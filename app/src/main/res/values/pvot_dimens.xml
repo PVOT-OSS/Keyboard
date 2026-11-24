@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <dimen name="clipboard_history_header_height">48dp</dimen>
+    <dimen name="clipboard_history_padding">8dp</dimen>
+    <dimen name="clipboard_history_item_margin">4dp</dimen>
+    <dimen name="clipboard_history_item_padding">12dp</dimen>
+    <dimen name="clipboard_history_text_size">14sp</dimen>
+    <dimen name="clipboard_history_title_size">16sp</dimen>
+</resources>

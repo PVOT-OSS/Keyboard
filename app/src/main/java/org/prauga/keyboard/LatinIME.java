@@ -86,6 +86,8 @@ import org.prauga.keyboard.keyboard.MainKeyboardView;
 import org.prauga.keyboard.Suggest.OnGetSuggestedWordsCallback;
 import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo;
 import org.prauga.keyboard.clipboard.ClipboardSuggestion;
+import org.prauga.keyboard.clipboard.ClipboardHistoryManager;
+import org.prauga.keyboard.clipboard.ClipboardHistoryView;
 import org.prauga.keyboard.clipboard.ClipboardSuggestionMonitor;
 import org.prauga.keyboard.blockedwords.BlockedWords;
 import org.prauga.keyboard.common.Constants;
@@ -131,7 +133,7 @@ import javax.annotation.Nullable;
  */
 public class LatinIME extends InputMethodService implements KeyboardActionListener,
         SuggestionStripView.Listener, SuggestionStripViewAccessor,
-        ClipboardSuggestionMonitor.Listener,
+        ClipboardSuggestionMonitor.Listener, ClipboardHistoryView.Listener,
         DictionaryFacilitator.DictionaryInitializationListener,
         PermissionsManager.PermissionsResultCallback {
     static final String TAG = LatinIME.class.getSimpleName();
@@ -1122,7 +1124,8 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
                 currentSettingsValues.mGestureTrailEnabled,
                 currentSettingsValues.mGestureFloatingPreviewTextEnabled);
 
-        if (currentSettingsValues.mShowClipboardSuggestions) {
+        if (currentSettingsValues.mShowClipboardSuggestions
+                || currentSettingsValues.mClipboardHistoryEnabled) {
             mClipboardSuggestionMonitor.start();
         } else {
             mClipboardSuggestionMonitor.stop();
@@ -1317,6 +1320,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
             return;
         }
         final int suggestionsHeight = (!mKeyboardSwitcher.isShowingEmojiPalettes()
+                && !mKeyboardSwitcher.isShowingClipboardHistory()
                 && mSuggestionStripView.getVisibility() == View.VISIBLE)
                 ? mSuggestionStripView.getHeight() : 0;
         final int visibleTopY = inputHeight - visibleKeyboardView.getHeight() - suggestionsHeight;
@@ -1465,8 +1469,35 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     @Override
     public void onClipboardSuggestionChanged(@Nullable final ClipboardSuggestion suggestion) {
         if (hasSuggestionStripView()) {
-            mSuggestionStripView.setClipboardSuggestion(suggestion);
+            mSuggestionStripView.setClipboardSuggestion(
+                    mSettings.getCurrent().mShowClipboardSuggestions ? suggestion : null);
         }
+    }
+
+    @Override
+    public void onClipRead(@Nullable final CharSequence text, final long timestamp,
+            final boolean isSensitive) {
+        if (mSettings.getCurrent().mClipboardHistoryEnabled) {
+            ClipboardHistoryManager.getInstance(this).add(text, timestamp, isSensitive);
+        }
+    }
+
+    @Override
+    public void showClipboardHistory() {
+        if (hasSuggestionStripView()) {
+            mKeyboardSwitcher.showClipboardHistory(mSuggestionStripView.getToolKeyTintList());
+        }
+    }
+
+    @Override
+    public void onClipboardHistoryPaste(@Nonnull final String text) {
+        mKeyboardSwitcher.hideClipboardHistory();
+        onTextInput(text);
+    }
+
+    @Override
+    public void onClipboardHistoryClose() {
+        mKeyboardSwitcher.hideClipboardHistory();
     }
 
     @Override

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+     SPDX-License-Identifier: Apache-2.0
+-->
+<org.prauga.keyboard.clipboard.ClipboardHistoryView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/clipboard_history_header_height"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/clipboard_history_padding"
+        android:paddingEnd="@dimen/clipboard_history_padding">
+
+        <TextView
+            android:id="@+id/clipboard_history_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:minWidth="@dimen/clipboard_history_header_height"
+            android:paddingStart="@dimen/clipboard_history_item_padding"
+            android:paddingEnd="@dimen/clipboard_history_item_padding"
+            android:textSize="@dimen/clipboard_history_title_size" />
+
+        <TextView
+            android:id="@+id/clipboard_history_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/clipboard_history"
+            android:textSize="@dimen/clipboard_history_title_size" />
+
+        <TextView
+            android:id="@+id/clipboard_history_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:minWidth="@dimen/clipboard_history_header_height"
+            android:paddingStart="@dimen/clipboard_history_item_padding"
+            android:paddingEnd="@dimen/clipboard_history_item_padding"
+            android:text="@string/clipboard_history_clear"
+            android:textSize="@dimen/clipboard_history_title_size" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/clipboard_history_actions"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/clipboard_history_header_height"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/clipboard_history_pin"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:textSize="@dimen/clipboard_history_title_size" />
+
+        <TextView
+            android:id="@+id/clipboard_history_delete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@string/clipboard_history_delete"
+            android:textSize="@dimen/clipboard_history_title_size" />
+
+        <TextView
+            android:id="@+id/clipboard_history_cancel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@android:string/cancel"
+            android:textSize="@dimen/clipboard_history_title_size" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ScrollView
+            android:id="@+id/clipboard_history_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/clipboard_history_padding"
+            android:paddingEnd="@dimen/clipboard_history_padding">
+
+            <GridLayout
+                android:id="@+id/clipboard_history_items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:useDefaultMargins="false" />
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/clipboard_history_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="@dimen/clipboard_history_item_padding"
+            android:text="@string/clipboard_history_empty"
+            android:textSize="@dimen/clipboard_history_text_size" />
+    </FrameLayout>
+</org.prauga.keyboard.clipboard.ClipboardHistoryView>

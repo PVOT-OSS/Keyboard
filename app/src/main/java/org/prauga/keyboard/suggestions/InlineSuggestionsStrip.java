@@ -92,7 +92,7 @@ public final class InlineSuggestionsStrip extends LinearLayout {
         }
     }
 
-    static int getChipBackgroundColor(final int textColor) {
+    public static int getChipBackgroundColor(final int textColor) {
         return ColorUtils.setAlphaComponent(textColor, CHIP_BACKGROUND_ALPHA);
     }
 

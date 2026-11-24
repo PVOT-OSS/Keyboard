@@ -39,6 +39,8 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.InlineSuggestion;
 import android.view.inputmethod.InlineSuggestionsRequest;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -71,6 +73,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     public interface Listener {
         public void showImportantNoticeContents();
         public void pickSuggestionManually(SuggestedWordInfo word);
+        public void showClipboardHistory();
         public void removeSuggestion(SuggestedWordInfo word);
         public void onCodeInput(int primaryCode, int x, int y, boolean isKeyRepeat);
         public void toggleSplitKeyboard();
@@ -96,6 +99,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     @Nullable
     private ClipboardSuggestion mClipboardSuggestion;
     private final KeyboardToolbar mToolbar;
+    private final View mToolbarClipboardKey;
+    private boolean mCanShowClipboardHistory;
     private boolean mShowsToolbar;
     private boolean mShouldBeVisible = true;
     private boolean mIsFullscreenMode;
@@ -233,14 +238,14 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
                 R.styleable.Keyboard, defStyle, R.style.SuggestionStripView);
         final Drawable iconVoice = keyboardAttr.getDrawable(R.styleable.Keyboard_iconShortcutKey);
         keyboardAttr.recycle();
-        mToolbar.addKey(Constants.CODE_EMOJI, R.drawable.ic_toolbar_emoji, getToolKeyTintList(),
-                R.string.spoken_description_emoji);
-        mToolbar.addKey(Constants.CODE_SETTINGS, R.drawable.ic_toolbar_settings,
-                getToolKeyTintList(),
-                R.string.spoken_description_settings);
-        mToolbar.setListener(code -> mListener.onCodeInput(code,
-                Constants.SUGGESTION_STRIP_COORDINATE, Constants.SUGGESTION_STRIP_COORDINATE,
-                false /* isKeyRepeat */));
+        mToolbarClipboardKey = mToolbar.addKey(R.drawable.ic_toolbar_clipboard,
+                getToolKeyTintList(), R.string.clipboard_history,
+                () -> mListener.showClipboardHistory());
+        mToolbar.addKey(R.drawable.ic_toolbar_emoji, getToolKeyTintList(),
+                R.string.spoken_description_emoji, () -> onToolbarCode(Constants.CODE_EMOJI));
+        mToolbar.addKey(R.drawable.ic_toolbar_settings, getToolKeyTintList(),
+                R.string.spoken_description_settings,
+                () -> onToolbarCode(Constants.CODE_SETTINGS));
         mVoiceKey.setImageDrawable(iconVoice);
         mVoiceKey.setOnClickListener(this);
         mSplitKey.setImageTintList(getToolKeyTintList());
@@ -267,6 +272,9 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         final SettingsValues currentSettingsValues = Settings.getInstance().getCurrent();
         mVoiceKey.setVisibility(currentSettingsValues.mShowsVoiceInputKey ? VISIBLE : INVISIBLE);
         mShowsToolbar = currentSettingsValues.mShowsToolbar;
+        mCanShowClipboardHistory = currentSettingsValues.mClipboardHistoryEnabled
+                && !currentSettingsValues.mIsFloatingKeyboardEnabled;
+        mToolbarClipboardKey.setVisibility(mCanShowClipboardHistory ? VISIBLE : GONE);
         mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion(),
                 shouldShowToolbar());
         updateSplitKey();
@@ -350,6 +358,9 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         mClipboardSuggestion = suggestion;
         mClipboardSuggestionStrip.removeAllViews();
         if (suggestion != null) {
+            if (mCanShowClipboardHistory) {
+                mClipboardSuggestionStrip.addView(createClipboardHistoryButton());
+            }
             for (final ClipboardSuggestion.Match match : suggestion.getMatches()) {
                 mClipboardSuggestionStrip.addView(
                         createClipboardSuggestionChip(match, suggestion.isSensitive()));
@@ -357,6 +368,20 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         }
         mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion(),
                 shouldShowToolbar());
+    }
+
+    @Nonnull
+    private ImageButton createClipboardHistoryButton() {
+        final ImageButton button =
+                new ImageButton(getContext(), null, R.attr.suggestionWordStyle);
+        button.setImageResource(R.drawable.ic_toolbar_clipboard);
+        button.setImageTintList(getToolKeyTintList());
+        button.setScaleType(ImageView.ScaleType.CENTER);
+        button.setContentDescription(getResources().getString(R.string.clipboard_history));
+        button.setOnClickListener(view -> mListener.showClipboardHistory());
+        button.setLayoutParams(new LinearLayout.LayoutParams(getResources().getDimensionPixelSize(
+                R.dimen.config_suggestions_strip_edge_key_width), LayoutParams.MATCH_PARENT));
+        return button;
     }
 
     @Nonnull
@@ -381,6 +406,11 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         chip.setTag(match);
         chip.setOnClickListener(this);
         return chip;
+    }
+
+    private void onToolbarCode(final int code) {
+        mListener.onCodeInput(code, Constants.SUGGESTION_STRIP_COORDINATE,
+                Constants.SUGGESTION_STRIP_COORDINATE, false /* isKeyRepeat */);
     }
 
     private boolean shouldShowToolbar() {

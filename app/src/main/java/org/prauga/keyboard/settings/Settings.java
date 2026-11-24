@@ -64,6 +64,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_AUTO_CORRECTION = "pref_key_auto_correction";
     public static final String PREF_AUTO_CORRECTION_STRENGTH = "pref_auto_correction_strength";
     public static final String PREF_SHOW_TOOLBAR = "pref_show_toolbar";
+    public static final String PREF_CLIPBOARD_HISTORY = "pref_clipboard_history";
     public static final String PREF_UNDO_AUTO_CORRECTION_ON_BACKSPACE =
             "pref_undo_auto_correction_on_backspace";
     // PREF_SHOW_SUGGESTIONS_SETTING_OBSOLETE is obsolete. Use PREF_SHOW_SUGGESTIONS instead.

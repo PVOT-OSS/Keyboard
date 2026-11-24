@@ -22,6 +22,8 @@ public final class ClipboardSuggestionMonitor
 
     public interface Listener {
         void onClipboardSuggestionChanged(@Nullable ClipboardSuggestion suggestion);
+
+        void onClipRead(@Nullable CharSequence text, long timestamp, boolean isSensitive);
     }
 
     private final ClipboardManager mClipboardManager;
@@ -67,6 +69,8 @@ public final class ClipboardSuggestionMonitor
             return null;
         }
         final ClipDescription description = clip.getDescription();
+        mListener.onClipRead(clip.getItemAt(0).getText(), description.getTimestamp(),
+                isSensitive(description));
         if (description.getTimestamp() == mConsumedTimestamp) {
             return null;
         }

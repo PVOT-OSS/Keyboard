@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+     SPDX-License-Identifier: Apache-2.0
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_columnWeight="1"
+    android:layout_margin="@dimen/clipboard_history_item_margin"
+    android:background="@drawable/inline_suggestion_chip"
+    android:drawablePadding="@dimen/clipboard_history_item_margin"
+    android:ellipsize="end"
+    android:hapticFeedbackEnabled="false"
+    android:maxLines="3"
+    android:minHeight="@dimen/clipboard_history_header_height"
+    android:padding="@dimen/clipboard_history_item_padding"
+    android:soundEffectsEnabled="false"
+    android:textSize="@dimen/clipboard_history_text_size" />

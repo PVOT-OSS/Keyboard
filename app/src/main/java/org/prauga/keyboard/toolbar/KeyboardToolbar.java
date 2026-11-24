@@ -8,6 +8,7 @@ package org.prauga.keyboard.toolbar;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,38 +19,24 @@ import androidx.annotation.StringRes;
 import org.prauga.keyboard.R;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public final class KeyboardToolbar extends LinearLayout {
-    public interface Listener {
-        void onToolbarKey(int code);
-    }
-
-    @Nullable
-    private Listener mListener;
-
     public KeyboardToolbar(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         setOrientation(HORIZONTAL);
     }
 
-    public void setListener(@Nullable final Listener listener) {
-        mListener = listener;
-    }
-
-    public void addKey(final int code, @DrawableRes final int iconResId,
-            @Nonnull final ColorStateList tint, @StringRes final int contentDescriptionResId) {
+    @Nonnull
+    public View addKey(@DrawableRes final int iconResId, @Nonnull final ColorStateList tint,
+            @StringRes final int contentDescriptionResId, @Nonnull final Runnable action) {
         final ImageButton button =
                 new ImageButton(getContext(), null, R.attr.suggestionWordStyle);
         button.setImageResource(iconResId);
         button.setScaleType(ImageView.ScaleType.CENTER);
         button.setImageTintList(tint);
         button.setContentDescription(getResources().getString(contentDescriptionResId));
-        button.setOnClickListener(view -> {
-            if (mListener != null) {
-                mListener.onToolbarKey(code);
-            }
-        });
+        button.setOnClickListener(view -> action.run());
         addView(button, new LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
+        return button;
     }
 }

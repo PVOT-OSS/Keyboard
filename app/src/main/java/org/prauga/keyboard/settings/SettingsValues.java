@@ -77,6 +77,7 @@ public class SettingsValues {
     public final boolean mShowsLanguageSwitchKey;
     public final boolean mShowsEmojiKey;
     public final boolean mShowsToolbar;
+    public final boolean mClipboardHistoryEnabled;
     public final boolean mUseContactsDict;
     public final boolean mUsePersonalizedDicts;
     public final boolean mUseDoubleSpacePeriod;
@@ -167,6 +168,7 @@ public class SettingsValues {
                 ? Settings.readShowsLanguageSwitchKey(prefs) : true /* forcibly */;
         mShowsEmojiKey = prefs.getBoolean(Settings.PREF_SHOW_EMOJI_KEY, false);
         mShowsToolbar = prefs.getBoolean(Settings.PREF_SHOW_TOOLBAR, true);
+        mClipboardHistoryEnabled = prefs.getBoolean(Settings.PREF_CLIPBOARD_HISTORY, true);
         mUseContactsDict = prefs.getBoolean(Settings.PREF_KEY_USE_CONTACTS_DICT, true);
         mUsePersonalizedDicts = prefs.getBoolean(Settings.PREF_KEY_USE_PERSONALIZED_DICTS, true);
         mUseDoubleSpacePeriod = prefs.getBoolean(Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD, true)
