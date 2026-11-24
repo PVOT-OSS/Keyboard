@@ -39,9 +39,23 @@
             android:text="@string/text_editing"
             android:textSize="@dimen/clipboard_history_title_size" />
 
-        <View
+        <ImageButton
+            android:id="@+id/text_editing_undo"
             android:layout_width="@dimen/clipboard_history_header_height"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/text_editing_undo"
+            android:scaleType="center"
+            android:src="@drawable/ic_editing_undo" />
+
+        <ImageButton
+            android:id="@+id/text_editing_redo"
+            android:layout_width="@dimen/clipboard_history_header_height"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/text_editing_redo"
+            android:scaleType="center"
+            android:src="@drawable/ic_editing_redo" />
     </LinearLayout>
 
     <GridLayout

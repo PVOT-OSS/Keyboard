@@ -29,6 +29,8 @@ class TextEditingView(context: Context, attrs: AttributeSet?) : LinearLayout(con
 
         fun onEditingAction(actionId: Int)
 
+        fun onEditingUndo(redo: Boolean)
+
         fun onTextEditingClose()
     }
 
@@ -60,6 +62,8 @@ class TextEditingView(context: Context, attrs: AttributeSet?) : LinearLayout(con
         setUpAction(R.id.text_editing_copy, android.R.id.copy, endsSelection = true)
         setUpAction(R.id.text_editing_cut, android.R.id.cut, endsSelection = true)
         setUpAction(R.id.text_editing_paste, android.R.id.paste, endsSelection = true)
+        findViewById<View>(R.id.text_editing_undo).setOnClickListener { listener.onEditingUndo(false) }
+        findViewById<View>(R.id.text_editing_redo).setOnClickListener { listener.onEditingUndo(true) }
     }
 
     fun setListener(listener: Listener) {
@@ -71,6 +75,8 @@ class TextEditingView(context: Context, attrs: AttributeSet?) : LinearLayout(con
         back.text = backLabel
         back.setTextColor(tint)
         findViewById<TextView>(R.id.text_editing_title).setTextColor(tint)
+        findViewById<ImageButton>(R.id.text_editing_undo).imageTintList = tint
+        findViewById<ImageButton>(R.id.text_editing_redo).imageTintList = tint
         for (key in keys.children) {
             when (key) {
                 is TextView -> key.setTextColor(tint)

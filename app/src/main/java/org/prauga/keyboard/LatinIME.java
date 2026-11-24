@@ -1535,6 +1535,33 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     }
 
     @Override
+    public void onEditingUndo(final boolean redo) {
+        final InputConnection ic = getCurrentInputConnection();
+        if (ic == null) {
+            return;
+        }
+        final long now = SystemClock.uptimeMillis();
+        final int ctrl = KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON;
+        final int metaState = redo ? ctrl | KeyEvent.META_SHIFT_ON | KeyEvent.META_SHIFT_LEFT_ON : ctrl;
+        ic.sendKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_DOWN,
+                KeyEvent.KEYCODE_CTRL_LEFT, 0, ctrl));
+        if (redo) {
+            ic.sendKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_DOWN,
+                    KeyEvent.KEYCODE_SHIFT_LEFT, 0, metaState));
+        }
+        ic.sendKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_Z, 0,
+                metaState));
+        ic.sendKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_Z, 0,
+                metaState));
+        if (redo) {
+            ic.sendKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_UP,
+                    KeyEvent.KEYCODE_SHIFT_LEFT, 0, ctrl));
+        }
+        ic.sendKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_UP,
+                KeyEvent.KEYCODE_CTRL_LEFT, 0, 0));
+    }
+
+    @Override
     public void onEditingKey(final int keyCode, final boolean extendSelection) {
         final InputConnection ic = getCurrentInputConnection();
         if (ic == null) {
