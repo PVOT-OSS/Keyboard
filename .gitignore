@@ -1,7 +1,8 @@
 # Gradle
+.cxx/
 .externalNativeBuild/
 .gradle/
 .idea/
-LatinIME.iml
+*.iml
 build/
 local.properties

@@ -27,7 +27,7 @@ tasks.register('generate', JavaExec) {
     dependsOn jar
     classpath jar.archiveFile
     workingDir rootProject.projectDir
-    args '-java', 'java'
+    args '-java', 'app/src/main/java'
 
     doLast {
         println()
