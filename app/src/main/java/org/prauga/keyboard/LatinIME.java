@@ -1488,7 +1488,9 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     @Override
     public void onClipRead(@Nullable final CharSequence text, final long timestamp,
             final boolean isSensitive) {
-        if (mSettings.getCurrent().mClipboardHistoryEnabled) {
+        final SettingsValues settingsValues = mSettings.getCurrent();
+        if (settingsValues.mClipboardHistoryEnabled
+                && settingsValues.isPersonalizedLearningEnabled()) {
             ClipboardHistoryManager.getInstance(this).add(text, timestamp, isSensitive);
         }
     }
