@@ -47,6 +47,14 @@
         android:summary="@string/auto_correction_summary"
         android:defaultValue="true"
         android:persistent="true" />
+    <ListPreference
+        android:key="pref_auto_correction_strength"
+        android:title="@string/auto_correction_strength"
+        android:dependency="pref_key_auto_correction"
+        android:entries="@array/auto_correction_strength_entries"
+        android:entryValues="@array/auto_correction_strength_values"
+        android:defaultValue="@string/auto_correction_threshold_mode_index_modest"
+        latin:useSimpleSummaryProvider="true" />
     <SwitchPreferenceCompat
         android:key="show_suggestions"
         android:summary="@string/prefs_show_suggestions_summary"
