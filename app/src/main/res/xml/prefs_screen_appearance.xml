@@ -27,6 +27,12 @@
         android:fragment="org.prauga.keyboard.settings.CustomInputStyleSettingsFragment"
         android:key="custom_input_styles"
         android:title="@string/custom_input_styles_title" />
+    <SwitchPreferenceCompat
+        android:key="pref_key_borders"
+        android:title="@string/key_borders"
+        android:summary="@string/key_borders_summary"
+        android:defaultValue="true"
+        android:persistent="true" />
     <ListPreference
         android:key="pref_key_text_size"
         android:title="@string/key_text_size"

@@ -219,6 +219,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         final Keyboard oldKeyboard = keyboardView.getKeyboard();
         final Keyboard newKeyboard = mKeyboardLayoutSet.getKeyboard(keyboardId);
         keyboardView.setKeyTextScale(currentSettingsValues.mKeyTextScale);
+        keyboardView.setKeyBordersEnabled(currentSettingsValues.mKeyBordersEnabled);
         keyboardView.setKeyboard(newKeyboard);
         mCurrentInputView.setKeyboardTopPadding(newKeyboard.mTopPadding);
         keyboardView.setKeyPreviewPopupEnabled(

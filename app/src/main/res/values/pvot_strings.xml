@@ -40,6 +40,8 @@
     <string name="hide_toolbar_key">Hide toolbar</string>
     <string name="emoji_search_key">Search emoji</string>
     <string name="key_text_size">Key text size</string>
+    <string name="key_borders">Key borders</string>
+    <string name="key_borders_summary">Draw a background behind each key</string>
     <string name="keyboard_resize">Resize keyboard</string>
     <string name="toolbar_keys">Toolbar keys</string>
     <string name="multilingual_typing">Multilingual typing</string>

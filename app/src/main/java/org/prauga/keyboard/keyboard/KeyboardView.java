@@ -32,6 +32,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.prauga.keyboard.keyborders.BorderlessKeyBackground;
 import org.prauga.keyboard.keyboard.internal.KeyDrawParams;
 import org.prauga.keyboard.keyboard.internal.KeyVisualAttributes;
 import org.prauga.keyboard.R;
@@ -95,6 +96,9 @@ public class KeyboardView extends View {
     private final Drawable mKeyBackground;
     private final Drawable mFunctionalKeyBackground;
     private final Drawable mSpacebarBackground;
+    private final Drawable mBorderlessKeyBackground;
+    private final Drawable mBorderlessFunctionalKeyBackground;
+    private boolean mKeyBordersEnabled = true;
     private final float mSpacebarIconWidthRatio;
     private final Rect mKeyBackgroundPadding = new Rect();
     private static final float KET_TEXT_SHADOW_RADIUS_DISABLED = -1.0f;
@@ -143,6 +147,8 @@ public class KeyboardView extends View {
         final Drawable spacebarBackground = keyboardViewAttr.getDrawable(
                 R.styleable.KeyboardView_spacebarBackground);
         mSpacebarBackground = (spacebarBackground != null) ? spacebarBackground : mKeyBackground;
+        mBorderlessKeyBackground = new BorderlessKeyBackground(mKeyBackground);
+        mBorderlessFunctionalKeyBackground = new BorderlessKeyBackground(mFunctionalKeyBackground);
         mSpacebarIconWidthRatio = keyboardViewAttr.getFloat(
                 R.styleable.KeyboardView_spacebarIconWidthRatio, 1.0f);
         mKeyHintLetterPaddingX = keyboardViewAttr.getDimension(
@@ -208,6 +214,13 @@ public class KeyboardView extends View {
      * @return the currently attached keyboard
      * @see #setKeyboard(Keyboard)
      */
+    public void setKeyBordersEnabled(final boolean enabled) {
+        if (mKeyBordersEnabled != enabled) {
+            mKeyBordersEnabled = enabled;
+            invalidateAllKeys();
+        }
+    }
+
     public void setKeyTextScale(final float textScale) {
         mKeyDrawParams.setTextScale(textScale);
     }
@@ -345,7 +358,10 @@ public class KeyboardView extends View {
 
         if (!key.isSpacer()) {
             final Drawable background = key.selectBackgroundDrawable(
-                    mKeyBackground, mFunctionalKeyBackground, mSpacebarBackground);
+                    mKeyBordersEnabled ? mKeyBackground : mBorderlessKeyBackground,
+                    mKeyBordersEnabled ? mFunctionalKeyBackground
+                            : mBorderlessFunctionalKeyBackground,
+                    mSpacebarBackground);
             if (background != null) {
                 onDrawKeyBackground(key, canvas, background);
             }
