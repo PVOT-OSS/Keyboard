@@ -24,6 +24,7 @@ import android.util.LruCache;
 
 import org.prauga.keyboard.annotations.UsedForTesting;
 import org.prauga.keyboard.blockedwords.BlockedWords;
+import org.prauga.keyboard.multilingual.SecondaryDictionaries;
 import org.prauga.keyboard.keyboard.Keyboard;
 import org.prauga.keyboard.NgramContext.WordInfo;
 import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo;
@@ -71,6 +72,14 @@ public class DictionaryFacilitatorImpl implements DictionaryFacilitator {
     private static final int CAPITALIZED_FORM_MAX_PROBABILITY_FOR_INSERT = 140;
 
     private DictionaryGroup mDictionaryGroup = new DictionaryGroup();
+    private final SecondaryDictionaries mSecondaryDictionaries = new SecondaryDictionaries();
+    private static final float WEIGHT_FOR_SECONDARY_LANGUAGE = 0.9f;
+
+    @Override
+    public void setSecondaryLocales(@Nonnull final Context context,
+            @Nonnull final List<Locale> locales) {
+        mSecondaryDictionaries.setLocales(context, locales);
+    }
 
     @Override
     @Nullable
@@ -463,6 +472,7 @@ public class DictionaryFacilitatorImpl implements DictionaryFacilitator {
     }
 
     public void closeDictionaries() {
+        mSecondaryDictionaries.close();
         final DictionaryGroup dictionaryGroupToClose;
         synchronized (mLock) {
             dictionaryGroupToClose = mDictionaryGroup;
@@ -647,18 +657,33 @@ public class DictionaryFacilitatorImpl implements DictionaryFacilitator {
                     dictionary.getSuggestions(composedData, ngramContext,
                             proximityInfoHandle, settingsValuesForSuggestion, sessionId,
                             weightForLocale, weightOfLangModelVsSpatialModel);
-            if (null == dictionarySuggestions) continue;
-            final Set<String> blockedWords = settingsValuesForSuggestion.mBlockedWords;
-            if (!blockedWords.isEmpty()) {
-                dictionarySuggestions.removeIf(
-                        info -> BlockedWords.isBlocked(blockedWords, info.mWord));
-            }
-            suggestionResults.addAll(dictionarySuggestions);
-            if (null != suggestionResults.mRawSuggestions) {
-                suggestionResults.mRawSuggestions.addAll(dictionarySuggestions);
-            }
+            addSuggestions(suggestionResults, dictionarySuggestions,
+                    settingsValuesForSuggestion.mBlockedWords);
+        }
+        for (final Dictionary dictionary : mSecondaryDictionaries.getDictionaries()) {
+            final ArrayList<SuggestedWordInfo> dictionarySuggestions =
+                    dictionary.getSuggestions(composedData, ngramContext, proximityInfoHandle,
+                            settingsValuesForSuggestion, sessionId,
+                            WEIGHT_FOR_SECONDARY_LANGUAGE, weightOfLangModelVsSpatialModel);
+            addSuggestions(suggestionResults, dictionarySuggestions,
+                    settingsValuesForSuggestion.mBlockedWords);
         }
         return suggestionResults;
+    }
+
+    private static void addSuggestions(@Nonnull final SuggestionResults suggestionResults,
+            @Nullable final ArrayList<SuggestedWordInfo> dictionarySuggestions,
+            @Nonnull final Set<String> blockedWords) {
+        if (null == dictionarySuggestions) {
+            return;
+        }
+        if (!blockedWords.isEmpty()) {
+            dictionarySuggestions.removeIf(info -> BlockedWords.isBlocked(blockedWords, info.mWord));
+        }
+        suggestionResults.addAll(dictionarySuggestions);
+        if (null != suggestionResults.mRawSuggestions) {
+            suggestionResults.mRawSuggestions.addAll(dictionarySuggestions);
+        }
     }
 
     public boolean isValidSpellingWord(final String word) {
@@ -689,6 +714,11 @@ public class DictionaryFacilitatorImpl implements DictionaryFacilitator {
             // would be immutable once it's finished initializing, but concretely a null test is
             // probably good enough for the time being.
             if (null == dictionary) continue;
+            if (dictionary.isValidWord(word)) {
+                return true;
+            }
+        }
+        for (final Dictionary dictionary : mSecondaryDictionaries.getDictionaries()) {
             if (dictionary.isValidWord(word)) {
                 return true;
             }

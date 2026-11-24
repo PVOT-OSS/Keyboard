@@ -74,6 +74,7 @@ import org.prauga.keyboard.annotations.UsedForTesting;
 import org.prauga.keyboard.compat.BuildCompatUtils;
 import org.prauga.keyboard.compat.EditorInfoCompatUtils;
 import org.prauga.keyboard.compat.InputMethodServiceCompatUtils;
+import org.prauga.keyboard.compat.InputMethodSubtypeCompatUtils;
 import org.prauga.keyboard.compat.ViewOutlineProviderCompatUtils;
 import org.prauga.keyboard.compat.ViewOutlineProviderCompatUtils.InsetsUpdater;
 import org.prauga.keyboard.event.Event;
@@ -98,6 +99,7 @@ import org.prauga.keyboard.emojisuggestions.EmojiKeywords;
 import org.prauga.keyboard.emojisuggestions.EmojiSearchBar;
 import org.prauga.keyboard.glide.GlideTyping;
 import org.prauga.keyboard.onehanded.OneHandedMode;
+import org.prauga.keyboard.multilingual.MultilingualLocales;
 import org.prauga.keyboard.onehanded.OneHandedSideView;
 import org.prauga.keyboard.resize.KeyboardResizeView;
 import org.prauga.keyboard.common.CoordinateUtils;
@@ -120,6 +122,7 @@ import org.prauga.keyboard.utils.IntentUtils;
 import org.prauga.keyboard.utils.JniUtils;
 import org.prauga.keyboard.utils.LeakGuardHandlerWrapper;
 import org.prauga.keyboard.utils.RecapitalizeStatus;
+import org.prauga.keyboard.utils.ScriptUtils;
 import org.prauga.keyboard.utils.StatsUtils;
 import org.prauga.keyboard.utils.FloatingKeyboardUtils;
 import org.prauga.keyboard.utils.SplitKeyboardUtils;
@@ -733,11 +736,24 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         } else {
             subtypeLocale = subtypeSwitcherLocale;
         }
+        updateSecondaryLocales(subtypeLocale);
         if (mDictionaryFacilitator.isForLocale(subtypeLocale)
                 && mDictionaryFacilitator.isForAccount(mSettings.getCurrent().mAccount)) {
             return;
         }
         resetDictionaryFacilitator(subtypeLocale);
+    }
+
+    private void updateSecondaryLocales(@Nonnull final Locale primaryLocale) {
+        final List<Locale> enabledLocales = new ArrayList<>();
+        if (mSettings.getCurrent().mMultilingualTypingEnabled) {
+            for (final InputMethodSubtype subtype
+                    : mRichImm.getMyEnabledInputMethodSubtypeList(true)) {
+                enabledLocales.add(InputMethodSubtypeCompatUtils.getLocaleObject(subtype));
+            }
+        }
+        mDictionaryFacilitator.setSecondaryLocales(this, MultilingualLocales.secondaryLocales(
+                primaryLocale, enabledLocales, ScriptUtils::getScriptFromSpellCheckerLocale));
     }
 
     /**

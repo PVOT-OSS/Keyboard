@@ -42,6 +42,8 @@
     <string name="key_text_size">Key text size</string>
     <string name="keyboard_resize">Resize keyboard</string>
     <string name="toolbar_keys">Toolbar keys</string>
+    <string name="multilingual_typing">Multilingual typing</string>
+    <string name="multilingual_typing_summary">Suggest words from your other languages without switching</string>
     <string name="toolbar_keys_summary">Choose and order the keys in the toolbar</string>
     <string name="toolbar_key_move_up">Move up</string>
     <string name="toolbar_key_move_down">Move down</string>

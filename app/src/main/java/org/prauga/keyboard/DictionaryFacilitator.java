@@ -110,6 +110,8 @@ public interface DictionaryFacilitator {
     @Nullable
     Dictionary getMainDictionary();
 
+    void setSecondaryLocales(@Nonnull Context context, @Nonnull List<Locale> locales);
+
     @Nullable
     ExpandableBinaryDictionary getSubDictionary(@Nonnull String dictType);
 

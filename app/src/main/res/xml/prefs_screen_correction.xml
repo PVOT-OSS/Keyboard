@@ -87,6 +87,12 @@
         android:title="@string/clear_clipboard_history"
         android:summary="@string/clear_clipboard_history_summary" />
     <SwitchPreferenceCompat
+        android:key="pref_multilingual_typing"
+        android:title="@string/multilingual_typing"
+        android:summary="@string/multilingual_typing_summary"
+        android:defaultValue="true"
+        android:persistent="true" />
+    <SwitchPreferenceCompat
         android:key="pref_emoji_suggestions"
         android:title="@string/emoji_suggestions"
         android:summary="@string/emoji_suggestions_summary"
