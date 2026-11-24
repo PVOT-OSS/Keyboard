@@ -110,6 +110,9 @@ public interface DictionaryFacilitator {
     @Nullable
     Dictionary getMainDictionary();
 
+    @Nullable
+    ExpandableBinaryDictionary getSubDictionary(@Nonnull String dictType);
+
     boolean usesContacts();
 
     String getAccount();

@@ -77,6 +77,12 @@ public class DictionaryFacilitatorImpl implements DictionaryFacilitator {
     public Dictionary getMainDictionary() {
         return mDictionaryGroup.getDict(Dictionary.TYPE_MAIN);
     }
+
+    @Override
+    @Nullable
+    public ExpandableBinaryDictionary getSubDictionary(@Nonnull final String dictType) {
+        return mDictionaryGroup.getSubDict(dictType);
+    }
     private volatile CountDownLatch mLatchForWaitingLoadingMainDictionaries = new CountDownLatch(0);
     // To synchronize assigning mDictionaryGroup to ensure closing dictionaries.
     private final Object mLock = new Object();

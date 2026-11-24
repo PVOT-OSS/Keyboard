@@ -8,6 +8,7 @@ package org.prauga.keyboard.glide
 import org.prauga.keyboard.Dictionary
 import org.prauga.keyboard.DictionaryCollection
 import org.prauga.keyboard.DictionaryFacilitator
+import org.prauga.keyboard.ExpandableBinaryDictionary
 import org.prauga.keyboard.NgramContext
 import org.prauga.keyboard.ReadOnlyBinaryDictionary
 import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo
@@ -23,6 +24,7 @@ object GlideTyping {
     private const val SCORE_STEP = 1000
     private const val CONTEXT_WEIGHT = 3f
     private const val MAX_PROBABILITY = 255f
+    private const val PERSONAL_FREQUENCY = 200
 
     @Volatile
     private var wordList: GlideWordList? = null
@@ -37,6 +39,10 @@ object GlideTyping {
     fun prepare(facilitator: DictionaryFacilitator) {
         val locale = facilitator.locale ?: return
         val main = facilitator.mainDictionary ?: return
+        val personal = listOfNotNull(
+            facilitator.getSubDictionary(Dictionary.TYPE_USER),
+            facilitator.getSubDictionary(Dictionary.TYPE_CONTACTS),
+        )
         synchronized(this) {
             if (wordList?.locale == locale || loadingLocale == locale) {
                 return
@@ -44,7 +50,7 @@ object GlideTyping {
             loadingLocale = locale
         }
         ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
-            val loaded = load(main, locale)
+            val loaded = load(main, personal, locale)
             synchronized(this) {
                 if (loadingLocale == locale) {
                     loadingLocale = null
@@ -121,7 +127,11 @@ object GlideTyping {
         return decoder
     }
 
-    private fun load(main: Dictionary, locale: Locale): GlideWordList {
+    private fun load(
+        main: Dictionary,
+        personal: List<ExpandableBinaryDictionary>,
+        locale: Locale,
+    ): GlideWordList {
         val dictionaries = (main as? DictionaryCollection)?.dictionaries ?: listOf(main)
         val frequencies = HashMap<String, Int>()
         val offensive = HashSet<String>()
@@ -145,6 +155,14 @@ object GlideTyping {
                 }
                 token = result.mNextToken
             } while (token != 0)
+        }
+        for (dictionary in personal) {
+            for (property in dictionary.wordPropertiesForSyncing.orEmpty()) {
+                val word = property.mWord
+                if (!property.mIsNotAWord && word.isNotEmpty() && ' ' !in word) {
+                    frequencies[word] = maxOf(frequencies[word] ?: -1, PERSONAL_FREQUENCY)
+                }
+            }
         }
         val words = frequencies.keys.toTypedArray()
         return GlideWordList(
