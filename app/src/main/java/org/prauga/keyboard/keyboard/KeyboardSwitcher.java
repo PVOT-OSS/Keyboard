@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import org.prauga.keyboard.clipboard.ClipboardHistoryManager;
 import org.prauga.keyboard.clipboard.ClipboardHistoryView;
 import org.prauga.keyboard.compat.InputMethodServiceCompatUtils;
+import org.prauga.keyboard.editing.TextEditingView;
 import org.prauga.keyboard.event.Event;
 import org.prauga.keyboard.keyboard.KeyboardLayoutSet.KeyboardLayoutSetException;
 import org.prauga.keyboard.keyboard.emoji.EmojiPalettesView;
@@ -67,6 +68,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
     private MainKeyboardView mKeyboardView;
     private EmojiPalettesView mEmojiPalettesView;
     private ClipboardHistoryView mClipboardHistoryView;
+    private TextEditingView mTextEditingView;
     private FloatingKeyboardController mFloatingKeyboardController;
     private boolean mIsFloating;
     private int mFloatingKeyboardWidth;
@@ -331,6 +333,9 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
     private void setMainKeyboardFrame(
             @Nonnull final SettingsValues settingsValues,
             @Nonnull final KeyboardSwitchState toggleState) {
+        if (isShowingPanel()) {
+            return;
+        }
         final int visibility =  isImeSuppressedByHardwareKeyboard(settingsValues, toggleState)
                 ? View.GONE : View.VISIBLE;
         mKeyboardView.setVisibility(visibility);
@@ -349,6 +354,12 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         showPanel(mClipboardHistoryView);
     }
 
+    public void showTextEditing(@Nonnull final ColorStateList tint) {
+        mTextEditingView.show(
+                mKeyboardTextsSet.getText(KeyboardTextsSet.SWITCH_TO_ALPHA_KEY_LABEL), tint);
+        showPanel(mTextEditingView);
+    }
+
     private void showPanel(@Nonnull final View panel) {
         panel.getLayoutParams().height = mMainKeyboardFrame.getHeight();
         final Drawable background = mKeyboardView.getBackground();
@@ -362,6 +373,9 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
     }
 
     public void hidePanels() {
+        if (mClipboardHistoryView == null) {
+            return;
+        }
         hidePanelViews();
         mMainKeyboardFrame.setVisibility(View.VISIBLE);
         mKeyboardView.setVisibility(View.VISIBLE);
@@ -369,12 +383,16 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
 
     private void hidePanelViews() {
         mClipboardHistoryView.setVisibility(View.GONE);
+        mTextEditingView.setVisibility(View.GONE);
     }
 
     @Nullable
     private View getShownPanel() {
         if (mClipboardHistoryView != null && mClipboardHistoryView.isShown()) {
             return mClipboardHistoryView;
+        }
+        if (mTextEditingView != null && mTextEditingView.isShown()) {
+            return mTextEditingView;
         }
         return null;
     }
@@ -585,6 +603,8 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
                 isHardwareAcceleratedDrawingEnabled);
         mClipboardHistoryView = mCurrentInputView.findViewById(R.id.clipboard_history_view);
         mClipboardHistoryView.setUp(ClipboardHistoryManager.getInstance(mLatinIME), mLatinIME);
+        mTextEditingView = mCurrentInputView.findViewById(R.id.text_editing_view);
+        mTextEditingView.setListener(mLatinIME);
         mEmojiPalettesView.setKeyboardActionListener(mLatinIME);
 
         final View dragHandle = mCurrentInputView.findViewById(R.id.floating_drag_handle);

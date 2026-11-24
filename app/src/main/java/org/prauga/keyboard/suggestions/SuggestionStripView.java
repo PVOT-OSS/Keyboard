@@ -74,6 +74,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         public void showImportantNoticeContents();
         public void pickSuggestionManually(SuggestedWordInfo word);
         public void showClipboardHistory();
+        public void showTextEditing();
         public void removeSuggestion(SuggestedWordInfo word);
         public void onCodeInput(int primaryCode, int x, int y, boolean isKeyRepeat);
         public void toggleSplitKeyboard();
@@ -100,6 +101,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     private ClipboardSuggestion mClipboardSuggestion;
     private final KeyboardToolbar mToolbar;
     private final View mToolbarClipboardKey;
+    private final View mToolbarEditingKey;
+    private final ColorStateList mPanelTint;
     private boolean mCanShowClipboardHistory;
     private boolean mShowsToolbar;
     private boolean mShouldBeVisible = true;
@@ -238,9 +241,12 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
                 R.styleable.Keyboard, defStyle, R.style.SuggestionStripView);
         final Drawable iconVoice = keyboardAttr.getDrawable(R.styleable.Keyboard_iconShortcutKey);
         keyboardAttr.recycle();
+        mPanelTint = getToolKeyTintList();
         mToolbarClipboardKey = mToolbar.addKey(R.drawable.ic_toolbar_clipboard,
                 getToolKeyTintList(), R.string.clipboard_history,
                 () -> mListener.showClipboardHistory());
+        mToolbarEditingKey = mToolbar.addKey(R.drawable.ic_toolbar_editing,
+                getToolKeyTintList(), R.string.text_editing, () -> mListener.showTextEditing());
         mToolbar.addKey(R.drawable.ic_toolbar_emoji, getToolKeyTintList(),
                 R.string.spoken_description_emoji, () -> onToolbarCode(Constants.CODE_EMOJI));
         mToolbar.addKey(R.drawable.ic_toolbar_settings, getToolKeyTintList(),
@@ -275,6 +281,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         mCanShowClipboardHistory = currentSettingsValues.mClipboardHistoryEnabled
                 && !currentSettingsValues.mIsFloatingKeyboardEnabled;
         mToolbarClipboardKey.setVisibility(mCanShowClipboardHistory ? VISIBLE : GONE);
+        mToolbarEditingKey.setVisibility(
+                currentSettingsValues.mIsFloatingKeyboardEnabled ? GONE : VISIBLE);
         mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion(),
                 shouldShowToolbar());
         updateSplitKey();
@@ -283,6 +291,11 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
 
     public ColorStateList getToolKeyTintList() {
         return mWordViews.get(0).getTextColors();
+    }
+
+    @Nonnull
+    public ColorStateList getPanelTintList() {
+        return mPanelTint;
     }
 
     private void updateFloatKey() {

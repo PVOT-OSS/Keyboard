@@ -13,6 +13,15 @@
     <string name="clipboard_history_pin">Pin</string>
     <string name="clipboard_history_unpin">Unpin</string>
     <string name="clipboard_history_delete">Delete</string>
+    <string name="text_editing">Text editing</string>
+    <string name="text_editing_select">Select</string>
+    <string name="text_editing_delete">Delete</string>
+    <string name="text_editing_line_start">Line start</string>
+    <string name="text_editing_line_end">Line end</string>
+    <string name="text_editing_up">Move up</string>
+    <string name="text_editing_down">Move down</string>
+    <string name="text_editing_left">Move left</string>
+    <string name="text_editing_right">Move right</string>
     <string name="clear_clipboard_history">Clear clipboard history</string>
     <string name="clear_clipboard_history_summary">Delete all saved clips, including pinned ones</string>
     <string name="clear_clipboard_history_confirm_title">Clear clipboard history?</string>

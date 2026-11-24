@@ -44,6 +44,7 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
@@ -63,6 +64,7 @@ import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InlineSuggestionsRequest;
 import android.view.inputmethod.InlineSuggestionsResponse;
+import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodSubtype;
 
 import androidx.annotation.NonNull;
@@ -91,6 +93,7 @@ import org.prauga.keyboard.clipboard.ClipboardHistoryView;
 import org.prauga.keyboard.clipboard.ClipboardSuggestionMonitor;
 import org.prauga.keyboard.blockedwords.BlockedWords;
 import org.prauga.keyboard.common.Constants;
+import org.prauga.keyboard.editing.TextEditingView;
 import org.prauga.keyboard.common.CoordinateUtils;
 import org.prauga.keyboard.common.InputPointers;
 import org.prauga.keyboard.define.DebugFlags;
@@ -134,6 +137,7 @@ import javax.annotation.Nullable;
 public class LatinIME extends InputMethodService implements KeyboardActionListener,
         SuggestionStripView.Listener, SuggestionStripViewAccessor,
         ClipboardSuggestionMonitor.Listener, ClipboardHistoryView.Listener,
+        TextEditingView.Listener,
         DictionaryFacilitator.DictionaryInitializationListener,
         PermissionsManager.PermissionsResultCallback {
     static final String TAG = LatinIME.class.getSimpleName();
@@ -959,6 +963,9 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     @SuppressWarnings("deprecation")
     void onStartInputViewInternal(final EditorInfo editorInfo, final boolean restarting) {
         super.onStartInputView(editorInfo, restarting);
+        if (!restarting) {
+            mKeyboardSwitcher.hidePanels();
+        }
 
         mDictionaryFacilitator.onStartInput();
         // Switch to the null consumer to handle cases leading to early exit below, for which we
@@ -1485,7 +1492,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     @Override
     public void showClipboardHistory() {
         if (hasSuggestionStripView()) {
-            mKeyboardSwitcher.showClipboardHistory(mSuggestionStripView.getToolKeyTintList());
+            mKeyboardSwitcher.showClipboardHistory(mSuggestionStripView.getPanelTintList());
         }
     }
 
@@ -1497,6 +1504,48 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     @Override
     public void onClipboardHistoryClose() {
+        mKeyboardSwitcher.hidePanels();
+    }
+
+    @Override
+    public void showTextEditing() {
+        if (hasSuggestionStripView()) {
+            mInputLogic.finishInput();
+            mKeyboardSwitcher.showTextEditing(mSuggestionStripView.getPanelTintList());
+        }
+    }
+
+    @Override
+    public void onEditingKey(final int keyCode, final boolean extendSelection) {
+        final InputConnection ic = getCurrentInputConnection();
+        if (ic == null) {
+            return;
+        }
+        final long now = SystemClock.uptimeMillis();
+        final int metaState = extendSelection
+                ? KeyEvent.META_SHIFT_ON | KeyEvent.META_SHIFT_LEFT_ON : 0;
+        if (extendSelection) {
+            ic.sendKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_DOWN,
+                    KeyEvent.KEYCODE_SHIFT_LEFT, 0, metaState));
+        }
+        ic.sendKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_DOWN, keyCode, 0, metaState));
+        ic.sendKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_UP, keyCode, 0, metaState));
+        if (extendSelection) {
+            ic.sendKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_UP,
+                    KeyEvent.KEYCODE_SHIFT_LEFT, 0, 0));
+        }
+    }
+
+    @Override
+    public void onEditingAction(final int actionId) {
+        final InputConnection ic = getCurrentInputConnection();
+        if (ic != null) {
+            ic.performContextMenuAction(actionId);
+        }
+    }
+
+    @Override
+    public void onTextEditingClose() {
         mKeyboardSwitcher.hidePanels();
     }
 

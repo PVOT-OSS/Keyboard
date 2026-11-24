@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+     SPDX-License-Identifier: Apache-2.0
+-->
+<org.prauga.keyboard.editing.TextEditingView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/clipboard_history_header_height"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/clipboard_history_padding"
+        android:paddingEnd="@dimen/clipboard_history_padding">
+
+        <TextView
+            android:id="@+id/text_editing_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:minWidth="@dimen/clipboard_history_header_height"
+            android:paddingStart="@dimen/clipboard_history_item_padding"
+            android:paddingEnd="@dimen/clipboard_history_item_padding"
+            android:textSize="@dimen/clipboard_history_title_size" />
+
+        <TextView
+            android:id="@+id/text_editing_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/text_editing"
+            android:textSize="@dimen/clipboard_history_title_size" />
+
+        <View
+            android:layout_width="@dimen/clipboard_history_header_height"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <GridLayout
+        android:id="@+id/text_editing_keys"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:columnCount="3"
+        android:padding="@dimen/clipboard_history_padding"
+        android:rowCount="4"
+        android:useDefaultMargins="false">
+
+        <TextView
+            android:id="@+id/text_editing_line_start"
+            style="@style/TextEditingKey"
+            android:text="@string/text_editing_line_start" />
+
+        <ImageButton
+            android:id="@+id/text_editing_up"
+            style="@style/TextEditingKey"
+            android:contentDescription="@string/text_editing_up"
+            android:scaleType="center"
+            android:src="@drawable/ic_editing_chevron_up" />
+
+        <TextView
+            android:id="@+id/text_editing_line_end"
+            style="@style/TextEditingKey"
+            android:text="@string/text_editing_line_end" />
+
+        <ImageButton
+            android:id="@+id/text_editing_left"
+            style="@style/TextEditingKey"
+            android:contentDescription="@string/text_editing_left"
+            android:scaleType="center"
+            android:src="@drawable/ic_editing_chevron_left" />
+
+        <TextView
+            android:id="@+id/text_editing_select"
+            style="@style/TextEditingKey"
+            android:text="@string/text_editing_select" />
+
+        <ImageButton
+            android:id="@+id/text_editing_right"
+            style="@style/TextEditingKey"
+            android:contentDescription="@string/text_editing_right"
+            android:scaleType="center"
+            android:src="@drawable/ic_editing_chevron_right" />
+
+        <TextView
+            android:id="@+id/text_editing_select_all"
+            style="@style/TextEditingKey"
+            android:text="@android:string/selectAll" />
+
+        <ImageButton
+            android:id="@+id/text_editing_down"
+            style="@style/TextEditingKey"
+            android:contentDescription="@string/text_editing_down"
+            android:scaleType="center"
+            android:src="@drawable/ic_editing_chevron_down" />
+
+        <TextView
+            android:id="@+id/text_editing_delete"
+            style="@style/TextEditingKey"
+            android:text="@string/text_editing_delete" />
+
+        <TextView
+            android:id="@+id/text_editing_copy"
+            style="@style/TextEditingKey"
+            android:text="@android:string/copy" />
+
+        <TextView
+            android:id="@+id/text_editing_cut"
+            style="@style/TextEditingKey"
+            android:text="@android:string/cut" />
+
+        <TextView
+            android:id="@+id/text_editing_paste"
+            style="@style/TextEditingKey"
+            android:text="@android:string/paste" />
+    </GridLayout>
+</org.prauga.keyboard.editing.TextEditingView>
