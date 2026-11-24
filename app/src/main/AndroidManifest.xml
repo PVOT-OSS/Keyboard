@@ -146,13 +146,5 @@
                 <action android:name="android.intent.action.LOCALE_CHANGED"/>
             </intent-filter>
         </receiver>
-
-        <!-- Broadcast receiver for AccountManager#LOGIN_ACCOUNTS_CHANGED_ACTION. -->
-        <receiver android:name=".accounts.AccountsChangedReceiver"
-             android:exported="true">
-            <intent-filter>
-                <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED"/>
-            </intent-filter>
-        </receiver>
     </application>
 </manifest>

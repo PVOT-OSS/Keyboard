@@ -28,7 +28,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import org.prauga.keyboard.R;
-import org.prauga.keyboard.define.ProductionFlags;
 import org.prauga.keyboard.utils.ApplicationUtils;
 import org.prauga.keyboard.utils.FeedbackUtils;
 import org.prauga.keyboard.utils.JniUtils;
@@ -53,10 +52,6 @@ public final class SettingsFragment extends InputMethodSettingsFragment {
         final PreferenceScreen preferenceScreen = getPreferenceScreen();
         preferenceScreen.setTitle(
                 ApplicationUtils.getActivityTitleResId(getActivity(), SettingsActivity.class));
-        if (!ProductionFlags.ENABLE_ACCOUNT_SIGN_IN) {
-            final Preference accountsPreference = findPreference(Settings.SCREEN_ACCOUNTS);
-            preferenceScreen.removePreference(accountsPreference);
-        }
         if (!JniUtils.sHaveGestureLib) {
             final Preference gesturePreference = findPreference(Settings.SCREEN_GESTURE);
             preferenceScreen.removePreference(gesturePreference);

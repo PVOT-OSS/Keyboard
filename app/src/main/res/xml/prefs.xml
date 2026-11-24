@@ -24,11 +24,6 @@
         android:key="screen_preferences"
         android:icon="@drawable/ic_settings_preferences" />
     <Preference
-        android:fragment="org.prauga.keyboard.settings.AccountsSettingsFragment"
-        android:title="@string/settings_screen_accounts"
-        android:key="screen_accounts"
-        android:icon="@drawable/ic_settings_privacy" />
-    <Preference
         android:fragment="org.prauga.keyboard.settings.AppearanceSettingsFragment"
         android:title="@string/settings_screen_appearance"
         android:key="screen_appearance"
