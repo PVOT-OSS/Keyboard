@@ -23,6 +23,7 @@ import android.util.Log;
 import android.util.LruCache;
 
 import org.prauga.keyboard.annotations.UsedForTesting;
+import org.prauga.keyboard.blockedwords.BlockedWords;
 import org.prauga.keyboard.keyboard.Keyboard;
 import org.prauga.keyboard.NgramContext.WordInfo;
 import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo;
@@ -45,6 +46,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -634,6 +636,11 @@ public class DictionaryFacilitatorImpl implements DictionaryFacilitator {
                             proximityInfoHandle, settingsValuesForSuggestion, sessionId,
                             weightForLocale, weightOfLangModelVsSpatialModel);
             if (null == dictionarySuggestions) continue;
+            final Set<String> blockedWords = settingsValuesForSuggestion.mBlockedWords;
+            if (!blockedWords.isEmpty()) {
+                dictionarySuggestions.removeIf(
+                        info -> BlockedWords.isBlocked(blockedWords, info.mWord));
+            }
             suggestionResults.addAll(dictionarySuggestions);
             if (null != suggestionResults.mRawSuggestions) {
                 suggestionResults.mRawSuggestions.addAll(dictionarySuggestions);

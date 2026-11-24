@@ -16,10 +16,23 @@
 
 package org.prauga.keyboard.settings;
 
+import java.util.Collections;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+
 public class SettingsValuesForSuggestion {
     public final boolean mBlockPotentiallyOffensive;
+    @Nonnull
+    public final Set<String> mBlockedWords;
 
     public SettingsValuesForSuggestion(final boolean blockPotentiallyOffensive) {
+        this(blockPotentiallyOffensive, Collections.<String>emptySet());
+    }
+
+    public SettingsValuesForSuggestion(final boolean blockPotentiallyOffensive,
+            @Nonnull final Set<String> blockedWords) {
         mBlockPotentiallyOffensive = blockPotentiallyOffensive;
+        mBlockedWords = blockedWords;
     }
 }

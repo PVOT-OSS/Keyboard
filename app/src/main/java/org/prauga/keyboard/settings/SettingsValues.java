@@ -29,12 +29,14 @@ import org.prauga.keyboard.compat.AppWorkaroundsUtils;
 import org.prauga.keyboard.InputAttributes;
 import org.prauga.keyboard.R;
 import org.prauga.keyboard.RichInputMethodManager;
+import org.prauga.keyboard.blockedwords.BlockedWords;
 import org.prauga.keyboard.utils.AsyncResultHolder;
 import org.prauga.keyboard.utils.ResourceUtils;
 import org.prauga.keyboard.utils.TargetPackageInfoGetterTask;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -79,6 +81,8 @@ public class SettingsValues {
     public final boolean mUseDoubleSpacePeriod;
     public final boolean mBlockPotentiallyOffensive;
     public final boolean mUndoAutoCorrectionOnBackspace;
+    @Nonnull
+    public final Set<String> mBlockedWords;
     public final boolean mSpaceTrackpadEnabled;
     public final boolean mBackspaceTrackpadEnabled;
     public final boolean mSwipeDownForDigitsEnabled;
@@ -168,6 +172,7 @@ public class SettingsValues {
         mBlockPotentiallyOffensive = Settings.readBlockPotentiallyOffensive(prefs, res);
         mUndoAutoCorrectionOnBackspace = prefs.getBoolean(
                 Settings.PREF_UNDO_AUTO_CORRECTION_ON_BACKSPACE, true);
+        mBlockedWords = BlockedWords.read(prefs);
         mAutoCorrectEnabled = Settings.readAutoCorrectEnabled(prefs, res);
         final String autoCorrectionThresholdRawValue = mAutoCorrectEnabled
                 ? prefs.getString(Settings.PREF_AUTO_CORRECTION_STRENGTH,
