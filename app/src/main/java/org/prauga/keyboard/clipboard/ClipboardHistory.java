@@ -32,10 +32,12 @@ public final class ClipboardHistory {
     }
 
     private final ArrayList<Item> mItems = new ArrayList<>();
+    private long mForgottenTimestamp = Long.MIN_VALUE;
 
     public boolean add(@Nullable final CharSequence clipText, final long timestamp,
             final boolean isSensitive, final long now) {
-        if (clipText == null || isSensitive || now - timestamp > UNPINNED_LIFETIME_MS) {
+        if (clipText == null || isSensitive || now - timestamp > UNPINNED_LIFETIME_MS
+                || timestamp <= mForgottenTimestamp) {
             return false;
         }
         final String text = clipText.toString();
@@ -106,21 +108,30 @@ public final class ClipboardHistory {
     public void remove(@Nonnull final String text) {
         final int index = indexOf(text);
         if (index >= 0) {
-            mItems.remove(index);
+            forget(mItems.remove(index));
         }
     }
 
     public void clearUnpinned() {
         final Iterator<Item> iterator = mItems.iterator();
         while (iterator.hasNext()) {
-            if (!iterator.next().mPinned) {
+            final Item item = iterator.next();
+            if (!item.mPinned) {
+                forget(item);
                 iterator.remove();
             }
         }
     }
 
     public void clearAll() {
+        for (final Item item : mItems) {
+            forget(item);
+        }
         mItems.clear();
+    }
+
+    private void forget(@Nonnull final Item item) {
+        mForgottenTimestamp = Math.max(mForgottenTimestamp, item.mTimestamp);
     }
 
     private int indexOf(@Nonnull final String text) {

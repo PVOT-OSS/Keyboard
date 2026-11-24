@@ -106,6 +106,24 @@ public class ClipboardHistoryTest {
     }
 
     @Test
+    public void clearedClipIsNotReadBackIn() {
+        final ClipboardHistory history = new ClipboardHistory();
+        history.add("a", NOW - 1, false, NOW);
+        history.clearUnpinned();
+        assertFalse(history.add("a", NOW - 1, false, NOW));
+        assertTrue(history.add("b", NOW, false, NOW));
+    }
+
+    @Test
+    public void deletedClipIsNotReadBackIn() {
+        final ClipboardHistory history = new ClipboardHistory();
+        history.add("a", NOW - 1, false, NOW);
+        history.remove("a");
+        assertFalse(history.add("a", NOW - 1, false, NOW));
+        assertTrue(history.add("a", NOW, false, NOW));
+    }
+
+    @Test
     public void restorePinnedSkipsDuplicates() {
         final ClipboardHistory history = new ClipboardHistory();
         history.add("a", NOW, false, NOW);
