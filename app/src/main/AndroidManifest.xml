@@ -158,6 +158,11 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".userdictionary.PersonalDictionaryBackupActivity"
+             android:theme="@android:style/Theme.Translucent.NoTitleBar"
+             android:excludeFromRecents="true"
+             android:exported="false"/>
+
         <!-- Unexported activity used for tests. -->
         <activity android:name=".settings.TestFragmentActivity"
              android:theme="@style/Theme.SettingsLib"

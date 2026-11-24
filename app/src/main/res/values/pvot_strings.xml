@@ -20,6 +20,21 @@
     <string name="clear_learned_words_confirm_message">Words and phrases learned from your typing will be forgotten in every language. Your personal dictionary and blocked words are kept.</string>
     <string name="clear_learned_words_confirm">Clear</string>
     <string name="clear_learned_words_done">Learned words cleared</string>
+    <string name="export_personal_dictionary">Export personal dictionary</string>
+    <string name="export_personal_dictionary_summary">Save your words and shortcuts to a file</string>
+    <string name="import_personal_dictionary">Import personal dictionary</string>
+    <string name="import_personal_dictionary_summary">Add words and shortcuts from a file</string>
+    <string name="personal_dictionary_file_name" translatable="false">personal-dictionary.tsv</string>
+    <string name="personal_dictionary_export_failed">Couldn\'t export the personal dictionary</string>
+    <string name="personal_dictionary_import_failed">Couldn\'t import the personal dictionary</string>
+    <plurals name="personal_dictionary_exported">
+        <item quantity="one">Exported <xliff:g id="count" example="1">%d</xliff:g> word</item>
+        <item quantity="other">Exported <xliff:g id="count" example="12">%d</xliff:g> words</item>
+    </plurals>
+    <plurals name="personal_dictionary_imported">
+        <item quantity="one">Imported <xliff:g id="count" example="1">%d</xliff:g> new word</item>
+        <item quantity="other">Imported <xliff:g id="count" example="12">%d</xliff:g> new words</item>
+    </plurals>
     <string name="remove_suggestion">Remove</string>
     <string name="remove_suggestion_title">Remove \u201c<xliff:g id="word" example="hello">%1$s</xliff:g>\u201d from suggestions?</string>
     <string name="remove_suggestion_message">It will not be suggested again. You can unblock it in Text correction, Blocked words.</string>

@@ -24,6 +24,14 @@
         android:title="@string/edit_personal_dictionary">
         <intent android:action="android.settings.USER_DICTIONARY_SETTINGS" />
     </Preference>
+    <org.prauga.keyboard.userdictionary.PersonalDictionaryBackupPreference
+        android:key="export_personal_dictionary"
+        android:title="@string/export_personal_dictionary"
+        android:summary="@string/export_personal_dictionary_summary" />
+    <org.prauga.keyboard.userdictionary.PersonalDictionaryBackupPreference
+        android:key="import_personal_dictionary"
+        android:title="@string/import_personal_dictionary"
+        android:summary="@string/import_personal_dictionary_summary" />
     <Preference
         android:key="configure_dictionaries_key"
         android:title="@string/configure_dictionaries_title">
