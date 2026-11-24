@@ -635,7 +635,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
         mHandler.onCreate();
         mClipboardSuggestionMonitor = new ClipboardSuggestionMonitor(this, this);
-        EmojiKeywords.getInstance().load(this);
+        EmojiKeywords.load(this);
 
         // TODO: Resolve mutual dependencies of {@link #loadSettings()} and
         // {@link #resetDictionaryFacilitatorIfNecessary()}.

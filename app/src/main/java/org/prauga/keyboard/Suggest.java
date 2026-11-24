@@ -291,7 +291,7 @@ public final class Suggest {
 
     private void addEmojiSuggestion(@Nonnull final ArrayList<SuggestedWordInfo> suggestions,
             @Nonnull final String typedWord) {
-        final String emoji = EmojiKeywords.getInstance().lookup(typedWord,
+        final String emoji = EmojiKeywords.lookup(typedWord,
                 mDictionaryFacilitator.getLocale());
         if (emoji == null) {
             return;
