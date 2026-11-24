@@ -26,6 +26,7 @@ import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo;
 import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.common.StringUtils;
 import org.prauga.keyboard.define.DebugFlags;
+import org.prauga.keyboard.emojisuggestions.EmojiKeywords;
 import org.prauga.keyboard.settings.SettingsValuesForSuggestion;
 import org.prauga.keyboard.utils.AutoCorrectionUtils;
 import org.prauga.keyboard.utils.BinaryDictionaryUtils;
@@ -54,6 +55,7 @@ public final class Suggest {
     private static final int SUPPRESS_SUGGEST_THRESHOLD = -2000000000;
 
     private static final boolean DBG = DebugFlags.DEBUG_ENABLED;
+    private static final int EMOJI_SUGGESTION_INDEX = 3;
     private final DictionaryFacilitator mDictionaryFacilitator;
 
     private static final int MAXIMUM_AUTO_CORRECT_LENGTH_FOR_GERMAN = 12;
@@ -256,6 +258,9 @@ public final class Suggest {
                 SuggestedWordInfo.NOT_A_CONFIDENCE /* autoCommitFirstWordConfidence */);
         if (!TextUtils.isEmpty(typedWordString)) {
             suggestionsContainer.add(0, typedWordInfo);
+            if (settingsValuesForSuggestion.mEmojiSuggestionsEnabled && !resultsArePredictions) {
+                addEmojiSuggestion(suggestionsContainer, typedWordString);
+            }
         }
 
         final ArrayList<SuggestedWordInfo> suggestionsList;
@@ -282,6 +287,21 @@ public final class Suggest {
                 isTypedWordValid,
                 hasAutoCorrection /* willAutoCorrect */,
                 false /* isObsoleteSuggestions */, inputStyle, sequenceNumber));
+    }
+
+    private void addEmojiSuggestion(@Nonnull final ArrayList<SuggestedWordInfo> suggestions,
+            @Nonnull final String typedWord) {
+        final String emoji = EmojiKeywords.getInstance().lookup(typedWord,
+                mDictionaryFacilitator.getLocale());
+        if (emoji == null) {
+            return;
+        }
+        suggestions.add(Math.min(EMOJI_SUGGESTION_INDEX, suggestions.size()),
+                new SuggestedWordInfo(emoji, "" /* prevWordsContext */,
+                        SuggestedWordInfo.MAX_SCORE, SuggestedWordInfo.KIND_COMPLETION,
+                        Dictionary.DICTIONARY_HARDCODED,
+                        SuggestedWordInfo.NOT_AN_INDEX /* indexOfTouchPointOfSecondWord */,
+                        SuggestedWordInfo.NOT_A_CONFIDENCE /* autoCommitFirstWordConfidence */));
     }
 
     // Retrieves suggestions for the batch input

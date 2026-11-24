@@ -6,6 +6,8 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="auto_correction_strength">Auto-correction strength</string>
     <string name="show_toolbar">Show toolbar</string>
+    <string name="emoji_suggestions">Emoji suggestions</string>
+    <string name="emoji_suggestions_summary">Suggest an emoji for the word you are typing (English)</string>
     <string name="clipboard_history">Clipboard history</string>
     <string name="clipboard_history_summary">Keep recently copied text for an hour, and pinned items until you remove them</string>
     <string name="clipboard_history_clear">Clear</string>

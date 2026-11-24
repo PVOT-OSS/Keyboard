@@ -87,6 +87,12 @@
         android:title="@string/clear_clipboard_history"
         android:summary="@string/clear_clipboard_history_summary" />
     <SwitchPreferenceCompat
+        android:key="pref_emoji_suggestions"
+        android:title="@string/emoji_suggestions"
+        android:summary="@string/emoji_suggestions_summary"
+        android:defaultValue="true"
+        android:persistent="true" />
+    <SwitchPreferenceCompat
         android:key="pref_key_use_personalized_dicts"
         android:title="@string/use_personalized_dicts"
         android:summary="@string/use_personalized_dicts_summary"

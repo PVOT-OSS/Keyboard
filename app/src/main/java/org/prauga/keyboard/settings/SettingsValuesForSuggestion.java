@@ -25,14 +25,16 @@ public class SettingsValuesForSuggestion {
     public final boolean mBlockPotentiallyOffensive;
     @Nonnull
     public final Set<String> mBlockedWords;
+    public final boolean mEmojiSuggestionsEnabled;
 
     public SettingsValuesForSuggestion(final boolean blockPotentiallyOffensive) {
-        this(blockPotentiallyOffensive, Collections.<String>emptySet());
+        this(blockPotentiallyOffensive, Collections.<String>emptySet(), false);
     }
 
     public SettingsValuesForSuggestion(final boolean blockPotentiallyOffensive,
-            @Nonnull final Set<String> blockedWords) {
+            @Nonnull final Set<String> blockedWords, final boolean emojiSuggestionsEnabled) {
         mBlockPotentiallyOffensive = blockPotentiallyOffensive;
         mBlockedWords = blockedWords;
+        mEmojiSuggestionsEnabled = emojiSuggestionsEnabled;
     }
 }

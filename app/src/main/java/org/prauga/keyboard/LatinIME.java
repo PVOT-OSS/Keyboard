@@ -94,6 +94,7 @@ import org.prauga.keyboard.clipboard.ClipboardSuggestionMonitor;
 import org.prauga.keyboard.blockedwords.BlockedWords;
 import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.editing.TextEditingView;
+import org.prauga.keyboard.emojisuggestions.EmojiKeywords;
 import org.prauga.keyboard.onehanded.OneHandedMode;
 import org.prauga.keyboard.onehanded.OneHandedSideView;
 import org.prauga.keyboard.common.CoordinateUtils;
@@ -634,6 +635,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
         mHandler.onCreate();
         mClipboardSuggestionMonitor = new ClipboardSuggestionMonitor(this, this);
+        EmojiKeywords.getInstance().load(this);
 
         // TODO: Resolve mutual dependencies of {@link #loadSettings()} and
         // {@link #resetDictionaryFacilitatorIfNecessary()}.

@@ -2272,7 +2272,7 @@ public final class InputLogic {
                         mWordComposer.isComposingWord() ? 2 : 1),
                 keyboard,
                 new SettingsValuesForSuggestion(settingsValues.mBlockPotentiallyOffensive,
-                        settingsValues.mBlockedWords),
+                        settingsValues.mBlockedWords, settingsValues.mEmojiSuggestionsEnabled),
                 settingsValues.mAutoCorrectionEnabledPerUserSettings,
                 inputStyle, sequenceNumber, callback);
     }
