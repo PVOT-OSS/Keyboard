@@ -25,7 +25,6 @@ import android.util.Log;
 import android.view.inputmethod.InputMethodSubtype;
 
 import org.prauga.keyboard.annotations.UsedForTesting;
-import org.prauga.keyboard.dictionarypack.UpdateHandler;
 import org.prauga.keyboard.AssetFileAddress;
 import org.prauga.keyboard.BinaryDictionaryGetter;
 import org.prauga.keyboard.BuildConfig;
@@ -61,7 +60,7 @@ public class DictionaryInfoUtils {
     // 6 digits - unicode is limited to 21 bits
     private static final int MAX_HEX_DIGITS_FOR_CODEPOINT = 6;
 
-    private static final String TEMP_DICT_FILE_SUB = UpdateHandler.TEMP_DICT_FILE_SUB;
+    private static final String TEMP_DICT_FILE_SUB = "___";
 
     public static class DictionaryInfo {
         private static final String LOCALE_COLUMN = "locale";

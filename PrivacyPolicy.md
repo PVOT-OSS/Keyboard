@@ -38,4 +38,3 @@ is sent anywhere by the app. There are no ads, analytics, trackers or third-part
 | `READ_USER_DICTIONARY`, `WRITE_USER_DICTIONARY` | use, export and import your personal dictionary |
 | `VIBRATE` | vibrate on key press |
 | `RECEIVE_BOOT_COMPLETED` | apply the "show app icon" setting after the phone starts |
-| `ACCESS_NETWORK_STATE`, `DOWNLOAD_WITHOUT_NOTIFICATION` | inherited from the upstream dictionary downloader; without the internet permission they cannot be used to download anything, and they will be removed with that code |

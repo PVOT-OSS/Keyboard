@@ -231,8 +231,7 @@ final public class BinaryDictionaryGetter {
      * Returns a list of file addresses for a given locale, trying relevant methods in order.
      *
      * Tries to get binary dictionaries from various sources, in order:
-     * - Uses a content provider to get a public dictionary set, as per the protocol described
-     *   in BinaryDictionaryFileDumper.
+     * - Uses the dictionaries cached in the app's storage for this locale, if any.
      * If that fails:
      * - Gets a file name from the built-in dictionary for this locale, if any.
      * If that fails:
@@ -240,20 +239,7 @@ final public class BinaryDictionaryGetter {
      * @return The list of addresses of valid dictionary files, or null.
      */
     public static ArrayList<AssetFileAddress> getDictionaryFiles(final Locale locale,
-            final Context context, boolean notifyDictionaryPackForUpdates) {
-        if (notifyDictionaryPackForUpdates) {
-            final boolean hasDefaultWordList = DictionaryInfoUtils.isDictionaryAvailable(
-                    context, locale);
-            // It makes sure that the first time keyboard comes up and the dictionaries are reset,
-            // the DB is populated with the appropriate values for each locale. Helps in downloading
-            // the dictionaries when the user enables and switches new languages before the
-            // DictionaryService runs.
-            BinaryDictionaryFileDumper.downloadDictIfNeverRequested(
-                    locale, context, hasDefaultWordList);
-
-            // Move a staging files to the cache ddirectories if any.
-            DictionaryInfoUtils.moveStagingFilesIfExists(context);
-        }
+            final Context context) {
         final File[] cachedWordLists = getCachedWordLists(locale.toString(), context);
         final String mainDictId = DictionaryInfoUtils.getMainDictId(locale);
         final DictPackSettings dictPackSettings = new DictPackSettings(context);

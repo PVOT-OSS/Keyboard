@@ -17,8 +17,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
      coreApp="true">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.READ_USER_DICTIONARY"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -80,10 +78,6 @@
                  android:resource="@xml/spellchecker"/>
         </service>
 
-        <service android:name="org.prauga.keyboard.dictionarypack.DictionaryService"
-             android:label="@string/dictionary_service_name">
-        </service>
-
         <!-- Activities -->
         <activity android:name=".setup.SetupActivity"
              android:theme="@style/platformActivityTheme"
@@ -132,25 +126,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="org.prauga.keyboard.dictionarypack.DictionarySettingsActivity"
-             android:theme="@style/Theme.SettingsLib"
-             android:label="@string/dictionary_settings_title"
-             android:uiOptions="splitActionBarWhenNarrow"
-             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name="org.prauga.keyboard.dictionarypack.DownloadOverMeteredDialog"
-             android:theme="@style/platformActivityTheme"
-             android:label="@string/dictionary_install_over_metered_network_prompt"
-             android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-
         <activity android:name=".userdictionary.PersonalDictionaryBackupActivity"
              android:theme="@android:style/Theme.Translucent.NoTitleBar"
              android:excludeFromRecents="true"
@@ -172,23 +147,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="DictionaryPackInstallBroadcastReceiver"
-             android:exported="false">
-            <intent-filter>
-                <action android:name="org.prauga.keyboard.dictionarypack.aosp.UNKNOWN_CLIENT"/>
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name="org.prauga.keyboard.dictionarypack.EventHandler"
-             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
-                <action android:name="android.intent.action.DATE_CHANGED"/>
-                <action android:name="org.prauga.keyboard.dictionarypack.aosp.UPDATE_NOW"/>
-                <action android:name="org.prauga.keyboard.dictionarypack.aosp.INIT_AND_UPDATE_NOW"/>
-            </intent-filter>
-        </receiver>
-
         <!-- Broadcast receiver for AccountManager#LOGIN_ACCOUNTS_CHANGED_ACTION. -->
         <receiver android:name=".accounts.AccountsChangedReceiver"
              android:exported="true">
@@ -196,14 +154,5 @@
                 <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED"/>
             </intent-filter>
         </receiver>
-
-        <!-- Content providers -->
-        <provider android:name="org.prauga.keyboard.dictionarypack.DictionaryProvider"
-             android:grantUriPermissions="true"
-             android:exported="false"
-             android:authorities="@string/authority"
-             android:multiprocess="false"
-             android:label="@string/dictionary_provider_name">
-        </provider>
     </application>
 </manifest>

@@ -74,7 +74,6 @@ import org.prauga.keyboard.compat.EditorInfoCompatUtils;
 import org.prauga.keyboard.compat.InputMethodServiceCompatUtils;
 import org.prauga.keyboard.compat.ViewOutlineProviderCompatUtils;
 import org.prauga.keyboard.compat.ViewOutlineProviderCompatUtils.InsetsUpdater;
-import org.prauga.keyboard.dictionarypack.DictionaryPackConstants;
 import org.prauga.keyboard.event.Event;
 import org.prauga.keyboard.event.HardwareEventDecoder;
 import org.prauga.keyboard.event.HardwareKeyboardEventDecoder;
@@ -161,7 +160,6 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
      * The name of the scheme used by the Package Manager to warn of a new package installation,
      * replacement or removal.
      */
-    private static final String SCHEME_PACKAGE = "package";
 
     final Settings mSettings;
     private final DictionaryFacilitator mDictionaryFacilitator =
@@ -193,10 +191,6 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     // Used for re-initialize keyboard layout after onConfigurationChange.
     @Nullable private Context mDisplayContext;
-
-    // Object for reacting to adding/removing a dictionary pack.
-    private final BroadcastReceiver mDictionaryPackInstallReceiver =
-            new DictionaryPackInstallBroadcastReceiver(this);
 
     private final BroadcastReceiver mDictionaryDumpBroadcastReceiver =
             new DictionaryDumpBroadcastReceiver(this);
@@ -643,22 +637,6 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
         registerReceiver(mRingerModeChangeReceiver, filter);
 
-        // Register to receive installation and removal of a dictionary pack.
-        final IntentFilter packageFilter = new IntentFilter();
-        packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        packageFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        packageFilter.addDataScheme(SCHEME_PACKAGE);
-        registerReceiver(mDictionaryPackInstallReceiver, packageFilter);
-
-        final IntentFilter newDictFilter = new IntentFilter();
-        newDictFilter.addAction(DictionaryPackConstants.NEW_DICTIONARY_INTENT_ACTION);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(mDictionaryPackInstallReceiver, newDictFilter,
-                    Context.RECEIVER_NOT_EXPORTED);
-        } else {
-            registerReceiver(mDictionaryPackInstallReceiver, newDictFilter);
-        }
-
         final IntentFilter dictDumpFilter = new IntentFilter();
         dictDumpFilter.addAction(DictionaryDumpBroadcastReceiver.DICTIONARY_DUMP_INTENT_ACTION);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -797,7 +775,6 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         mSettings.onDestroy();
         unregisterReceiver(mHideSoftInputReceiver);
         unregisterReceiver(mRingerModeChangeReceiver);
-        unregisterReceiver(mDictionaryPackInstallReceiver);
         unregisterReceiver(mDictionaryDumpBroadcastReceiver);
         mStatsUtilsManager.onDestroy(this /* context */);
         super.onDestroy();
@@ -805,7 +782,6 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     @UsedForTesting
     public void recycle() {
-        unregisterReceiver(mDictionaryPackInstallReceiver);
         unregisterReceiver(mDictionaryDumpBroadcastReceiver);
         unregisterReceiver(mRingerModeChangeReceiver);
         mInputLogic.recycle();
