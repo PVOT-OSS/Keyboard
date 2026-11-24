@@ -82,6 +82,12 @@ public class DictionaryFacilitatorImpl implements DictionaryFacilitator {
     }
 
     @Override
+    @Nonnull
+    public List<Dictionary> getSecondaryMainDictionaries() {
+        return mSecondaryDictionaries.getDictionaries();
+    }
+
+    @Override
     @Nullable
     public Dictionary getMainDictionary() {
         return mDictionaryGroup.getDict(Dictionary.TYPE_MAIN);

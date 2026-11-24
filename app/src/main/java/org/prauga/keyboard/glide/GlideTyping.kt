@@ -28,12 +28,15 @@ object GlideTyping {
 
     @Volatile
     private var wordList: GlideWordList? = null
-    private var loadingLocale: Locale? = null
+    private var loadedSource: Source? = null
+    private var loadingSource: Source? = null
 
     @Volatile
     private var cache: CachedDecoder? = null
 
     private class CachedDecoder(val keyboard: Keyboard, val words: GlideWordList, val decoder: GlideDecoder)
+
+    private data class Source(val locale: Locale, val dictionaries: List<Dictionary>)
 
     @JvmStatic
     fun prepare(facilitator: DictionaryFacilitator) {
@@ -43,19 +46,21 @@ object GlideTyping {
             facilitator.getSubDictionary(Dictionary.TYPE_USER),
             facilitator.getSubDictionary(Dictionary.TYPE_CONTACTS),
         )
+        val source = Source(locale, listOf(main) + facilitator.secondaryMainDictionaries)
         synchronized(this) {
-            if (wordList?.locale == locale || loadingLocale == locale) {
+            if (source == loadedSource || source == loadingSource) {
                 return
             }
-            loadingLocale = locale
+            loadingSource = source
         }
         ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
-            val loaded = load(main, personal, locale)
+            val loaded = load(source.dictionaries, personal, locale)
             synchronized(this) {
-                if (loadingLocale == locale) {
-                    loadingLocale = null
+                if (loadingSource == source) {
+                    loadingSource = null
                     if (loaded.size > 0) {
                         wordList = loaded
+                        loadedSource = source
                     }
                 }
             }
@@ -71,6 +76,7 @@ object GlideTyping {
         ngramContext: NgramContext,
     ): ArrayList<SuggestedWordInfo>? {
         val words = wordList?.takeIf { it.locale == facilitator.locale } ?: return null
+        prepare(facilitator)
         val decoded = decoderFor(keyboard, words).decode(
             pointers.xCoordinates, pointers.yCoordinates, pointers.pointerSize, MAX_RESULTS
         ) { word, offensive ->
@@ -128,11 +134,11 @@ object GlideTyping {
     }
 
     private fun load(
-        main: Dictionary,
+        sources: List<Dictionary>,
         personal: List<ExpandableBinaryDictionary>,
         locale: Locale,
     ): GlideWordList {
-        val dictionaries = (main as? DictionaryCollection)?.dictionaries ?: listOf(main)
+        val dictionaries = sources.flatMap { (it as? DictionaryCollection)?.dictionaries ?: listOf(it) }
         val frequencies = HashMap<String, Int>()
         val offensive = HashSet<String>()
         for (dictionary in dictionaries) {
