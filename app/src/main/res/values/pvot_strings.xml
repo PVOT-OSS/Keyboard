@@ -5,6 +5,8 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="auto_correction_strength">Auto-correction strength</string>
+    <string name="show_toolbar">Show toolbar</string>
+    <string name="show_toolbar_summary">Show shortcuts in the suggestion bar when there are no suggestions</string>
     <string name="undo_auto_correction_on_backspace">Undo auto-correction on backspace</string>
     <string name="undo_auto_correction_on_backspace_summary">Backspace right after a correction restores what you typed</string>
     <string name="blocked_words">Blocked words</string>

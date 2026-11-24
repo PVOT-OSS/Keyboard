@@ -55,6 +55,7 @@ import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.define.DebugFlags;
 import org.prauga.keyboard.settings.Settings;
 import org.prauga.keyboard.settings.SettingsValues;
+import org.prauga.keyboard.toolbar.KeyboardToolbar;
 import org.prauga.keyboard.suggestions.MoreSuggestionsView.MoreSuggestionsListener;
 import org.prauga.keyboard.utils.ImportantNoticeUtils;
 import org.prauga.keyboard.utils.SplitKeyboardUtils;
@@ -94,6 +95,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     private final ViewGroup mClipboardSuggestionStrip;
     @Nullable
     private ClipboardSuggestion mClipboardSuggestion;
+    private final KeyboardToolbar mToolbar;
+    private boolean mShowsToolbar;
     private boolean mShouldBeVisible = true;
     private boolean mIsFullscreenMode;
     MainKeyboardView mMainKeyboardView;
@@ -119,17 +122,19 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         private final View mImportantNoticeStrip;
         private final InlineSuggestionsStrip mInlineSuggestionsStrip;
         private final View mClipboardSuggestionStrip;
+        private final View mToolbar;
 
         public StripVisibilityGroup(final View suggestionStripView,
                 final ViewGroup suggestionsStrip, final View importantNoticeStrip,
                 final InlineSuggestionsStrip inlineSuggestionsStrip,
-                final View clipboardSuggestionStrip) {
+                final View clipboardSuggestionStrip, final View toolbar) {
             mSuggestionStripView = suggestionStripView;
             mSuggestionsStrip = suggestionsStrip;
             mImportantNoticeStrip = importantNoticeStrip;
             mInlineSuggestionsStrip = inlineSuggestionsStrip;
             mClipboardSuggestionStrip = clipboardSuggestionStrip;
-            showSuggestionsStrip(false /* showsClipboardSuggestion */);
+            mToolbar = toolbar;
+            showSuggestionsStrip(false /* showsClipboardSuggestion */, false /* showsToolbar */);
         }
 
         public void setLayoutDirection(final boolean isRtlLanguage) {
@@ -140,13 +145,17 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
             ViewCompat.setLayoutDirection(mImportantNoticeStrip, layoutDirection);
         }
 
-        public void showSuggestionsStrip(final boolean showsClipboardSuggestion) {
+        public void showSuggestionsStrip(final boolean showsClipboardSuggestion,
+                final boolean showsToolbar) {
             final boolean showsInline = mInlineSuggestionsStrip.hasSuggestions();
             final boolean showsClipboard = !showsInline && showsClipboardSuggestion;
-            mSuggestionsStrip.setVisibility(showsInline || showsClipboard ? INVISIBLE : VISIBLE);
+            final boolean showsTools = !showsInline && !showsClipboard && showsToolbar;
+            mSuggestionsStrip.setVisibility(
+                    showsInline || showsClipboard || showsTools ? INVISIBLE : VISIBLE);
             mImportantNoticeStrip.setVisibility(INVISIBLE);
             mInlineSuggestionsStrip.setVisibility(showsInline ? VISIBLE : INVISIBLE);
             mClipboardSuggestionStrip.setVisibility(showsClipboard ? VISIBLE : INVISIBLE);
+            mToolbar.setVisibility(showsTools ? VISIBLE : INVISIBLE);
         }
 
         public void showImportantNoticeStrip() {
@@ -154,6 +163,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
             mImportantNoticeStrip.setVisibility(VISIBLE);
             mInlineSuggestionsStrip.setVisibility(INVISIBLE);
             mClipboardSuggestionStrip.setVisibility(INVISIBLE);
+            mToolbar.setVisibility(INVISIBLE);
         }
 
         public boolean isShowingImportantNoticeStrip() {
@@ -186,8 +196,10 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         mImportantNoticeStrip = findViewById(R.id.important_notice_strip);
         mInlineSuggestionsStrip = findViewById(R.id.inline_suggestions_strip);
         mClipboardSuggestionStrip = findViewById(R.id.clipboard_suggestion_strip);
+        mToolbar = findViewById(R.id.keyboard_toolbar);
         mStripVisibilityGroup = new StripVisibilityGroup(this, mSuggestionsStrip,
-                mImportantNoticeStrip, mInlineSuggestionsStrip, mClipboardSuggestionStrip);
+                mImportantNoticeStrip, mInlineSuggestionsStrip, mClipboardSuggestionStrip,
+                mToolbar);
 
         for (int pos = 0; pos < SuggestedWords.MAX_SUGGESTIONS; pos++) {
             final TextView word = new TextView(context, null, R.attr.suggestionWordStyle);
@@ -221,6 +233,14 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
                 R.styleable.Keyboard, defStyle, R.style.SuggestionStripView);
         final Drawable iconVoice = keyboardAttr.getDrawable(R.styleable.Keyboard_iconShortcutKey);
         keyboardAttr.recycle();
+        mToolbar.addKey(Constants.CODE_EMOJI, R.drawable.ic_toolbar_emoji, getToolKeyTintList(),
+                R.string.spoken_description_emoji);
+        mToolbar.addKey(Constants.CODE_SETTINGS, R.drawable.ic_toolbar_settings,
+                getToolKeyTintList(),
+                R.string.spoken_description_settings);
+        mToolbar.setListener(code -> mListener.onCodeInput(code,
+                Constants.SUGGESTION_STRIP_COORDINATE, Constants.SUGGESTION_STRIP_COORDINATE,
+                false /* isKeyRepeat */));
         mVoiceKey.setImageDrawable(iconVoice);
         mVoiceKey.setOnClickListener(this);
         mSplitKey.setImageTintList(getToolKeyTintList());
@@ -246,6 +266,9 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         setVisibility(visibility);
         final SettingsValues currentSettingsValues = Settings.getInstance().getCurrent();
         mVoiceKey.setVisibility(currentSettingsValues.mShowsVoiceInputKey ? VISIBLE : INVISIBLE);
+        mShowsToolbar = currentSettingsValues.mShowsToolbar;
+        mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion(),
+                shouldShowToolbar());
         updateSplitKey();
         updateFloatKey();
     }
@@ -303,7 +326,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         mSuggestedWords = suggestedWords;
         mStartIndexOfMoreSuggestions = mLayoutHelper.layoutAndReturnStartIndexOfMoreSuggestions(
                 getContext(), mSuggestedWords, mSuggestionsStrip, this);
-        mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion());
+        mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion(),
+                shouldShowToolbar());
     }
 
     @Nullable
@@ -317,7 +341,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         if (isShowingMoreSuggestionPanel()) {
             dismissMoreSuggestionsPanel();
         }
-        mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion());
+        mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion(),
+                shouldShowToolbar());
         updateVisibility(mShouldBeVisible, mIsFullscreenMode);
     }
 
@@ -330,7 +355,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
                         createClipboardSuggestionChip(match, suggestion.isSensitive()));
             }
         }
-        mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion());
+        mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion(),
+                shouldShowToolbar());
     }
 
     @Nonnull
@@ -355,6 +381,11 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         chip.setTag(match);
         chip.setOnClickListener(this);
         return chip;
+    }
+
+    private boolean shouldShowToolbar() {
+        return mShowsToolbar
+                && (mSuggestedWords.isEmpty() || mSuggestedWords.isPunctuationSuggestions());
     }
 
     private boolean shouldShowClipboardSuggestion() {
@@ -397,7 +428,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     public void clear() {
         mSuggestionsStrip.removeAllViews();
         removeAllDebugInfoViews();
-        mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion());
+        mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion(),
+                shouldShowToolbar());
         dismissMoreSuggestionsPanel();
     }
 
