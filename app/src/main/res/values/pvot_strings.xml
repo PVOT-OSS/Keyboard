@@ -28,7 +28,9 @@
     <string name="clear_clipboard_history_confirm_message">All saved clips will be deleted, including pinned ones. What is on the clipboard now is not changed.</string>
     <string name="clear_clipboard_history_confirm">Clear</string>
     <string name="clear_clipboard_history_done">Clipboard history cleared</string>
-    <string name="show_toolbar_summary">Show shortcuts in the suggestion bar when there are no suggestions</string>
+    <string name="show_toolbar_key">Show toolbar</string>
+    <string name="hide_toolbar_key">Hide toolbar</string>
+    <string name="show_toolbar_summary">Show a toolbar button and shortcuts in the suggestion bar</string>
     <string name="undo_auto_correction_on_backspace">Undo auto-correction on backspace</string>
     <string name="undo_auto_correction_on_backspace_summary">Backspace right after a correction restores what you typed</string>
     <string name="blocked_words">Blocked words</string>
