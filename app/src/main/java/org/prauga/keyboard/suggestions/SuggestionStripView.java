@@ -70,6 +70,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     public interface Listener {
         public void showImportantNoticeContents();
         public void pickSuggestionManually(SuggestedWordInfo word);
+        public void removeSuggestion(SuggestedWordInfo word);
         public void onCodeInput(int primaryCode, int x, int y, boolean isKeyRepeat);
         public void toggleSplitKeyboard();
         public void toggleFloatingKeyboard();
@@ -453,7 +454,25 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     public boolean onLongClick(final View view) {
         AudioAndHapticFeedbackManager.getInstance().performHapticAndAudioFeedback(
                 Constants.NOT_A_CODE, this);
+        final SuggestedWordInfo removableSuggestion = getRemovableSuggestion(view);
+        if (removableSuggestion != null) {
+            mListener.removeSuggestion(removableSuggestion);
+            return true;
+        }
         return showMoreSuggestions();
+    }
+
+    @Nullable
+    private SuggestedWordInfo getRemovableSuggestion(final View view) {
+        if (mSuggestedWords.isPunctuationSuggestions() || !(view.getTag() instanceof Integer)) {
+            return null;
+        }
+        final int index = (Integer) view.getTag();
+        if (index >= mSuggestedWords.size()) {
+            return null;
+        }
+        final SuggestedWordInfo wordInfo = mSuggestedWords.getInfo(index);
+        return wordInfo.isKindOf(SuggestedWordInfo.KIND_TYPED) ? null : wordInfo;
     }
 
     boolean showMoreSuggestions() {

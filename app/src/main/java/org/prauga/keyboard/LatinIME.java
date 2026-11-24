@@ -88,6 +88,7 @@ import org.prauga.keyboard.Suggest.OnGetSuggestedWordsCallback;
 import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo;
 import org.prauga.keyboard.clipboard.ClipboardSuggestion;
 import org.prauga.keyboard.clipboard.ClipboardSuggestionMonitor;
+import org.prauga.keyboard.blockedwords.BlockedWords;
 import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.common.CoordinateUtils;
 import org.prauga.keyboard.common.InputPointers;
@@ -1853,6 +1854,27 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         // Cache the auto-correction in accessibility code so we can speak it if the user
         // touches a key that will insert it.
         AccessibilityUtils.getInstance().setAutoCorrection(suggestedWords);
+    }
+
+    @Override
+    public void removeSuggestion(final SuggestedWordInfo suggestionInfo) {
+        final String word = suggestionInfo.mWord;
+        final AlertDialog dialog = new AlertDialog.Builder(
+                DialogUtils.getPlatformDialogThemeContext(this))
+                .setTitle(getString(R.string.remove_suggestion_title, word))
+                .setMessage(R.string.remove_suggestion_message)
+                .setPositiveButton(R.string.remove_suggestion, (di, which) -> {
+                    mDictionaryFacilitator.unlearnFromUserHistory(word,
+                            NgramContext.EMPTY_PREV_WORDS_INFO,
+                            TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()),
+                            Constants.EVENT_REJECTION);
+                    BlockedWords.add(PreferenceManager.getDefaultSharedPreferences(this), word);
+                    mHandler.postUpdateSuggestionStrip(SuggestedWords.INPUT_STYLE_TYPING);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+        dialog.setCanceledOnTouchOutside(true);
+        showOptionDialog(dialog);
     }
 
     // Called from {@link SuggestionStripView} through the {@link SuggestionStripView#Listener}

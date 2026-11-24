@@ -14,5 +14,8 @@
     <string name="blocked_words_block">Block</string>
     <string name="blocked_words_empty">No blocked words</string>
     <string name="blocked_words_unblock">Unblock</string>
+    <string name="remove_suggestion">Remove</string>
+    <string name="remove_suggestion_title">Remove \u201c<xliff:g id="word" example="hello">%1$s</xliff:g>\u201d from suggestions?</string>
+    <string name="remove_suggestion_message">It will not be suggested again. You can unblock it in Text correction, Blocked words.</string>
     <string name="blocked_words_unblock_title">Unblock “<xliff:g id="word" example="hello">%1$s</xliff:g>”?</string>
 </resources>
