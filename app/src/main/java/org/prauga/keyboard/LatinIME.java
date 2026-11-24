@@ -2093,7 +2093,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     // Hooks for hardware keyboard
     @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent keyEvent) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && mKeyboardSwitcher.isShowingPanel()) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && isShowingPanelOrEmoji()) {
             keyEvent.startTracking();
             return true;
         }
@@ -2123,8 +2123,13 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     @Override
     public boolean onKeyUp(final int keyCode, final KeyEvent keyEvent) {
         if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.isTracking() && !keyEvent.isCanceled()
-                && mKeyboardSwitcher.isShowingPanel()) {
-            mKeyboardSwitcher.hidePanels();
+                && isShowingPanelOrEmoji()) {
+            if (mKeyboardSwitcher.isShowingPanel()) {
+                mKeyboardSwitcher.hidePanels();
+            } else {
+                onCodeInput(Constants.CODE_ALPHA_FROM_EMOJI, Constants.NOT_A_COORDINATE,
+                        Constants.NOT_A_COORDINATE, false);
+            }
             return true;
         }
         if (mEmojiAltPhysicalKeyDetector == null) {
@@ -2140,6 +2145,10 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
             return true;
         }
         return super.onKeyUp(keyCode, keyEvent);
+    }
+
+    private boolean isShowingPanelOrEmoji() {
+        return mKeyboardSwitcher.isShowingPanel() || mKeyboardSwitcher.isShowingEmojiPalettes();
     }
 
     // onKeyDown and onKeyUp are the main events we are interested in. There are two more events
