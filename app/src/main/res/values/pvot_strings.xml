@@ -13,6 +13,12 @@
     <string name="clipboard_history_pin">Pin</string>
     <string name="clipboard_history_unpin">Unpin</string>
     <string name="clipboard_history_delete">Delete</string>
+    <string name="clear_clipboard_history">Clear clipboard history</string>
+    <string name="clear_clipboard_history_summary">Delete all saved clips, including pinned ones</string>
+    <string name="clear_clipboard_history_confirm_title">Clear clipboard history?</string>
+    <string name="clear_clipboard_history_confirm_message">All saved clips will be deleted, including pinned ones. What is on the clipboard now is not changed.</string>
+    <string name="clear_clipboard_history_confirm">Clear</string>
+    <string name="clear_clipboard_history_done">Clipboard history cleared</string>
     <string name="show_toolbar_summary">Show shortcuts in the suggestion bar when there are no suggestions</string>
     <string name="undo_auto_correction_on_backspace">Undo auto-correction on backspace</string>
     <string name="undo_auto_correction_on_backspace_summary">Backspace right after a correction restores what you typed</string>
