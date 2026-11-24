@@ -95,6 +95,7 @@ import org.prauga.keyboard.blockedwords.BlockedWords;
 import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.editing.TextEditingView;
 import org.prauga.keyboard.emojisuggestions.EmojiKeywords;
+import org.prauga.keyboard.emojisuggestions.EmojiSearchBar;
 import org.prauga.keyboard.onehanded.OneHandedMode;
 import org.prauga.keyboard.onehanded.OneHandedSideView;
 import org.prauga.keyboard.common.CoordinateUtils;
@@ -116,6 +117,7 @@ import org.prauga.keyboard.utils.ImportantNoticeUtils;
 import org.prauga.keyboard.utils.IntentUtils;
 import org.prauga.keyboard.utils.JniUtils;
 import org.prauga.keyboard.utils.LeakGuardHandlerWrapper;
+import org.prauga.keyboard.utils.RecapitalizeStatus;
 import org.prauga.keyboard.utils.StatsUtils;
 import org.prauga.keyboard.utils.FloatingKeyboardUtils;
 import org.prauga.keyboard.utils.SplitKeyboardUtils;
@@ -140,7 +142,7 @@ import javax.annotation.Nullable;
 public class LatinIME extends InputMethodService implements KeyboardActionListener,
         SuggestionStripView.Listener, SuggestionStripViewAccessor,
         ClipboardSuggestionMonitor.Listener, ClipboardHistoryView.Listener,
-        TextEditingView.Listener, OneHandedSideView.Listener,
+        TextEditingView.Listener, OneHandedSideView.Listener, EmojiSearchBar.Listener,
         DictionaryFacilitator.DictionaryInitializationListener,
         PermissionsManager.PermissionsResultCallback {
     static final String TAG = LatinIME.class.getSimpleName();
@@ -883,6 +885,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         mSuggestionStripView = (SuggestionStripView)view.findViewById(R.id.suggestion_strip_view);
         if (hasSuggestionStripView()) {
             mSuggestionStripView.setListener(this, view);
+            mSuggestionStripView.setEmojiSearchListener(this);
         }
     }
 
@@ -969,6 +972,9 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         super.onStartInputView(editorInfo, restarting);
         if (!restarting) {
             mKeyboardSwitcher.hidePanels();
+            if (hasSuggestionStripView()) {
+                mSuggestionStripView.hideEmojiSearch();
+            }
         }
 
         mDictionaryFacilitator.onStartInput();
@@ -1765,6 +1771,13 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     // This method is public for testability of LatinIME, but also in the future it should
     // completely replace #onCodeInput.
     public void onEvent(@Nonnull final Event event) {
+        if (event.mKeyCode == Constants.CODE_EMOJI_SEARCH) {
+            startEmojiSearch();
+            return;
+        }
+        if (isEmojiSearchShown() && handleEmojiSearchEvent(event)) {
+            return;
+        }
         if (Constants.CODE_SHORTCUT == event.mKeyCode) {
             mRichImm.switchToShortcutIme(this);
         }
@@ -1797,6 +1810,14 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     // Called from PointerTracker through the KeyboardActionListener interface
     @Override
     public void onTextInput(final String rawText) {
+        if (isEmojiSearchShown()) {
+            mSuggestionStripView.typeIntoEmojiSearch(rawText);
+            return;
+        }
+        commitTextInput(rawText);
+    }
+
+    private void commitTextInput(final String rawText) {
         // TODO: have the keyboard pass the correct key code when we need it.
         final Event event = Event.createSoftwareTextEvent(rawText, Constants.CODE_OUTPUT_TEXT);
         final InputTransaction completeInputTransaction =
@@ -2126,7 +2147,11 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     public boolean onKeyUp(final int keyCode, final KeyEvent keyEvent) {
         if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.isTracking() && !keyEvent.isCanceled()
                 && isShowingPanelOrEmoji()) {
-            if (mKeyboardSwitcher.isShowingPanel()) {
+            if (isEmojiSearchShown()) {
+                mSuggestionStripView.hideEmojiSearch();
+                onCodeInput(Constants.CODE_EMOJI, Constants.NOT_A_COORDINATE,
+                        Constants.NOT_A_COORDINATE, false);
+            } else if (mKeyboardSwitcher.isShowingPanel()) {
                 mKeyboardSwitcher.hidePanels();
             } else {
                 onCodeInput(Constants.CODE_ALPHA_FROM_EMOJI, Constants.NOT_A_COORDINATE,
@@ -2150,7 +2175,49 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     }
 
     private boolean isShowingPanelOrEmoji() {
-        return mKeyboardSwitcher.isShowingPanel() || mKeyboardSwitcher.isShowingEmojiPalettes();
+        return mKeyboardSwitcher.isShowingPanel() || mKeyboardSwitcher.isShowingEmojiPalettes()
+                || isEmojiSearchShown();
+    }
+
+    private boolean isEmojiSearchShown() {
+        return hasSuggestionStripView() && mSuggestionStripView.isEmojiSearchShown();
+    }
+
+    private void startEmojiSearch() {
+        if (!hasSuggestionStripView()) {
+            return;
+        }
+        mInputLogic.finishInput();
+        onCodeInput(Constants.CODE_ALPHA_FROM_EMOJI, Constants.NOT_A_COORDINATE,
+                Constants.NOT_A_COORDINATE, false);
+        mSuggestionStripView.showEmojiSearch();
+    }
+
+    private boolean handleEmojiSearchEvent(@Nonnull final Event event) {
+        if (event.mKeyCode == Constants.CODE_EMOJI) {
+            mSuggestionStripView.hideEmojiSearch();
+            return false;
+        }
+        if (event.mKeyCode == Constants.CODE_DELETE) {
+            mSuggestionStripView.deleteFromEmojiSearch();
+        } else if (event.mCodePoint > 0 && event.mCodePoint != Constants.CODE_ENTER) {
+            mSuggestionStripView.typeIntoEmojiSearch(new String(Character.toChars(event.mCodePoint)));
+        } else if (event.mCodePoint != Constants.CODE_ENTER) {
+            return false;
+        }
+        mKeyboardSwitcher.onEvent(event, Constants.TextUtils.CAP_MODE_OFF,
+                RecapitalizeStatus.NOT_A_RECAPITALIZE_MODE);
+        return true;
+    }
+
+    @Override
+    public void onEmojiSearchResult(@Nonnull final String emoji) {
+        commitTextInput(emoji);
+    }
+
+    @Override
+    public void onEmojiSearchClose() {
+        mSuggestionStripView.hideEmojiSearch();
     }
 
     // onKeyDown and onKeyUp are the main events we are interested in. There are two more events

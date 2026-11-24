@@ -87,13 +87,21 @@
             android:layout_height="match_parent"
             android:hapticFeedbackEnabled="false"
             android:soundEffectsEnabled="false" />
+        <ImageButton
+            android:id="@+id/emoji_keyboard_search"
+            android:layout_width="0dip"
+            android:layout_weight="0.15"
+            android:layout_height="match_parent"
+            android:hapticFeedbackEnabled="false"
+            android:soundEffectsEnabled="false"
+            android:contentDescription="@string/emoji_search_key" />
         <!-- TODO: Implement KeyView and replace this. -->
         <!-- Provide audio and haptic feedback by ourselves based on the keyboard settings.
              We just need to ignore the system's audio and haptic feedback settings. -->
         <RelativeLayout
             android:id="@+id/emoji_keyboard_space"
             android:layout_width="0dip"
-            android:layout_weight="0.70"
+            android:layout_weight="0.55"
             android:layout_height="match_parent"
             android:hapticFeedbackEnabled="false"
             android:soundEffectsEnabled="false"

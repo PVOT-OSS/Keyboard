@@ -79,6 +79,7 @@ public final class EmojiPalettesView extends LinearLayout implements OnTabChange
     private final DeleteKeyOnTouchListener mDeleteKeyOnTouchListener;
 
     private ImageButton mDeleteKey;
+    private ImageButton mSearchKey;
     private TextView mAlphabetKeyLeft;
     private View mSpacebar;
     // TODO: Remove this workaround.
@@ -252,6 +253,11 @@ public final class EmojiPalettesView extends LinearLayout implements OnTabChange
         mAlphabetKeyLeft.setTag(Constants.CODE_ALPHA_FROM_EMOJI);
         mAlphabetKeyLeft.setOnTouchListener(this);
         mAlphabetKeyLeft.setOnClickListener(this);
+        mSearchKey = findViewById(R.id.emoji_keyboard_search);
+        mSearchKey.setBackgroundResource(mFunctionalKeyBackgroundId);
+        mSearchKey.setTag(Constants.CODE_EMOJI_SEARCH);
+        mSearchKey.setOnTouchListener(this);
+        mSearchKey.setOnClickListener(this);
         mSpacebar = findViewById(R.id.emoji_keyboard_space);
         mSpacebar.setBackgroundResource(mSpacebarBackgroundId);
         mSpacebar.setTag(Constants.CODE_SPACE);
@@ -376,6 +382,10 @@ public final class EmojiPalettesView extends LinearLayout implements OnTabChange
         final int deleteIconResId = iconSet.getIconResourceId(KeyboardIconsSet.NAME_DELETE_KEY);
         if (deleteIconResId != 0) {
             mDeleteKey.setImageResource(deleteIconResId);
+        }
+        final int searchIconResId = iconSet.getIconResourceId(KeyboardIconsSet.NAME_SEARCH_KEY);
+        if (searchIconResId != 0) {
+            mSearchKey.setImageResource(searchIconResId);
         }
         final int spacebarResId = iconSet.getIconResourceId(KeyboardIconsSet.NAME_SPACE_KEY);
         if (spacebarResId != 0) {

@@ -118,4 +118,43 @@
         android:layout_centerVertical="true"
         android:contentDescription="@string/spoken_description_mic"
         style="?attr/suggestionWordStyle" />
+    <org.prauga.keyboard.emojisuggestions.EmojiSearchBar
+        android:id="@+id/emoji_search_bar"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:visibility="invisible">
+        <ImageButton
+            android:id="@+id/emoji_search_close"
+            android:layout_width="@dimen/config_suggestions_strip_edge_key_width"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:src="@drawable/ic_close"
+            android:contentDescription="@string/emoji_search_close"
+            style="?attr/suggestionWordStyle" />
+        <TextView
+            android:id="@+id/emoji_search_query"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:maxWidth="@dimen/emoji_search_query_max_width"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:ellipsize="start"
+            android:textSize="@dimen/clipboard_history_title_size" />
+        <HorizontalScrollView
+            android:id="@+id/emoji_search_scroller"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/emoji_search_result_padding"
+            android:scrollbars="none">
+            <LinearLayout
+                android:id="@+id/emoji_search_results"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </HorizontalScrollView>
+    </org.prauga.keyboard.emojisuggestions.EmojiSearchBar>
 </merge>

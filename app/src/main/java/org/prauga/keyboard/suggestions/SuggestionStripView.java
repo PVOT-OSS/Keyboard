@@ -57,6 +57,7 @@ import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.define.DebugFlags;
 import org.prauga.keyboard.settings.Settings;
 import org.prauga.keyboard.settings.SettingsValues;
+import org.prauga.keyboard.emojisuggestions.EmojiSearchBar;
 import org.prauga.keyboard.toolbar.KeyboardToolbar;
 import org.prauga.keyboard.suggestions.MoreSuggestionsView.MoreSuggestionsListener;
 import org.prauga.keyboard.utils.ImportantNoticeUtils;
@@ -103,6 +104,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     @Nullable
     private ClipboardSuggestion mClipboardSuggestion;
     private final KeyboardToolbar mToolbar;
+    private final EmojiSearchBar mEmojiSearchBar;
     private final View mToolbarClipboardKey;
     private final View mToolbarEditingKey;
     private final ImageButton mToolbarFloatKey;
@@ -137,17 +139,21 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         private final InlineSuggestionsStrip mInlineSuggestionsStrip;
         private final View mClipboardSuggestionStrip;
         private final View mToolbar;
+        private final View mEmojiSearchBar;
+        private boolean mShowsEmojiSearch;
 
         public StripVisibilityGroup(final View suggestionStripView,
                 final ViewGroup suggestionsStrip, final View importantNoticeStrip,
                 final InlineSuggestionsStrip inlineSuggestionsStrip,
-                final View clipboardSuggestionStrip, final View toolbar) {
+                final View clipboardSuggestionStrip, final View toolbar,
+                final View emojiSearchBar) {
             mSuggestionStripView = suggestionStripView;
             mSuggestionsStrip = suggestionsStrip;
             mImportantNoticeStrip = importantNoticeStrip;
             mInlineSuggestionsStrip = inlineSuggestionsStrip;
             mClipboardSuggestionStrip = clipboardSuggestionStrip;
             mToolbar = toolbar;
+            mEmojiSearchBar = emojiSearchBar;
             showSuggestionsStrip(false /* showsClipboardSuggestion */, false /* showsToolbar */);
         }
 
@@ -161,6 +167,15 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
 
         public void showSuggestionsStrip(final boolean showsClipboardSuggestion,
                 final boolean showsToolbar) {
+            mEmojiSearchBar.setVisibility(mShowsEmojiSearch ? VISIBLE : INVISIBLE);
+            if (mShowsEmojiSearch) {
+                mSuggestionsStrip.setVisibility(INVISIBLE);
+                mImportantNoticeStrip.setVisibility(INVISIBLE);
+                mInlineSuggestionsStrip.setVisibility(INVISIBLE);
+                mClipboardSuggestionStrip.setVisibility(INVISIBLE);
+                mToolbar.setVisibility(INVISIBLE);
+                return;
+            }
             final boolean showsInline = mInlineSuggestionsStrip.hasSuggestions();
             final boolean showsClipboard = !showsInline && showsClipboardSuggestion;
             final boolean showsTools = !showsInline && !showsClipboard && showsToolbar;
@@ -212,9 +227,10 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         mInlineSuggestionsStrip = findViewById(R.id.inline_suggestions_strip);
         mClipboardSuggestionStrip = findViewById(R.id.clipboard_suggestion_strip);
         mToolbar = findViewById(R.id.keyboard_toolbar);
+        mEmojiSearchBar = findViewById(R.id.emoji_search_bar);
         mStripVisibilityGroup = new StripVisibilityGroup(this, mSuggestionsStrip,
                 mImportantNoticeStrip, mInlineSuggestionsStrip, mClipboardSuggestionStrip,
-                mToolbar);
+                mToolbar, mEmojiSearchBar);
 
         for (int pos = 0; pos < SuggestedWords.MAX_SUGGESTIONS; pos++) {
             final TextView word = new TextView(context, null, R.attr.suggestionWordStyle);
@@ -287,7 +303,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     public void updateVisibility(final boolean shouldBeVisible, final boolean isFullscreenMode) {
         mShouldBeVisible = shouldBeVisible;
         mIsFullscreenMode = isFullscreenMode;
-        final boolean isVisible = shouldBeVisible || mInlineSuggestionsStrip.hasSuggestions();
+        final boolean isVisible = shouldBeVisible || mInlineSuggestionsStrip.hasSuggestions()
+                || isEmojiSearchShown();
         final int visibility = isVisible ? VISIBLE : (isFullscreenMode ? GONE : INVISIBLE);
         setVisibility(visibility);
         final SettingsValues currentSettingsValues = Settings.getInstance().getCurrent();
@@ -311,6 +328,48 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
                 shouldShowToolbar());
         updateSplitKey();
         updateFloatKey();
+        if (isEmojiSearchShown()) {
+            hideEdgeKeys();
+        }
+    }
+
+    public void setEmojiSearchListener(@Nonnull final EmojiSearchBar.Listener listener) {
+        mEmojiSearchBar.setListener(listener);
+    }
+
+    public boolean isEmojiSearchShown() {
+        return mStripVisibilityGroup.mShowsEmojiSearch;
+    }
+
+    public void showEmojiSearch() {
+        mStripVisibilityGroup.mShowsEmojiSearch = true;
+        mEmojiSearchBar.start(mPanelTint);
+        setVisibility(VISIBLE);
+        hideEdgeKeys();
+        mStripVisibilityGroup.showSuggestionsStrip(false, false);
+    }
+
+    public void hideEmojiSearch() {
+        if (!isEmojiSearchShown()) {
+            return;
+        }
+        mStripVisibilityGroup.mShowsEmojiSearch = false;
+        updateVisibility(mShouldBeVisible, mIsFullscreenMode);
+    }
+
+    public void typeIntoEmojiSearch(@Nonnull final String text) {
+        mEmojiSearchBar.type(text);
+    }
+
+    public void deleteFromEmojiSearch() {
+        mEmojiSearchBar.deleteLast();
+    }
+
+    private void hideEdgeKeys() {
+        mToolbarToggleKey.setVisibility(INVISIBLE);
+        mFloatKey.setVisibility(INVISIBLE);
+        mSplitKey.setVisibility(INVISIBLE);
+        mVoiceKey.setVisibility(INVISIBLE);
     }
 
     public ColorStateList getToolKeyTintList() {
