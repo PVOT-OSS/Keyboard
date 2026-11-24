@@ -33,11 +33,18 @@ android {
 
     buildTypes {
         debug {
+            applicationIdSuffix ".dev"
             minifyEnabled false
+            resValue 'string', 'authority', 'org.prauga.keyboard.dev.dictionarypack'
         }
         release {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue 'string', 'authority', 'org.prauga.keyboard.dictionarypack'
         }
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     compileOptions {
