@@ -30,6 +30,7 @@ import org.prauga.keyboard.InputAttributes;
 import org.prauga.keyboard.R;
 import org.prauga.keyboard.RichInputMethodManager;
 import org.prauga.keyboard.blockedwords.BlockedWords;
+import org.prauga.keyboard.keytextsize.KeyTextSize;
 import org.prauga.keyboard.onehanded.OneHandedMode;
 import org.prauga.keyboard.utils.AsyncResultHolder;
 import org.prauga.keyboard.utils.ResourceUtils;
@@ -81,6 +82,7 @@ public class SettingsValues {
     public final boolean mClipboardHistoryEnabled;
     public final int mOneHandedMode;
     public final boolean mEmojiSuggestionsEnabled;
+    public final float mKeyTextScale;
     public final boolean mUseContactsDict;
     public final boolean mUsePersonalizedDicts;
     public final boolean mUseDoubleSpacePeriod;
@@ -174,6 +176,7 @@ public class SettingsValues {
         mClipboardHistoryEnabled = prefs.getBoolean(Settings.PREF_CLIPBOARD_HISTORY, true);
         mOneHandedMode = OneHandedMode.read(prefs);
         mEmojiSuggestionsEnabled = prefs.getBoolean(Settings.PREF_EMOJI_SUGGESTIONS, true);
+        mKeyTextScale = KeyTextSize.read(prefs);
         mUseContactsDict = prefs.getBoolean(Settings.PREF_KEY_USE_CONTACTS_DICT, true);
         mUsePersonalizedDicts = prefs.getBoolean(Settings.PREF_KEY_USE_PERSONALIZED_DICTS, true);
         mUseDoubleSpacePeriod = prefs.getBoolean(Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD, true)

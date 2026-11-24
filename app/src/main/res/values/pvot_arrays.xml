@@ -14,4 +14,16 @@
         <item>@string/auto_correction_threshold_mode_index_aggressive</item>
         <item>@string/auto_correction_threshold_mode_index_very_aggressive</item>
     </string-array>
+    <string-array name="key_text_size_entries" translatable="false">
+        <item>@string/key_text_size_small</item>
+        <item>@string/key_text_size_default</item>
+        <item>@string/key_text_size_large</item>
+        <item>@string/key_text_size_largest</item>
+    </string-array>
+    <string-array name="key_text_size_values" translatable="false">
+        <item>small</item>
+        <item>default</item>
+        <item>large</item>
+        <item>largest</item>
+    </string-array>
 </resources>

@@ -37,6 +37,11 @@
     <string name="show_toolbar_key_incognito">Incognito: the keyboard is not learning. Show toolbar</string>
     <string name="hide_toolbar_key">Hide toolbar</string>
     <string name="emoji_search_key">Search emoji</string>
+    <string name="key_text_size">Key text size</string>
+    <string name="key_text_size_small">Small</string>
+    <string name="key_text_size_default">Default</string>
+    <string name="key_text_size_large">Large</string>
+    <string name="key_text_size_largest">Largest</string>
     <string name="emoji_search_hint">Search emoji</string>
     <string name="emoji_search_close">Close emoji search</string>
     <string name="emoji_search_no_results">No emoji found</string>

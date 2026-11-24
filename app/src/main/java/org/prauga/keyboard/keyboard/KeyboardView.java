@@ -208,6 +208,10 @@ public class KeyboardView extends View {
      * @return the currently attached keyboard
      * @see #setKeyboard(Keyboard)
      */
+    public void setKeyTextScale(final float textScale) {
+        mKeyDrawParams.setTextScale(textScale);
+    }
+
     @Nullable
     public Keyboard getKeyboard() {
         return mKeyboard;
