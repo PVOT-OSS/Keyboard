@@ -1050,7 +1050,8 @@ public final class InputLogic {
             }
             inputTransaction.setRequiresUpdateSuggestions();
         } else {
-            if (mLastComposedWord.canRevertCommit()) {
+            if (mLastComposedWord.canRevertCommit()
+                    && inputTransaction.mSettingsValues.mUndoAutoCorrectionOnBackspace) {
                 final String lastComposedWord = mLastComposedWord.mTypedWord;
                 revertCommit(inputTransaction, inputTransaction.mSettingsValues);
                 StatsUtils.onRevertAutoCorrect();

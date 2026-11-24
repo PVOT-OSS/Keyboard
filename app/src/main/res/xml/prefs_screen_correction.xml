@@ -56,6 +56,13 @@
         android:defaultValue="@string/auto_correction_threshold_mode_index_modest"
         latin:useSimpleSummaryProvider="true" />
     <SwitchPreferenceCompat
+        android:key="pref_undo_auto_correction_on_backspace"
+        android:title="@string/undo_auto_correction_on_backspace"
+        android:summary="@string/undo_auto_correction_on_backspace_summary"
+        android:dependency="pref_key_auto_correction"
+        android:defaultValue="true"
+        android:persistent="true" />
+    <SwitchPreferenceCompat
         android:key="show_suggestions"
         android:summary="@string/prefs_show_suggestions_summary"
         android:title="@string/prefs_show_suggestions"

@@ -78,6 +78,7 @@ public class SettingsValues {
     public final boolean mUsePersonalizedDicts;
     public final boolean mUseDoubleSpacePeriod;
     public final boolean mBlockPotentiallyOffensive;
+    public final boolean mUndoAutoCorrectionOnBackspace;
     public final boolean mSpaceTrackpadEnabled;
     public final boolean mBackspaceTrackpadEnabled;
     public final boolean mSwipeDownForDigitsEnabled;
@@ -165,6 +166,8 @@ public class SettingsValues {
         mUseDoubleSpacePeriod = prefs.getBoolean(Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD, true)
                 && inputAttributes.mIsGeneralTextInput;
         mBlockPotentiallyOffensive = Settings.readBlockPotentiallyOffensive(prefs, res);
+        mUndoAutoCorrectionOnBackspace = prefs.getBoolean(
+                Settings.PREF_UNDO_AUTO_CORRECTION_ON_BACKSPACE, true);
         mAutoCorrectEnabled = Settings.readAutoCorrectEnabled(prefs, res);
         final String autoCorrectionThresholdRawValue = mAutoCorrectEnabled
                 ? prefs.getString(Settings.PREF_AUTO_CORRECTION_STRENGTH,

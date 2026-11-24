@@ -5,4 +5,6 @@
 -->
 <resources>
     <string name="auto_correction_strength">Auto-correction strength</string>
+    <string name="undo_auto_correction_on_backspace">Undo auto-correction on backspace</string>
+    <string name="undo_auto_correction_on_backspace_summary">Backspace right after a correction restores what you typed</string>
 </resources>
