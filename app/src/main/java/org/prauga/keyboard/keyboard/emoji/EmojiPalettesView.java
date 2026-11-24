@@ -386,7 +386,7 @@ public final class EmojiPalettesView extends LinearLayout implements OnTabChange
         params.updateParams(mEmojiLayoutParams.getActionBarHeight(), keyVisualAttr);
         setupAlphabetKey(mAlphabetKeyLeft, switchToAlphaLabel, params);
         mEmojiPager.setAdapter(mEmojiPalettesAdapter);
-        mEmojiPager.setCurrentItem(mCurrentPagerPosition);
+        mEmojiPager.setCurrentItem(mCurrentPagerPosition, false /* smoothScroll */);
     }
 
     public void stopEmojiPalettes() {
