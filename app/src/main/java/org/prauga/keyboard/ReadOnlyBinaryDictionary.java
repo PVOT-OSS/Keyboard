@@ -81,6 +81,17 @@ public final class ReadOnlyBinaryDictionary extends Dictionary {
         return null;
     }
 
+    public int getNgramProbability(final NgramContext ngramContext, final String word) {
+        if (mLock.readLock().tryLock()) {
+            try {
+                return mBinaryDictionary.getNgramProbability(ngramContext, word);
+            } finally {
+                mLock.readLock().unlock();
+            }
+        }
+        return NOT_A_PROBABILITY;
+    }
+
     @Override
     public boolean isInDictionary(final String word) {
         if (mLock.readLock().tryLock()) {

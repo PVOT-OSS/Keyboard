@@ -8,6 +8,7 @@ package org.prauga.keyboard.glide
 import org.prauga.keyboard.Dictionary
 import org.prauga.keyboard.DictionaryCollection
 import org.prauga.keyboard.DictionaryFacilitator
+import org.prauga.keyboard.NgramContext
 import org.prauga.keyboard.ReadOnlyBinaryDictionary
 import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo
 import org.prauga.keyboard.blockedwords.BlockedWords
@@ -20,6 +21,8 @@ import java.util.Locale
 object GlideTyping {
     private const val MAX_RESULTS = 18
     private const val SCORE_STEP = 1000
+    private const val CONTEXT_WEIGHT = 3f
+    private const val MAX_PROBABILITY = 255f
 
     @Volatile
     private var wordList: GlideWordList? = null
@@ -58,14 +61,22 @@ object GlideTyping {
         pointers: InputPointers,
         keyboard: Keyboard,
         settings: SettingsValuesForSuggestion,
-        locale: Locale?,
+        facilitator: DictionaryFacilitator,
+        ngramContext: NgramContext,
     ): ArrayList<SuggestedWordInfo>? {
-        val words = wordList?.takeIf { it.locale == locale } ?: return null
-        val results = decoderFor(keyboard, words).decode(
+        val words = wordList?.takeIf { it.locale == facilitator.locale } ?: return null
+        val decoded = decoderFor(keyboard, words).decode(
             pointers.xCoordinates, pointers.yCoordinates, pointers.pointerSize, MAX_RESULTS
         ) { word, offensive ->
             !(offensive && settings.mBlockPotentiallyOffensive) &&
                 !BlockedWords.isBlocked(settings.mBlockedWords, word)
+        }
+        val main = facilitator.mainDictionary
+        val results = if (main == null || !ngramContext.isValid) {
+            decoded
+        } else {
+            decoded.map { it.copy(score = it.score + contextBonus(main, ngramContext, it.word)) }
+                .sortedByDescending { it.score }
         }
         val suggestions = ArrayList<SuggestedWordInfo>(results.size)
         results.forEachIndexed { rank, candidate ->
@@ -78,6 +89,17 @@ object GlideTyping {
             )
         }
         return suggestions
+    }
+
+    private fun contextBonus(main: Dictionary, ngramContext: NgramContext, word: String): Float {
+        val dictionaries = (main as? DictionaryCollection)?.dictionaries ?: listOf(main)
+        var best = Dictionary.NOT_A_PROBABILITY
+        for (dictionary in dictionaries) {
+            if (dictionary is ReadOnlyBinaryDictionary) {
+                best = maxOf(best, dictionary.getNgramProbability(ngramContext, word))
+            }
+        }
+        return if (best == Dictionary.NOT_A_PROBABILITY) 0f else CONTEXT_WEIGHT * best / MAX_PROBABILITY
     }
 
     private fun decoderFor(keyboard: Keyboard, words: GlideWordList): GlideDecoder {

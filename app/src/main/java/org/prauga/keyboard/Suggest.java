@@ -315,7 +315,8 @@ public final class Suggest {
         // For transforming words that don't come from a dictionary, because it's our best bet
         final Locale locale = mDictionaryFacilitator.getLocale();
         ArrayList<SuggestedWordInfo> suggestionsContainer = GlideTyping.suggest(
-                wordComposer.getInputPointers(), keyboard, settingsValuesForSuggestion, locale);
+                wordComposer.getInputPointers(), keyboard, settingsValuesForSuggestion,
+                mDictionaryFacilitator, ngramContext);
         if (suggestionsContainer == null) {
             GlideTyping.prepare(mDictionaryFacilitator);
             suggestionsContainer = new ArrayList<>();
