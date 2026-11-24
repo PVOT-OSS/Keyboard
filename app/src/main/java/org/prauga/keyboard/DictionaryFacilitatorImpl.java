@@ -71,6 +71,12 @@ public class DictionaryFacilitatorImpl implements DictionaryFacilitator {
     private static final int CAPITALIZED_FORM_MAX_PROBABILITY_FOR_INSERT = 140;
 
     private DictionaryGroup mDictionaryGroup = new DictionaryGroup();
+
+    @Override
+    @Nullable
+    public Dictionary getMainDictionary() {
+        return mDictionaryGroup.getDict(Dictionary.TYPE_MAIN);
+    }
     private volatile CountDownLatch mLatchForWaitingLoadingMainDictionaries = new CountDownLatch(0);
     // To synchronize assigning mDictionaryGroup to ensure closing dictionaries.
     private final Object mLock = new Object();

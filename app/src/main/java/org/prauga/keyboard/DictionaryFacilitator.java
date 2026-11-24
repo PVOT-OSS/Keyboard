@@ -107,6 +107,9 @@ public interface DictionaryFacilitator {
 
     Locale getLocale();
 
+    @Nullable
+    Dictionary getMainDictionary();
+
     boolean usesContacts();
 
     String getAccount();

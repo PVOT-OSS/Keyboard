@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.annotation.Nullable;
+
 /**
  * This class provides binary dictionary reading operations with locking. An instance of this class
  * can be used by multiple threads. Note that different session IDs must be used when multiple
@@ -60,6 +62,18 @@ public final class ReadOnlyBinaryDictionary extends Dictionary {
                 return mBinaryDictionary.getSuggestions(composedData, ngramContext,
                         proximityInfoHandle, settingsValuesForSuggestion, sessionId,
                         weightForLocale, inOutWeightOfLangModelVsSpatialModel);
+            } finally {
+                mLock.readLock().unlock();
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public BinaryDictionary.GetNextWordPropertyResult getNextWordProperty(final int token) {
+        if (mLock.readLock().tryLock()) {
+            try {
+                return mBinaryDictionary.getNextWordProperty(token);
             } finally {
                 mLock.readLock().unlock();
             }

@@ -27,6 +27,7 @@ import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.common.StringUtils;
 import org.prauga.keyboard.define.DebugFlags;
 import org.prauga.keyboard.emojisuggestions.EmojiKeywords;
+import org.prauga.keyboard.glide.GlideTyping;
 import org.prauga.keyboard.settings.SettingsValuesForSuggestion;
 import org.prauga.keyboard.utils.AutoCorrectionUtils;
 import org.prauga.keyboard.utils.BinaryDictionaryUtils;
@@ -311,13 +312,14 @@ public final class Suggest {
             final SettingsValuesForSuggestion settingsValuesForSuggestion,
             final int inputStyle, final int sequenceNumber,
             final OnGetSuggestedWordsCallback callback) {
-        final SuggestionResults suggestionResults = mDictionaryFacilitator.getSuggestionResults(
-                wordComposer.getComposedDataSnapshot(), ngramContext, keyboard,
-                settingsValuesForSuggestion, SESSION_ID_GESTURE, inputStyle);
         // For transforming words that don't come from a dictionary, because it's our best bet
         final Locale locale = mDictionaryFacilitator.getLocale();
-        final ArrayList<SuggestedWordInfo> suggestionsContainer =
-                new ArrayList<>(suggestionResults);
+        ArrayList<SuggestedWordInfo> suggestionsContainer = GlideTyping.suggest(
+                wordComposer.getInputPointers(), keyboard, settingsValuesForSuggestion, locale);
+        if (suggestionsContainer == null) {
+            GlideTyping.prepare(mDictionaryFacilitator);
+            suggestionsContainer = new ArrayList<>();
+        }
         final int suggestionsCount = suggestionsContainer.size();
         final boolean isFirstCharCapitalized = wordComposer.wasShiftedNoLock();
         final boolean isAllUpperCase = wordComposer.isAllUpperCase();
@@ -357,7 +359,7 @@ public final class Suggest {
                 : suggestionsContainer.get(0);
 
         callback.onGetSuggestedWords(new SuggestedWords(suggestionsContainer,
-                suggestionResults.mRawSuggestions,
+                null /* rawSuggestions */,
                 pseudoTypedWordInfo,
                 true /* typedWordValid */,
                 false /* willAutoCorrect */,

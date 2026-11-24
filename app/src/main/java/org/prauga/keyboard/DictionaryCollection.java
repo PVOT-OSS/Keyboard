@@ -25,8 +25,11 @@ import org.prauga.keyboard.settings.SettingsValuesForSuggestion;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.annotation.Nonnull;
 
 /**
  * Class for a collection of dictionaries that behave like one dictionary.
@@ -34,6 +37,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class DictionaryCollection extends Dictionary {
     private final String TAG = DictionaryCollection.class.getSimpleName();
     protected final CopyOnWriteArrayList<Dictionary> mDictionaries;
+
+    @Nonnull
+    public List<Dictionary> getDictionaries() {
+        return Collections.unmodifiableList(mDictionaries);
+    }
 
     public DictionaryCollection(final String dictType, final Locale locale) {
         super(dictType, locale);

@@ -96,6 +96,7 @@ import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.editing.TextEditingView;
 import org.prauga.keyboard.emojisuggestions.EmojiKeywords;
 import org.prauga.keyboard.emojisuggestions.EmojiSearchBar;
+import org.prauga.keyboard.glide.GlideTyping;
 import org.prauga.keyboard.onehanded.OneHandedMode;
 import org.prauga.keyboard.onehanded.OneHandedSideView;
 import org.prauga.keyboard.resize.KeyboardResizeView;
@@ -706,6 +707,9 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     // Note that this method is called from a non-UI thread.
     @Override
     public void onUpdateMainDictionaryAvailability(final boolean isMainDictionaryAvailable) {
+        if (isMainDictionaryAvailable && mSettings.getCurrent().mGestureInputEnabled) {
+            GlideTyping.prepare(mDictionaryFacilitator);
+        }
         final MainKeyboardView mainKeyboardView = mKeyboardSwitcher.getMainKeyboardView();
         if (mainKeyboardView != null) {
             mainKeyboardView.setMainDictionaryAvailability(isMainDictionaryAvailable);
