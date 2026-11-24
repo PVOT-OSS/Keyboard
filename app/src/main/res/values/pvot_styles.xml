@@ -16,4 +16,16 @@
         <item name="android:soundEffectsEnabled">false</item>
         <item name="android:textSize">@dimen/clipboard_history_title_size</item>
     </style>
+
+    <style name="KeyboardResizeButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/clipboard_history_header_height</item>
+        <item name="android:layout_margin">@dimen/clipboard_history_item_margin</item>
+        <item name="android:background">@drawable/inline_suggestion_chip</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minWidth">@dimen/keyboard_resize_button_min_width</item>
+        <item name="android:paddingStart">@dimen/clipboard_history_item_padding</item>
+        <item name="android:paddingEnd">@dimen/clipboard_history_item_padding</item>
+        <item name="android:textSize">@dimen/clipboard_history_title_size</item>
+    </style>
 </resources>

@@ -98,6 +98,7 @@ import org.prauga.keyboard.emojisuggestions.EmojiKeywords;
 import org.prauga.keyboard.emojisuggestions.EmojiSearchBar;
 import org.prauga.keyboard.onehanded.OneHandedMode;
 import org.prauga.keyboard.onehanded.OneHandedSideView;
+import org.prauga.keyboard.resize.KeyboardResizeView;
 import org.prauga.keyboard.common.CoordinateUtils;
 import org.prauga.keyboard.common.InputPointers;
 import org.prauga.keyboard.define.DebugFlags;
@@ -143,6 +144,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         SuggestionStripView.Listener, SuggestionStripViewAccessor,
         ClipboardSuggestionMonitor.Listener, ClipboardHistoryView.Listener,
         TextEditingView.Listener, OneHandedSideView.Listener, EmojiSearchBar.Listener,
+        KeyboardResizeView.Listener,
         DictionaryFacilitator.DictionaryInitializationListener,
         PermissionsManager.PermissionsResultCallback {
     static final String TAG = LatinIME.class.getSimpleName();
@@ -972,6 +974,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         super.onStartInputView(editorInfo, restarting);
         if (!restarting) {
             mKeyboardSwitcher.hidePanels();
+            mKeyboardSwitcher.hideKeyboardResize();
             if (hasSuggestionStripView()) {
                 mSuggestionStripView.hideEmojiSearch();
             }
@@ -1562,6 +1565,34 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     }
 
     @Override
+    public void showKeyboardResize() {
+        if (hasSuggestionStripView()) {
+            mKeyboardSwitcher.showKeyboardResize(mSettings.getCurrent().mKeyboardHeightScale,
+                    mSuggestionStripView.getPanelTintList());
+        }
+    }
+
+    @Override
+    public void onKeyboardResize(final float scale) {
+        PreferenceManager.getDefaultSharedPreferences(this).edit()
+                .putFloat(Settings.PREF_KEYBOARD_HEIGHT_SCALE, scale).apply();
+        reloadKeyboardGeometry();
+    }
+
+    @Override
+    public void onKeyboardResizeReset() {
+        PreferenceManager.getDefaultSharedPreferences(this).edit()
+                .remove(Settings.PREF_KEYBOARD_HEIGHT_SCALE).apply();
+        reloadKeyboardGeometry();
+        mKeyboardSwitcher.setKeyboardResizeScale(mSettings.getCurrent().mKeyboardHeightScale);
+    }
+
+    @Override
+    public void onKeyboardResizeDone() {
+        mKeyboardSwitcher.hideKeyboardResize();
+    }
+
+    @Override
     public void toggleOneHandedMode() {
         OneHandedMode.toggle(PreferenceManager.getDefaultSharedPreferences(this));
         reloadKeyboardGeometry();
@@ -2147,7 +2178,9 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     public boolean onKeyUp(final int keyCode, final KeyEvent keyEvent) {
         if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.isTracking() && !keyEvent.isCanceled()
                 && isShowingPanelOrEmoji()) {
-            if (isEmojiSearchShown()) {
+            if (mKeyboardSwitcher.isShowingKeyboardResize()) {
+                mKeyboardSwitcher.hideKeyboardResize();
+            } else if (isEmojiSearchShown()) {
                 mSuggestionStripView.hideEmojiSearch();
                 onCodeInput(Constants.CODE_EMOJI, Constants.NOT_A_COORDINATE,
                         Constants.NOT_A_COORDINATE, false);
@@ -2176,7 +2209,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     private boolean isShowingPanelOrEmoji() {
         return mKeyboardSwitcher.isShowingPanel() || mKeyboardSwitcher.isShowingEmojiPalettes()
-                || isEmojiSearchShown();
+                || isEmojiSearchShown() || mKeyboardSwitcher.isShowingKeyboardResize();
     }
 
     private boolean isEmojiSearchShown() {

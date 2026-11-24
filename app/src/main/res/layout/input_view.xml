@@ -38,4 +38,7 @@
     <include
         android:id="@+id/one_handed_side_view"
         layout="@layout/one_handed_side_view" />
+    <include
+        android:id="@+id/keyboard_resize_view"
+        layout="@layout/keyboard_resize_view" />
 </org.prauga.keyboard.InputView>

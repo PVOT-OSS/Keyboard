@@ -38,6 +38,7 @@ import org.prauga.keyboard.compat.InputMethodServiceCompatUtils;
 import org.prauga.keyboard.editing.TextEditingView;
 import org.prauga.keyboard.onehanded.OneHandedMode;
 import org.prauga.keyboard.onehanded.OneHandedSideView;
+import org.prauga.keyboard.resize.KeyboardResizeView;
 import org.prauga.keyboard.event.Event;
 import org.prauga.keyboard.keyboard.KeyboardLayoutSet.KeyboardLayoutSetException;
 import org.prauga.keyboard.keyboard.emoji.EmojiPalettesView;
@@ -72,6 +73,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
     private ClipboardHistoryView mClipboardHistoryView;
     private TextEditingView mTextEditingView;
     private OneHandedSideView mOneHandedSideView;
+    private KeyboardResizeView mKeyboardResizeView;
     private FloatingKeyboardController mFloatingKeyboardController;
     private boolean mIsFloating;
     private int mFloatingKeyboardWidth;
@@ -383,6 +385,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
     }
 
     private void showPanel(@Nonnull final View panel) {
+        hideKeyboardResize();
         panel.getLayoutParams().height = mMainKeyboardFrame.getHeight();
         final Drawable background = mKeyboardView.getBackground();
         if (background != null && background.getConstantState() != null) {
@@ -419,6 +422,28 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         return null;
     }
 
+    public void showKeyboardResize(final float scale, @Nonnull final ColorStateList tint) {
+        if (mKeyboardResizeView != null) {
+            mKeyboardResizeView.show(scale, tint);
+        }
+    }
+
+    public void setKeyboardResizeScale(final float scale) {
+        if (mKeyboardResizeView != null) {
+            mKeyboardResizeView.setScale(scale);
+        }
+    }
+
+    public void hideKeyboardResize() {
+        if (mKeyboardResizeView != null) {
+            mKeyboardResizeView.hide();
+        }
+    }
+
+    public boolean isShowingKeyboardResize() {
+        return mKeyboardResizeView != null && mKeyboardResizeView.isShowing();
+    }
+
     public boolean isShowingPanel() {
         return getShownPanel() != null;
     }
@@ -430,6 +455,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
             Log.d(TAG, "setEmojiKeyboard");
         }
         final Keyboard keyboard = mKeyboardLayoutSet.getKeyboard(KeyboardId.ELEMENT_ALPHABET);
+        hideKeyboardResize();
         mMainKeyboardFrame.setVisibility(View.GONE);
         // The visibility of {@link #mKeyboardView} must be aligned with {@link #MainKeyboardFrame}.
         // @see #getVisibleKeyboardView() and
@@ -629,6 +655,8 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         mTextEditingView.setListener(mLatinIME);
         mOneHandedSideView = mCurrentInputView.findViewById(R.id.one_handed_side_view);
         mOneHandedSideView.bind(mKeyboardView, mLatinIME);
+        mKeyboardResizeView = mCurrentInputView.findViewById(R.id.keyboard_resize_view);
+        mKeyboardResizeView.bind(mKeyboardView, mLatinIME);
         mEmojiPalettesView.setKeyboardActionListener(mLatinIME);
 
         final View dragHandle = mCurrentInputView.findViewById(R.id.floating_drag_handle);

@@ -77,6 +77,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         public void showClipboardHistory();
         public void showTextEditing();
         public void toggleOneHandedMode();
+        public void showKeyboardResize();
         public void removeSuggestion(SuggestedWordInfo word);
         public void onCodeInput(int primaryCode, int x, int y, boolean isKeyRepeat);
         public void toggleSplitKeyboard();
@@ -109,6 +110,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     private final View mToolbarEditingKey;
     private final ImageButton mToolbarFloatKey;
     private final View mToolbarOneHandedKey;
+    private final View mToolbarResizeKey;
     private final ColorStateList mPanelTint;
     private boolean mCanShowClipboardHistory;
     private boolean mShowsToolbar;
@@ -273,6 +275,9 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         mToolbarOneHandedKey = mToolbar.addKey(R.drawable.ic_toolbar_one_handed,
                 getToolKeyTintList(), R.string.one_handed_mode,
                 () -> mListener.toggleOneHandedMode());
+        mToolbarResizeKey = mToolbar.addKey(R.drawable.ic_toolbar_resize,
+                getToolKeyTintList(), R.string.keyboard_resize,
+                () -> mListener.showKeyboardResize());
         mToolbarFloatKey = (ImageButton) mToolbar.addKey(R.drawable.ic_floating_keyboard,
                 getToolKeyTintList(), R.string.spoken_description_float_keyboard,
                 () -> mListener.toggleFloatingKeyboard());
@@ -323,6 +328,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         mToolbarEditingKey.setVisibility(
                 currentSettingsValues.mIsFloatingKeyboardEnabled ? GONE : VISIBLE);
         mToolbarOneHandedKey.setVisibility(
+                currentSettingsValues.mIsFloatingKeyboardEnabled ? GONE : VISIBLE);
+        mToolbarResizeKey.setVisibility(
                 currentSettingsValues.mIsFloatingKeyboardEnabled ? GONE : VISIBLE);
         mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion(),
                 shouldShowToolbar());

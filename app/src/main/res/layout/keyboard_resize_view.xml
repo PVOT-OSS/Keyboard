@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+     SPDX-License-Identifier: Apache-2.0
+-->
+<org.prauga.keyboard.resize.KeyboardResizeView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:clickable="true"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <FrameLayout
+        android:id="@+id/keyboard_resize_handle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/clipboard_history_header_height"
+        android:contentDescription="@string/keyboard_resize_handle">
+
+        <View
+            android:id="@+id/keyboard_resize_pill"
+            android:layout_width="@dimen/config_floating_drag_handle_pill_width"
+            android:layout_height="@dimen/config_floating_drag_handle_pill_height"
+            android:layout_gravity="center"
+            android:background="@drawable/floating_drag_handle_pill" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/keyboard_resize_hint"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/keyboard_resize_hint"
+        android:textSize="@dimen/clipboard_history_title_size" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/clipboard_history_padding">
+
+        <TextView
+            android:id="@+id/keyboard_resize_reset"
+            style="@style/KeyboardResizeButton"
+            android:text="@string/keyboard_resize_reset" />
+
+        <TextView
+            android:id="@+id/keyboard_resize_done"
+            style="@style/KeyboardResizeButton"
+            android:text="@string/keyboard_resize_done" />
+    </LinearLayout>
+</org.prauga.keyboard.resize.KeyboardResizeView>
