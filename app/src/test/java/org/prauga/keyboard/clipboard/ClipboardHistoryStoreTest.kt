@@ -1,0 +1,39 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+package org.prauga.keyboard.clipboard
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+import java.io.IOException
+import java.nio.file.Files
+
+class ClipboardHistoryStoreTest {
+    @Test
+    fun roundTripKeepsTextAndTimestamps() {
+        val file = File(Files.createTempDirectory("pins").toFile(), "pins")
+        val pinned = listOf(
+            ClipboardHistory.Item("line one\nline\ttwo", 42, true),
+            ClipboardHistory.Item("emoji 😀", 7, true),
+        )
+        ClipboardHistoryStore.write(file, pinned)
+        assertEquals(pinned, ClipboardHistoryStore.read(file))
+    }
+
+    @Test
+    fun missingFileReadsEmpty() {
+        val dir = Files.createTempDirectory("pins").toFile()
+        assertTrue(ClipboardHistoryStore.read(File(dir, "none")).isEmpty())
+    }
+
+    @Test(expected = IOException::class)
+    fun corruptFileIsRejected() {
+        val file = Files.createTempFile("pins", null).toFile()
+        file.writeText("something else\n")
+        ClipboardHistoryStore.read(file)
+    }
+}
