@@ -110,6 +110,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     private final ColorStateList mPanelTint;
     private boolean mCanShowClipboardHistory;
     private boolean mShowsToolbar;
+    private boolean mIsIncognito;
     private boolean mShouldBeVisible = true;
     private boolean mIsFullscreenMode;
     MainKeyboardView mMainKeyboardView;
@@ -292,6 +293,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         final SettingsValues currentSettingsValues = Settings.getInstance().getCurrent();
         mVoiceKey.setVisibility(currentSettingsValues.mShowsVoiceInputKey ? VISIBLE : INVISIBLE);
         mShowsToolbar = currentSettingsValues.mShowsToolbar;
+        mIsIncognito = !currentSettingsValues.isPersonalizedLearningEnabled();
+        updateToolbarToggleKey();
         mToolbarToggleKey.setVisibility(mShowsToolbar ? VISIBLE : GONE);
         mFloatKey.setVisibility(mShowsToolbar ? GONE : VISIBLE);
         if (!mShowsToolbar) {
@@ -461,12 +464,26 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
 
     private void setToolbarExpanded(final boolean expanded) {
         mToolbarExpanded = expanded;
-        mToolbarToggleKey.setImageResource(expanded
-                ? R.drawable.ic_editing_chevron_left : R.drawable.ic_toolbar_toggle);
-        mToolbarToggleKey.setContentDescription(getResources().getString(expanded
-                ? R.string.hide_toolbar_key : R.string.show_toolbar_key));
+        updateToolbarToggleKey();
         mStripVisibilityGroup.showSuggestionsStrip(shouldShowClipboardSuggestion(),
                 shouldShowToolbar());
+    }
+
+    private void updateToolbarToggleKey() {
+        final int icon;
+        final int description;
+        if (mToolbarExpanded) {
+            icon = R.drawable.ic_editing_chevron_left;
+            description = R.string.hide_toolbar_key;
+        } else if (mIsIncognito) {
+            icon = R.drawable.ic_toolbar_incognito;
+            description = R.string.show_toolbar_key_incognito;
+        } else {
+            icon = R.drawable.ic_toolbar_toggle;
+            description = R.string.show_toolbar_key;
+        }
+        mToolbarToggleKey.setImageResource(icon);
+        mToolbarToggleKey.setContentDescription(getResources().getString(description));
     }
 
     private boolean shouldShowClipboardSuggestion() {
