@@ -94,6 +94,8 @@ import org.prauga.keyboard.clipboard.ClipboardSuggestionMonitor;
 import org.prauga.keyboard.blockedwords.BlockedWords;
 import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.editing.TextEditingView;
+import org.prauga.keyboard.onehanded.OneHandedMode;
+import org.prauga.keyboard.onehanded.OneHandedSideView;
 import org.prauga.keyboard.common.CoordinateUtils;
 import org.prauga.keyboard.common.InputPointers;
 import org.prauga.keyboard.define.DebugFlags;
@@ -137,7 +139,7 @@ import javax.annotation.Nullable;
 public class LatinIME extends InputMethodService implements KeyboardActionListener,
         SuggestionStripView.Listener, SuggestionStripViewAccessor,
         ClipboardSuggestionMonitor.Listener, ClipboardHistoryView.Listener,
-        TextEditingView.Listener,
+        TextEditingView.Listener, OneHandedSideView.Listener,
         DictionaryFacilitator.DictionaryInitializationListener,
         PermissionsManager.PermissionsResultCallback {
     static final String TAG = LatinIME.class.getSimpleName();
@@ -1547,6 +1549,32 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     @Override
     public void onTextEditingClose() {
         mKeyboardSwitcher.hidePanels();
+    }
+
+    @Override
+    public void toggleOneHandedMode() {
+        OneHandedMode.toggle(PreferenceManager.getDefaultSharedPreferences(this));
+        reloadKeyboardGeometry();
+    }
+
+    @Override
+    public void onOneHandedSwitchSide() {
+        OneHandedMode.switchSide(PreferenceManager.getDefaultSharedPreferences(this));
+        reloadKeyboardGeometry();
+    }
+
+    @Override
+    public void onOneHandedExit() {
+        OneHandedMode.turnOff(PreferenceManager.getDefaultSharedPreferences(this));
+        reloadKeyboardGeometry();
+    }
+
+    private void reloadKeyboardGeometry() {
+        loadSettings();
+        if (mKeyboardSwitcher.getMainKeyboardView() != null) {
+            mKeyboardSwitcher.loadKeyboard(getCurrentInputEditorInfo(), mSettings.getCurrent(),
+                    getCurrentAutoCapsState(), getCurrentRecapitalizeState());
+        }
     }
 
     @Override

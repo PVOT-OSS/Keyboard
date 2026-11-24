@@ -22,6 +22,9 @@
     <string name="text_editing_down">Move down</string>
     <string name="text_editing_left">Move left</string>
     <string name="text_editing_right">Move right</string>
+    <string name="one_handed_mode">One-handed mode</string>
+    <string name="one_handed_switch_side">Move keyboard to the other side</string>
+    <string name="one_handed_exit">Full-width keyboard</string>
     <string name="clear_clipboard_history">Clear clipboard history</string>
     <string name="clear_clipboard_history_summary">Delete all saved clips, including pinned ones</string>
     <string name="clear_clipboard_history_confirm_title">Clear clipboard history?</string>

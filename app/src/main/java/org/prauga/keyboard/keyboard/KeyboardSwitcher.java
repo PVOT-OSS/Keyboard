@@ -36,6 +36,8 @@ import org.prauga.keyboard.clipboard.ClipboardHistoryManager;
 import org.prauga.keyboard.clipboard.ClipboardHistoryView;
 import org.prauga.keyboard.compat.InputMethodServiceCompatUtils;
 import org.prauga.keyboard.editing.TextEditingView;
+import org.prauga.keyboard.onehanded.OneHandedMode;
+import org.prauga.keyboard.onehanded.OneHandedSideView;
 import org.prauga.keyboard.event.Event;
 import org.prauga.keyboard.keyboard.KeyboardLayoutSet.KeyboardLayoutSetException;
 import org.prauga.keyboard.keyboard.emoji.EmojiPalettesView;
@@ -69,6 +71,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
     private EmojiPalettesView mEmojiPalettesView;
     private ClipboardHistoryView mClipboardHistoryView;
     private TextEditingView mTextEditingView;
+    private OneHandedSideView mOneHandedSideView;
     private FloatingKeyboardController mFloatingKeyboardController;
     private boolean mIsFloating;
     private int mFloatingKeyboardWidth;
@@ -144,6 +147,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         final int screenWidth = ResourceUtils.getDefaultKeyboardWidth(mThemeContext);
         final int keyboardWidth;
         final int keyboardHeight;
+        int oneHandedMode = OneHandedMode.OFF;
         if (isFloating) {
             final float density = res.getDisplayMetrics().density;
             final SharedPreferences prefs =
@@ -158,7 +162,10 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
                     keyboardWidth, res.getDisplayMetrics().heightPixels, density);
         } else {
             final int height = ResourceUtils.getKeyboardHeight(res, settingsValues);
-            keyboardWidth = screenWidth;
+            oneHandedMode = isSplitLayout ? OneHandedMode.OFF : settingsValues.mOneHandedMode;
+            keyboardWidth = oneHandedMode == OneHandedMode.OFF ? screenWidth
+                    : OneHandedMode.keyboardWidth(screenWidth, res.getFraction(
+                            R.fraction.config_one_handed_keyboard_width, 1, 1));
             keyboardHeight = SplitKeyboardUtils.isSplitKeyboardAvailable(res)
                     ? SplitKeyboardUtils.getSplitKeyboardHeight(height) : height;
         }
@@ -178,6 +185,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         if (mFloatingKeyboardController != null) {
             mFloatingKeyboardController.setFloating(isFloating, keyboardWidth);
         }
+        applyOneHandedMode(oneHandedMode, screenWidth - keyboardWidth);
         try {
             mState.onLoadKeyboard(currentAutoCapsState, currentRecapitalizeState);
             mKeyboardTextsSet.setLocale(mRichImm.getCurrentSubtypeLocale(), mThemeContext);
@@ -346,6 +354,19 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         mEmojiPalettesView.setVisibility(View.GONE);
         mEmojiPalettesView.stopEmojiPalettes();
         hidePanelViews();
+    }
+
+    private void applyOneHandedMode(final int mode, final int sideWidth) {
+        if (mKeyboardView == null || mOneHandedSideView == null) {
+            return;
+        }
+        final int side = mode == OneHandedMode.OFF ? 0 : sideWidth;
+        mKeyboardView.setPadding(mode == OneHandedMode.RIGHT ? side : 0,
+                mKeyboardView.getPaddingTop(), mode == OneHandedMode.LEFT ? side : 0,
+                mKeyboardView.getPaddingBottom());
+        final SuggestionStripView strip =
+                mCurrentInputView.findViewById(R.id.suggestion_strip_view);
+        mOneHandedSideView.setMode(mode, side, strip.getPanelTintList());
     }
 
     public void showClipboardHistory(@Nonnull final ColorStateList tint) {
@@ -605,6 +626,8 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         mClipboardHistoryView.setUp(ClipboardHistoryManager.getInstance(mLatinIME), mLatinIME);
         mTextEditingView = mCurrentInputView.findViewById(R.id.text_editing_view);
         mTextEditingView.setListener(mLatinIME);
+        mOneHandedSideView = mCurrentInputView.findViewById(R.id.one_handed_side_view);
+        mOneHandedSideView.bind(mKeyboardView, mLatinIME);
         mEmojiPalettesView.setKeyboardActionListener(mLatinIME);
 
         final View dragHandle = mCurrentInputView.findViewById(R.id.floating_drag_handle);

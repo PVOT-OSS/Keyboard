@@ -35,4 +35,7 @@
     <include
         android:id="@+id/text_editing_view"
         layout="@layout/text_editing_view" />
+    <include
+        android:id="@+id/one_handed_side_view"
+        layout="@layout/one_handed_side_view" />
 </org.prauga.keyboard.InputView>

@@ -4,6 +4,7 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources>
+    <fraction name="config_one_handed_keyboard_width">80%</fraction>
     <dimen name="clipboard_history_header_height">48dp</dimen>
     <dimen name="clipboard_history_padding">8dp</dimen>
     <dimen name="clipboard_history_item_margin">4dp</dimen>
