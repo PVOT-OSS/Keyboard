@@ -2093,6 +2093,10 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     // Hooks for hardware keyboard
     @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent keyEvent) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && mKeyboardSwitcher.isShowingPanel()) {
+            keyEvent.startTracking();
+            return true;
+        }
         if (mEmojiAltPhysicalKeyDetector == null) {
             mEmojiAltPhysicalKeyDetector = new EmojiAltPhysicalKeyDetector(
                     getApplicationContext().getResources());
@@ -2118,6 +2122,11 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     @Override
     public boolean onKeyUp(final int keyCode, final KeyEvent keyEvent) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.isTracking() && !keyEvent.isCanceled()
+                && mKeyboardSwitcher.isShowingPanel()) {
+            mKeyboardSwitcher.hidePanels();
+            return true;
+        }
         if (mEmojiAltPhysicalKeyDetector == null) {
             mEmojiAltPhysicalKeyDetector = new EmojiAltPhysicalKeyDetector(
                     getApplicationContext().getResources());
