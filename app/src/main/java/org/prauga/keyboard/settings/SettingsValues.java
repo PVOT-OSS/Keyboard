@@ -340,7 +340,7 @@ public class SettingsValues {
     }
 
     public boolean isPersonalizedLearningEnabled() {
-        return !mInputAttributes.mNoPersonalizedLearning;
+        return !mInputAttributes.mNoPersonalizedLearning && !mInputAttributes.mIsPasswordField;
     }
 
     private static final String SUGGESTIONS_VISIBILITY_HIDE_VALUE_OBSOLETE = "2";
