@@ -85,6 +85,10 @@
         android:summary="@string/use_personalized_dicts_summary"
         android:defaultValue="true"
         android:persistent="true" />
+    <org.prauga.keyboard.personalization.ClearLearnedWordsPreference
+        android:key="clear_learned_words"
+        android:title="@string/clear_learned_words"
+        android:summary="@string/clear_learned_words_summary" />
     <SwitchPreferenceCompat
         android:key="pref_key_use_contacts_dict"
         android:title="@string/use_contacts_dict"

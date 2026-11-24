@@ -14,6 +14,12 @@
     <string name="blocked_words_block">Block</string>
     <string name="blocked_words_empty">No blocked words</string>
     <string name="blocked_words_unblock">Unblock</string>
+    <string name="clear_learned_words">Clear learned words</string>
+    <string name="clear_learned_words_summary">Forget the words and phrases learned from your typing</string>
+    <string name="clear_learned_words_confirm_title">Clear learned words?</string>
+    <string name="clear_learned_words_confirm_message">Words and phrases learned from your typing will be forgotten in every language. Your personal dictionary and blocked words are kept.</string>
+    <string name="clear_learned_words_confirm">Clear</string>
+    <string name="clear_learned_words_done">Learned words cleared</string>
     <string name="remove_suggestion">Remove</string>
     <string name="remove_suggestion_title">Remove \u201c<xliff:g id="word" example="hello">%1$s</xliff:g>\u201d from suggestions?</string>
     <string name="remove_suggestion_message">It will not be suggested again. You can unblock it in Text correction, Blocked words.</string>
