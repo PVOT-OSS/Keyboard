@@ -1320,7 +1320,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
             return;
         }
         final int suggestionsHeight = (!mKeyboardSwitcher.isShowingEmojiPalettes()
-                && !mKeyboardSwitcher.isShowingClipboardHistory()
+                && !mKeyboardSwitcher.isShowingPanel()
                 && mSuggestionStripView.getVisibility() == View.VISIBLE)
                 ? mSuggestionStripView.getHeight() : 0;
         final int visibleTopY = inputHeight - visibleKeyboardView.getHeight() - suggestionsHeight;
@@ -1491,13 +1491,13 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     @Override
     public void onClipboardHistoryPaste(@Nonnull final String text) {
-        mKeyboardSwitcher.hideClipboardHistory();
+        mKeyboardSwitcher.hidePanels();
         onTextInput(text);
     }
 
     @Override
     public void onClipboardHistoryClose() {
-        mKeyboardSwitcher.hideClipboardHistory();
+        mKeyboardSwitcher.hidePanels();
     }
 
     @Override
