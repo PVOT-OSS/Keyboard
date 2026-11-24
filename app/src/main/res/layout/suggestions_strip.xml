@@ -52,7 +52,7 @@
             android:textSize="16sp"
             style="?attr/suggestionWordStyle" />
     </LinearLayout>
-    <com.android.inputmethod.latin.suggestions.InlineSuggestionsStrip
+    <org.prauga.keyboard.suggestions.InlineSuggestionsStrip
         android:id="@+id/inline_suggestions_strip"
         android:orientation="horizontal"
         android:layout_width="match_parent"

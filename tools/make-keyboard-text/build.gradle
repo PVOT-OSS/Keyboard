@@ -3,7 +3,7 @@ plugins {
 }
 
 application {
-    mainClass = 'com.android.inputmethod.keyboard.tools.MakeKeyboardText'
+    mainClass = 'org.prauga.keyboard.keyboard.tools.MakeKeyboardText'
 }
 
 sourceSets {

@@ -36,17 +36,17 @@
                  To use this, add the following line into calling application's AndroidManifest.xml
          <pre>
                       {@code
-         <uses-permission android:name="com.android.inputmethod.latin.HIDE_SOFT_INPUT"/>
+         <uses-permission android:name="org.prauga.keyboard.HIDE_SOFT_INPUT"/>
                       }
          </pre>
                       then call {@link android.content.Context#sendBroadcast(Intent)} as follows:
          <pre>
                       {@code
-                      sendBroadcast(new Intent("com.android.inputmethod.latin.HIDE_SOFT_INPUT")
-                              .setPackage("com.android.inputmethod.latin"));
+                      sendBroadcast(new Intent("org.prauga.keyboard.HIDE_SOFT_INPUT")
+                              .setPackage("org.prauga.keyboard"));
                       }
          </pre> -->
-    <permission android:name="com.android.inputmethod.latin.HIDE_SOFT_INPUT"
+    <permission android:name="org.prauga.keyboard.HIDE_SOFT_INPUT"
          android:protectionLevel="signature"/>
 
     <!-- To query enabled input methods. -->
@@ -87,7 +87,7 @@
                  android:resource="@xml/spellchecker"/>
         </service>
 
-        <service android:name="com.android.inputmethod.dictionarypack.DictionaryService"
+        <service android:name="org.prauga.keyboard.dictionarypack.DictionaryService"
              android:label="@string/dictionary_service_name">
         </service>
 
@@ -139,7 +139,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.android.inputmethod.dictionarypack.DictionarySettingsActivity"
+        <activity android:name="org.prauga.keyboard.dictionarypack.DictionarySettingsActivity"
              android:theme="@style/Theme.SettingsLib"
              android:label="@string/dictionary_settings_title"
              android:uiOptions="splitActionBarWhenNarrow"
@@ -149,7 +149,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.android.inputmethod.dictionarypack.DownloadOverMeteredDialog"
+        <activity android:name="org.prauga.keyboard.dictionarypack.DownloadOverMeteredDialog"
              android:theme="@style/platformActivityTheme"
              android:label="@string/dictionary_install_over_metered_network_prompt"
              android:exported="false">
@@ -177,17 +177,17 @@
         <receiver android:name="DictionaryPackInstallBroadcastReceiver"
              android:exported="false">
             <intent-filter>
-                <action android:name="com.android.inputmethod.dictionarypack.aosp.UNKNOWN_CLIENT"/>
+                <action android:name="org.prauga.keyboard.dictionarypack.aosp.UNKNOWN_CLIENT"/>
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.android.inputmethod.dictionarypack.EventHandler"
+        <receiver android:name="org.prauga.keyboard.dictionarypack.EventHandler"
              android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
                 <action android:name="android.intent.action.DATE_CHANGED"/>
-                <action android:name="com.android.inputmethod.dictionarypack.aosp.UPDATE_NOW"/>
-                <action android:name="com.android.inputmethod.dictionarypack.aosp.INIT_AND_UPDATE_NOW"/>
+                <action android:name="org.prauga.keyboard.dictionarypack.aosp.UPDATE_NOW"/>
+                <action android:name="org.prauga.keyboard.dictionarypack.aosp.INIT_AND_UPDATE_NOW"/>
             </intent-filter>
         </receiver>
 
@@ -200,7 +200,7 @@
         </receiver>
 
         <!-- Content providers -->
-        <provider android:name="com.android.inputmethod.dictionarypack.DictionaryProvider"
+        <provider android:name="org.prauga.keyboard.dictionarypack.DictionaryProvider"
              android:grantUriPermissions="true"
              android:exported="false"
              android:authorities="@string/authority"

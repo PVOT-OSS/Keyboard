@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.android.inputmethod.latin'
+    namespace 'org.prauga.keyboard'
     compileSdk 35
     ndkVersion '25.1.8937393'
 
@@ -12,13 +12,13 @@ android {
     useLibrary 'android.test.mock'
 
     defaultConfig {
-        applicationId 'com.android.inputmethod.latin'
+        applicationId 'org.prauga.keyboard'
         minSdk 30
         targetSdk 34
         versionCode 30
         versionName "1.0"
 
-        testApplicationId 'com.android.inputmethod.latin.tests'
+        testApplicationId 'org.prauga.keyboard.tests'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = false
 

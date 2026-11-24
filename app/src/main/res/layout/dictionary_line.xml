@@ -54,7 +54,7 @@
                 android:textAppearance="?android:attr/textAppearanceListItemSecondary"
                 android:textColor="?android:attr/textColorSecondary" />
 
-            <com.android.inputmethod.dictionarypack.DictionaryDownloadProgressBar
+            <org.prauga.keyboard.dictionarypack.DictionaryDownloadProgressBar
                 android:id="@+id/dictionary_line_progress_bar"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
