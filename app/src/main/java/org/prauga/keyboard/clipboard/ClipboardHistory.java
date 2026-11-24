@@ -59,8 +59,13 @@ public final class ClipboardHistory {
 
     public void restorePinned(@Nonnull final List<Item> pinnedItems) {
         for (final Item item : pinnedItems) {
-            if (indexOf(item.mText) < 0) {
+            final int index = indexOf(item.mText);
+            if (index < 0) {
                 mItems.add(new Item(item.mText, item.mTimestamp, true));
+            } else {
+                final Item existing = mItems.get(index);
+                mItems.set(index, new Item(existing.mText,
+                        Math.max(existing.mTimestamp, item.mTimestamp), true));
             }
         }
         Collections.sort(mItems, (a, b) -> Long.compare(b.mTimestamp, a.mTimestamp));

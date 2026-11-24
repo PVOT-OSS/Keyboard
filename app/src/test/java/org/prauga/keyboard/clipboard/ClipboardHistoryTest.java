@@ -95,6 +95,17 @@ public class ClipboardHistoryTest {
     }
 
     @Test
+    public void restoredPinAppliesToAClipAddedBeforeLoading() {
+        final ClipboardHistory history = new ClipboardHistory();
+        history.add("a", NOW, false, NOW);
+        history.restorePinned(Collections.singletonList(new ClipboardHistory.Item("a", 1, true)));
+        final List<ClipboardHistory.Item> items = history.getItems(NOW);
+        assertEquals(1, items.size());
+        assertTrue(items.get(0).mPinned);
+        assertEquals(NOW, items.get(0).mTimestamp);
+    }
+
+    @Test
     public void restorePinnedSkipsDuplicates() {
         final ClipboardHistory history = new ClipboardHistory();
         history.add("a", NOW, false, NOW);
