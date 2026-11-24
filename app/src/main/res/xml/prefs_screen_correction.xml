@@ -41,6 +41,11 @@
         android:summary="@string/prefs_block_potentially_offensive_summary"
         android:defaultValue="@bool/config_block_potentially_offensive"
         android:persistent="true" />
+    <Preference
+        android:key="screen_blocked_words"
+        android:fragment="org.prauga.keyboard.blockedwords.BlockedWordsSettingsFragment"
+        android:title="@string/blocked_words"
+        android:summary="@string/blocked_words_summary" />
     <SwitchPreferenceCompat
         android:key="pref_key_auto_correction"
         android:title="@string/auto_correction"

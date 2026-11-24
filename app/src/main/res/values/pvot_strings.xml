@@ -3,8 +3,16 @@
      SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
      SPDX-License-Identifier: Apache-2.0
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="auto_correction_strength">Auto-correction strength</string>
     <string name="undo_auto_correction_on_backspace">Undo auto-correction on backspace</string>
     <string name="undo_auto_correction_on_backspace_summary">Backspace right after a correction restores what you typed</string>
+    <string name="blocked_words">Blocked words</string>
+    <string name="blocked_words_summary">Words that are never suggested</string>
+    <string name="blocked_words_add">Block a word</string>
+    <string name="blocked_words_input_hint">Word</string>
+    <string name="blocked_words_block">Block</string>
+    <string name="blocked_words_empty">No blocked words</string>
+    <string name="blocked_words_unblock">Unblock</string>
+    <string name="blocked_words_unblock_title">Unblock “<xliff:g id="word" example="hello">%1$s</xliff:g>”?</string>
 </resources>
