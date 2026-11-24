@@ -21,20 +21,23 @@ class KeyboardToolbar(context: Context, attrs: AttributeSet?) : LinearLayout(con
         orientation = HORIZONTAL
     }
 
-    fun addKey(
+    fun createKey(
         @DrawableRes iconResId: Int,
         tint: ColorStateList,
         @StringRes contentDescriptionResId: Int,
         action: Runnable,
-    ): View {
-        val button = ImageButton(context, null, R.attr.suggestionWordStyle).apply {
-            setImageResource(iconResId)
-            scaleType = ImageView.ScaleType.CENTER
-            imageTintList = tint
-            contentDescription = resources.getString(contentDescriptionResId)
-            setOnClickListener { action.run() }
+    ): ImageButton = ImageButton(context, null, R.attr.suggestionWordStyle).apply {
+        setImageResource(iconResId)
+        scaleType = ImageView.ScaleType.CENTER
+        imageTintList = tint
+        contentDescription = resources.getString(contentDescriptionResId)
+        setOnClickListener { action.run() }
+    }
+
+    fun setKeys(keys: List<View>) {
+        removeAllViews()
+        for (key in keys) {
+            addView(key, LayoutParams(0, LayoutParams.MATCH_PARENT, 1f))
         }
-        addView(button, LayoutParams(0, LayoutParams.MATCH_PARENT, 1f))
-        return button
     }
 }

@@ -59,12 +59,16 @@ import org.prauga.keyboard.settings.Settings;
 import org.prauga.keyboard.settings.SettingsValues;
 import org.prauga.keyboard.emojisuggestions.EmojiSearchBar;
 import org.prauga.keyboard.toolbar.KeyboardToolbar;
+import org.prauga.keyboard.toolbar.ToolbarKeys;
 import org.prauga.keyboard.suggestions.MoreSuggestionsView.MoreSuggestionsListener;
 import org.prauga.keyboard.utils.ImportantNoticeUtils;
 import org.prauga.keyboard.utils.SplitKeyboardUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -111,6 +115,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     private final ImageButton mToolbarFloatKey;
     private final View mToolbarOneHandedKey;
     private final View mToolbarResizeKey;
+    private final Map<String, View> mToolbarKeys = new HashMap<>();
+    private List<String> mToolbarKeyOrder = Collections.emptyList();
     private final ColorStateList mPanelTint;
     private boolean mCanShowClipboardHistory;
     private boolean mShowsToolbar;
@@ -267,25 +273,31 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         final Drawable iconVoice = keyboardAttr.getDrawable(R.styleable.Keyboard_iconShortcutKey);
         keyboardAttr.recycle();
         mPanelTint = getToolKeyTintList();
-        mToolbarClipboardKey = mToolbar.addKey(R.drawable.ic_toolbar_clipboard,
+        mToolbarClipboardKey = mToolbar.createKey(R.drawable.ic_toolbar_clipboard,
                 getToolKeyTintList(), R.string.clipboard_history,
                 () -> mListener.showClipboardHistory());
-        mToolbarEditingKey = mToolbar.addKey(R.drawable.ic_toolbar_editing,
+        mToolbarEditingKey = mToolbar.createKey(R.drawable.ic_toolbar_editing,
                 getToolKeyTintList(), R.string.text_editing, () -> mListener.showTextEditing());
-        mToolbarOneHandedKey = mToolbar.addKey(R.drawable.ic_toolbar_one_handed,
+        mToolbarOneHandedKey = mToolbar.createKey(R.drawable.ic_toolbar_one_handed,
                 getToolKeyTintList(), R.string.one_handed_mode,
                 () -> mListener.toggleOneHandedMode());
-        mToolbarResizeKey = mToolbar.addKey(R.drawable.ic_toolbar_resize,
+        mToolbarResizeKey = mToolbar.createKey(R.drawable.ic_toolbar_resize,
                 getToolKeyTintList(), R.string.keyboard_resize,
                 () -> mListener.showKeyboardResize());
-        mToolbarFloatKey = (ImageButton) mToolbar.addKey(R.drawable.ic_floating_keyboard,
+        mToolbarFloatKey = mToolbar.createKey(R.drawable.ic_floating_keyboard,
                 getToolKeyTintList(), R.string.spoken_description_float_keyboard,
                 () -> mListener.toggleFloatingKeyboard());
-        mToolbar.addKey(R.drawable.ic_toolbar_emoji, getToolKeyTintList(),
-                R.string.spoken_description_emoji, () -> onToolbarCode(Constants.CODE_EMOJI));
-        mToolbar.addKey(R.drawable.ic_toolbar_settings, getToolKeyTintList(),
-                R.string.spoken_description_settings,
-                () -> onToolbarCode(Constants.CODE_SETTINGS));
+        mToolbarKeys.put(ToolbarKeys.CLIPBOARD, mToolbarClipboardKey);
+        mToolbarKeys.put(ToolbarKeys.EDITING, mToolbarEditingKey);
+        mToolbarKeys.put(ToolbarKeys.ONE_HANDED, mToolbarOneHandedKey);
+        mToolbarKeys.put(ToolbarKeys.RESIZE, mToolbarResizeKey);
+        mToolbarKeys.put(ToolbarKeys.FLOAT, mToolbarFloatKey);
+        mToolbarKeys.put(ToolbarKeys.EMOJI, mToolbar.createKey(R.drawable.ic_toolbar_emoji,
+                getToolKeyTintList(), R.string.spoken_description_emoji,
+                () -> onToolbarCode(Constants.CODE_EMOJI)));
+        mToolbarKeys.put(ToolbarKeys.SETTINGS, mToolbar.createKey(R.drawable.ic_toolbar_settings,
+                getToolKeyTintList(), R.string.spoken_description_settings,
+                () -> onToolbarCode(Constants.CODE_SETTINGS)));
         mVoiceKey.setImageDrawable(iconVoice);
         mVoiceKey.setOnClickListener(this);
         mSplitKey.setImageTintList(getToolKeyTintList());
@@ -315,6 +327,14 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         final SettingsValues currentSettingsValues = Settings.getInstance().getCurrent();
         mVoiceKey.setVisibility(currentSettingsValues.mShowsVoiceInputKey ? VISIBLE : INVISIBLE);
         mShowsToolbar = currentSettingsValues.mShowsToolbar;
+        if (!mToolbarKeyOrder.equals(currentSettingsValues.mToolbarKeys)) {
+            mToolbarKeyOrder = currentSettingsValues.mToolbarKeys;
+            final List<View> keys = new ArrayList<>();
+            for (final String id : mToolbarKeyOrder) {
+                keys.add(mToolbarKeys.get(id));
+            }
+            mToolbar.setKeys(keys);
+        }
         mIsIncognito = !currentSettingsValues.isPersonalizedLearningEnabled();
         updateToolbarToggleKey();
         mToolbarToggleKey.setVisibility(mShowsToolbar ? VISIBLE : GONE);

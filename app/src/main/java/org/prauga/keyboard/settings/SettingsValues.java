@@ -32,11 +32,13 @@ import org.prauga.keyboard.RichInputMethodManager;
 import org.prauga.keyboard.blockedwords.BlockedWords;
 import org.prauga.keyboard.keytextsize.KeyTextSize;
 import org.prauga.keyboard.onehanded.OneHandedMode;
+import org.prauga.keyboard.toolbar.ToolbarKeys;
 import org.prauga.keyboard.utils.AsyncResultHolder;
 import org.prauga.keyboard.utils.ResourceUtils;
 import org.prauga.keyboard.utils.TargetPackageInfoGetterTask;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -83,6 +85,7 @@ public class SettingsValues {
     public final int mOneHandedMode;
     public final boolean mEmojiSuggestionsEnabled;
     public final float mKeyTextScale;
+    public final List<String> mToolbarKeys;
     public final boolean mUseContactsDict;
     public final boolean mUsePersonalizedDicts;
     public final boolean mUseDoubleSpacePeriod;
@@ -177,6 +180,7 @@ public class SettingsValues {
         mOneHandedMode = OneHandedMode.read(prefs);
         mEmojiSuggestionsEnabled = prefs.getBoolean(Settings.PREF_EMOJI_SUGGESTIONS, true);
         mKeyTextScale = KeyTextSize.read(prefs);
+        mToolbarKeys = ToolbarKeys.read(prefs);
         mUseContactsDict = prefs.getBoolean(Settings.PREF_KEY_USE_CONTACTS_DICT, true);
         mUsePersonalizedDicts = prefs.getBoolean(Settings.PREF_KEY_USE_PERSONALIZED_DICTS, true);
         mUseDoubleSpacePeriod = prefs.getBoolean(Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD, true)

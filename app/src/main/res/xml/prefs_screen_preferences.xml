@@ -48,6 +48,12 @@
         android:summary="@string/show_toolbar_summary"
         android:defaultValue="true"
         android:persistent="true" />
+    <Preference
+        android:fragment="org.prauga.keyboard.toolbar.ToolbarKeysSettingsFragment"
+        android:key="screen_toolbar_keys"
+        android:title="@string/toolbar_keys"
+        android:summary="@string/toolbar_keys_summary"
+        android:dependency="pref_show_toolbar" />
     <SwitchPreferenceCompat
         android:key="pref_show_longpress_hints"
         android:title="@string/show_longpress_hints"
