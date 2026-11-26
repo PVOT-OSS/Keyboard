@@ -928,7 +928,10 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     public void setInputView(final View view) {
         super.setInputView(view);
         view.setOnApplyWindowInsetsListener((v, insets) -> {
-            mNavigationBarInset = insets.getInsets(WindowInsets.Type.navigationBars()).bottom;
+            // The system's IME navigation bar (back and switcher) is reported as a caption bar.
+            mNavigationBarInset = Math.max(
+                    insets.getInsets(WindowInsets.Type.navigationBars()).bottom,
+                    insets.getInsets(WindowInsets.Type.captionBar()).bottom);
             updateNavigationBarColor();
             return insets;
         });
