@@ -82,6 +82,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         public void showTextEditing();
         public void toggleOneHandedMode();
         public void showKeyboardResize();
+        public void toggleIncognitoMode();
         public void removeSuggestion(SuggestedWordInfo word);
         public void onCodeInput(int primaryCode, int x, int y, boolean isKeyRepeat);
         public void toggleSplitKeyboard();
@@ -115,6 +116,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     private final ImageButton mToolbarFloatKey;
     private final View mToolbarOneHandedKey;
     private final View mToolbarResizeKey;
+    private final ImageButton mToolbarIncognitoKey;
     private final Map<String, View> mToolbarKeys = new HashMap<>();
     private List<String> mToolbarKeyOrder = Collections.emptyList();
     private final ColorStateList mPanelTint;
@@ -287,6 +289,10 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         mToolbarFloatKey = mToolbar.createKey(R.drawable.ic_floating_keyboard,
                 getToolKeyTintList(), R.string.spoken_description_float_keyboard,
                 () -> mListener.toggleFloatingKeyboard());
+        mToolbarIncognitoKey = mToolbar.createKey(R.drawable.ic_toolbar_incognito,
+                getToolKeyTintList(), R.string.incognito_mode,
+                () -> mListener.toggleIncognitoMode());
+        mToolbarKeys.put(ToolbarKeys.INCOGNITO, mToolbarIncognitoKey);
         mToolbarKeys.put(ToolbarKeys.CLIPBOARD, mToolbarClipboardKey);
         mToolbarKeys.put(ToolbarKeys.EDITING, mToolbarEditingKey);
         mToolbarKeys.put(ToolbarKeys.ONE_HANDED, mToolbarOneHandedKey);
@@ -336,6 +342,9 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
             mToolbar.setKeys(keys);
         }
         mIsIncognito = !currentSettingsValues.isPersonalizedLearningEnabled();
+        final boolean incognitoMode = currentSettingsValues.mIncognitoModeEnabled;
+        mToolbarIncognitoKey.setActivated(incognitoMode);
+        mToolbarIncognitoKey.setImageAlpha(incognitoMode ? TOOL_KEY_ALPHA_ON : TOOL_KEY_ALPHA_OFF);
         updateToolbarToggleKey();
         mToolbarToggleKey.setVisibility(mShowsToolbar ? VISIBLE : GONE);
         mFloatKey.setVisibility(mShowsToolbar ? GONE : VISIBLE);
@@ -360,6 +369,10 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         }
     }
 
+    public void refresh() {
+        updateVisibility(mShouldBeVisible, mIsFullscreenMode);
+    }
+
     public void setEmojiSearchListener(@Nonnull final EmojiSearchBar.Listener listener) {
         mEmojiSearchBar.setListener(listener);
     }
@@ -381,7 +394,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
             return;
         }
         mStripVisibilityGroup.mShowsEmojiSearch = false;
-        updateVisibility(mShouldBeVisible, mIsFullscreenMode);
+        refresh();
     }
 
     public void typeIntoEmojiSearch(@Nonnull final String text) {

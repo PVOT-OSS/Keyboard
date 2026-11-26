@@ -17,10 +17,12 @@ object ToolbarKeys {
     const val FLOAT = "float"
     const val EMOJI = "emoji"
     const val SETTINGS = "settings"
+    const val INCOGNITO = "incognito"
 
     private const val HIDDEN_PREFIX = "!"
     private const val SEPARATOR = ","
-    private val ALL = listOf(CLIPBOARD, EDITING, ONE_HANDED, RESIZE, FLOAT, EMOJI, SETTINGS)
+    private val ALL = listOf(CLIPBOARD, EDITING, ONE_HANDED, RESIZE, FLOAT, EMOJI, SETTINGS, INCOGNITO)
+    private val HIDDEN_BY_DEFAULT = setOf(INCOGNITO)
 
     data class Entry(val id: String, val shown: Boolean)
 
@@ -46,7 +48,7 @@ object ToolbarKeys {
         }
         for (id in ALL) {
             if (entries.none { it.id == id }) {
-                entries.add(Entry(id, true))
+                entries.add(Entry(id, id !in HIDDEN_BY_DEFAULT))
             }
         }
         return entries

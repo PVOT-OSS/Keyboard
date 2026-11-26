@@ -90,6 +90,7 @@ public class SettingsValues {
     public final List<String> mToolbarKeys;
     public final boolean mMultilingualTypingEnabled;
     public final boolean mKeyBordersEnabled;
+    public final boolean mIncognitoModeEnabled;
     public final boolean mUseContactsDict;
     public final boolean mUsePersonalizedDicts;
     public final boolean mUseDoubleSpacePeriod;
@@ -188,6 +189,7 @@ public class SettingsValues {
         mMultilingualTypingEnabled =
                 prefs.getBoolean(MultilingualLocales.PREF_MULTILINGUAL_TYPING, true);
         mKeyBordersEnabled = prefs.getBoolean(BorderlessKeyBackground.PREF_KEY_BORDERS, true);
+        mIncognitoModeEnabled = prefs.getBoolean(Settings.PREF_INCOGNITO_MODE, false);
         mUseContactsDict = prefs.getBoolean(Settings.PREF_KEY_USE_CONTACTS_DICT, true);
         mUsePersonalizedDicts = prefs.getBoolean(Settings.PREF_KEY_USE_PERSONALIZED_DICTS, true);
         mUseDoubleSpacePeriod = prefs.getBoolean(Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD, true)
@@ -354,7 +356,8 @@ public class SettingsValues {
     }
 
     public boolean isPersonalizedLearningEnabled() {
-        return !mInputAttributes.mNoPersonalizedLearning && !mInputAttributes.mIsPasswordField;
+        return !mInputAttributes.mNoPersonalizedLearning && !mInputAttributes.mIsPasswordField
+                && !mIncognitoModeEnabled;
     }
 
     private static final String SUGGESTIONS_VISIBILITY_HIDE_VALUE_OBSOLETE = "2";

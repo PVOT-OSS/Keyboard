@@ -10,12 +10,13 @@ import org.junit.Test
 
 class ToolbarKeysTest {
     @Test
-    fun defaultShowsEveryKeyInTheStandardOrder() {
+    fun defaultShowsTheStandardKeysAndHidesIncognito() {
+        val entries = ToolbarKeys.parse(null)
         assertEquals(
-            listOf("clipboard", "editing", "one_handed", "resize", "float", "emoji", "settings"),
-            ToolbarKeys.parse(null).map { it.id },
+            listOf("clipboard", "editing", "one_handed", "resize", "float", "emoji", "settings", "incognito"),
+            entries.map { it.id },
         )
-        assertEquals(true, ToolbarKeys.parse(null).all { it.shown })
+        assertEquals(listOf("incognito"), entries.filter { !it.shown }.map { it.id })
     }
 
     @Test
@@ -30,7 +31,7 @@ class ToolbarKeysTest {
     fun unknownAndDuplicateKeysAreDroppedAndMissingOnesAppended() {
         val ids = ToolbarKeys.parse("emoji,gif,emoji").map { it.id }
         assertEquals("emoji", ids[0])
-        assertEquals(7, ids.size)
+        assertEquals(8, ids.size)
         assertEquals(ids.distinct(), ids)
     }
 }

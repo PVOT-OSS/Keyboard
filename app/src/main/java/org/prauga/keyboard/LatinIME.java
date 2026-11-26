@@ -31,6 +31,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -1609,6 +1610,17 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     @Override
     public void onTextEditingClose() {
         mKeyboardSwitcher.hidePanels();
+    }
+
+    @Override
+    public void toggleIncognitoMode() {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean(Settings.PREF_INCOGNITO_MODE,
+                !prefs.getBoolean(Settings.PREF_INCOGNITO_MODE, false)).apply();
+        loadSettings();
+        if (hasSuggestionStripView()) {
+            mSuggestionStripView.refresh();
+        }
     }
 
     @Override
