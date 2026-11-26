@@ -55,8 +55,8 @@ class ClipImageProvider : ContentProvider() {
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?) = 0
 
     private fun fileFor(uri: Uri): File? {
-        val context = context ?: return null
-        val name = uri.lastPathSegment ?: return null
-        return ClipImages.fileFor(context, name)
+        val context = context
+        val name = uri.lastPathSegment
+        return if (context != null && name != null) ClipImages.fileFor(context, name) else null
     }
 }

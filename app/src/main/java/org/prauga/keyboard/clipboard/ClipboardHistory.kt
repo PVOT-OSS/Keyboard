@@ -30,34 +30,28 @@ class ClipboardHistory {
         now: Long,
         mimeType: String? = null,
     ): Boolean {
-        if (
-            clipText == null ||
-                isSensitive ||
-                now - timestamp > UNPINNED_LIFETIME_MS ||
-                timestamp <= forgottenTimestamp
-        ) {
-            return false
-        }
-        val text = clipText.toString()
-        if (text.isBlank()) {
-            return false
-        }
-        var pinned = false
-        var shortcut: String? = null
+        val text =
+            clipText?.toString()?.takeIf {
+                it.isNotBlank() && isAcceptable(timestamp, isSensitive, now)
+            } ?: return false
         val index = indexOf(text)
-        if (index >= 0) {
-            val existing = items[index]
-            if (existing.timestamp >= timestamp) {
-                return false
+        val existing = items.getOrNull(index)
+        val newer = existing == null || existing.timestamp < timestamp
+        if (newer) {
+            if (existing != null) {
+                items.removeAt(index)
             }
-            pinned = existing.pinned
-            shortcut = existing.shortcut
-            items.removeAt(index)
+            items.add(
+                0,
+                Item(text, timestamp, existing?.pinned ?: false, existing?.shortcut, mimeType),
+            )
+            trimToMaxItems()
         }
-        items.add(0, Item(text, timestamp, pinned, shortcut, mimeType))
-        trimToMaxItems()
-        return true
+        return newer
     }
+
+    private fun isAcceptable(timestamp: Long, isSensitive: Boolean, now: Long): Boolean =
+        !isSensitive && now - timestamp <= UNPINNED_LIFETIME_MS && timestamp > forgottenTimestamp
 
     fun restorePinned(pinnedItems: List<Item>) {
         for (item in pinnedItems) {
