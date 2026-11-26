@@ -134,4 +134,18 @@
     <string name="remove_suggestion_title">Remove \u201c<xliff:g id="word" example="hello">%1$s</xliff:g>\u201d from suggestions?</string>
     <string name="remove_suggestion_message">It will not be suggested again. You can unblock it in Text correction, Blocked words.</string>
     <string name="blocked_words_unblock_title">Unblock “<xliff:g id="word" example="hello">%1$s</xliff:g>”?</string>
+    <string name="settings_group_keys">Keys</string>
+    <string name="settings_group_toolbar">Toolbar</string>
+    <string name="settings_group_feedback">Key press</string>
+    <string name="settings_group_look">Look</string>
+    <string name="settings_group_layout">Layout</string>
+    <string name="settings_group_dictionaries">Dictionaries</string>
+    <string name="settings_group_corrections">Corrections</string>
+    <string name="settings_group_suggestions">Suggestions</string>
+    <string name="settings_group_clipboard">Clipboard</string>
+    <string name="settings_group_timing">Timing</string>
+    <string name="settings_group_keyboard">Keyboard</string>
+    <string name="settings_group_other">Other</string>
+    <string name="custom_input_style_remove_title">Remove “<xliff:g id="style" example="English (US) (Colemak)">%1$s</xliff:g>”?</string>
+    <string name="custom_input_styles_empty">No custom input styles</string>
 </resources>

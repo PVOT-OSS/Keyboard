@@ -109,7 +109,7 @@
         </activity>
 
         <activity android:name=".settings.SettingsActivity"
-             android:theme="@style/Theme.SettingsLib"
+             android:theme="@style/PvotTheme"
              android:label="@string/english_ime_settings"
              android:exported="true">
             <intent-filter>
@@ -118,7 +118,7 @@
         </activity>
 
         <activity android:name=".spellcheck.SpellCheckerSettingsActivity"
-             android:theme="@style/Theme.SettingsLib"
+             android:theme="@style/PvotTheme"
              android:label="@string/android_spell_checker_settings"
              android:exported="true">
             <intent-filter>
@@ -136,10 +136,6 @@
              android:excludeFromRecents="true"
              android:exported="false"/>
 
-        <!-- Unexported activity used for tests. -->
-        <activity android:name=".settings.TestFragmentActivity"
-             android:theme="@style/Theme.SettingsLib"
-             android:exported="false"/>
 
         <!-- Broadcast receivers -->
         <receiver android:name="SystemBroadcastReceiver"
