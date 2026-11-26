@@ -5,16 +5,9 @@
 
 package org.prauga.keyboard.settings.ui
 
-import android.content.Context
-import android.text.InputType
-import android.view.ContextThemeWrapper
-import android.view.View
-import android.view.inputmethod.EditorInfo
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -24,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.integerArrayResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
@@ -34,20 +26,14 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.prauga.pvot.designsystem.components.PvotCard
 import com.prauga.pvot.designsystem.components.PvotSubScreen
 import com.prauga.pvot.designsystem.theme.PvotShapes
 import com.prauga.pvot.designsystem.theme.PvotSpacing
 import com.prauga.pvot.designsystem.R as PvotR
 import org.prauga.keyboard.R
-import org.prauga.keyboard.RichInputMethodManager
-import org.prauga.keyboard.keyboard.KeyboardId
-import org.prauga.keyboard.keyboard.KeyboardLayoutSet
-import org.prauga.keyboard.keyboard.KeyboardTheme
-import org.prauga.keyboard.keyboard.KeyboardView
+import org.prauga.keyboard.preview.KeyboardPreview
 import org.prauga.keyboard.settings.data.SettingsSnapshot
-import org.prauga.keyboard.utils.SubtypeLocaleUtils
 
 @Composable
 internal fun ThemeScreen(
@@ -113,38 +99,5 @@ private fun ThemeCard(
     }
 }
 
-@Composable
-private fun KeyboardPreview(themeId: Int, modifier: Modifier = Modifier) {
-    BoxWithConstraints(modifier.fillMaxWidth()) {
-        val width = constraints.maxWidth
-        val height = (width * PREVIEW_ASPECT).toInt()
-        val heightDp = with(LocalDensity.current) { height.toDp() }
-        AndroidView(
-            factory = { context -> previewView(context, themeId, width, height) },
-            modifier = Modifier.fillMaxWidth().height(heightDp),
-        )
-    }
-}
-
-private fun previewView(context: Context, themeId: Int, width: Int, height: Int): View {
-    val themed = ContextThemeWrapper(context, KeyboardTheme.getStyleId(context, themeId))
-    RichInputMethodManager.init(context)
-    SubtypeLocaleUtils.init(context)
-    // Cached keyboards are keyed by layout and size but not by theme.
-    KeyboardLayoutSet.onKeyboardThemeChanged()
-    val editorInfo = EditorInfo().apply { inputType = InputType.TYPE_CLASS_TEXT }
-    val keyboard =
-        KeyboardLayoutSet.Builder(themed, editorInfo)
-            .setKeyboardGeometry(width, height)
-            .setSubtype(RichInputMethodManager.getInstance().currentSubtype)
-            .build()
-            .getKeyboard(KeyboardId.ELEMENT_ALPHABET)
-    return KeyboardView(themed, null).apply {
-        setKeyboard(keyboard)
-        importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
-    }
-}
-
-private const val PREVIEW_ASPECT = 0.62f
 private val SELECTED_BORDER = 2.dp
 private val CHECK_SIZE = 24.dp

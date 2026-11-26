@@ -99,7 +99,7 @@
         </activity>
 
         <activity android:name=".setup.SetupWizardActivity"
-             android:theme="@style/platformActivityTheme"
+             android:theme="@style/PvotTheme"
              android:label="@string/english_ime_name"
              android:clearTaskOnLaunch="true"
              android:exported="true">
