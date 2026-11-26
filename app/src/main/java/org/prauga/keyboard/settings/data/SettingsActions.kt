@@ -5,52 +5,18 @@
 
 package org.prauga.keyboard.settings.data
 
-import android.content.Context
-import android.media.AudioManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.prauga.keyboard.AudioAndHapticFeedbackManager
-import org.prauga.keyboard.clipboard.ClipboardHistoryManager
-import org.prauga.keyboard.personalization.PersonalizationHelper
-import org.prauga.keyboard.photo.KeyboardPhoto
-import org.prauga.keyboard.stats.TypingStats
+internal interface SettingsActions {
+    suspend fun removePhoto()
 
-internal class SettingsActions(context: Context) {
+    fun clearClipboard()
 
-    private val context: Context = context.applicationContext
+    suspend fun clearLearnedWords()
 
-    suspend fun removePhoto() = withContext(Dispatchers.IO) { KeyboardPhoto.remove(context) }
+    suspend fun resetStats()
 
-    fun clearClipboard() {
-        ClipboardHistoryManager.getInstance(context).clearAll()
-    }
+    suspend fun readDocument(path: String): String
 
-    suspend fun clearLearnedWords() =
-        withContext(Dispatchers.IO) {
-            PersonalizationHelper.removeAllUserHistoryDictionaries(context)
-        }
+    fun playKeySound(percent: Int)
 
-    suspend fun resetStats() = withContext(Dispatchers.IO) { TypingStats.reset(context) }
-
-    suspend fun readDocument(path: String): String =
-        withContext(Dispatchers.IO) {
-            val text = context.assets.open(path).bufferedReader().use { it.readText() }
-            text.trim().split(PARAGRAPH_BREAK).joinToString("\n\n") { paragraph ->
-                paragraph.lines().joinToString(" ") { it.trim() }
-            }
-        }
-
-    fun playKeySound(percent: Int) {
-        val audio = context.getSystemService(AudioManager::class.java) ?: return
-        audio.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, percent / PERCENT)
-    }
-
-    fun vibrate(milliseconds: Int) {
-        AudioAndHapticFeedbackManager.init(context)
-        AudioAndHapticFeedbackManager.getInstance().vibrate(milliseconds.toLong())
-    }
-
-    private companion object {
-        val PARAGRAPH_BREAK = Regex("\\n\\s*\\n")
-    }
+    fun vibrate(milliseconds: Int)
 }

@@ -29,12 +29,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.prauga.pvot.coreui.UiState
 import org.prauga.keyboard.R
-import org.prauga.keyboard.settings.data.InputStylesRepository
-import org.prauga.keyboard.settings.data.SettingsActions
-import org.prauga.keyboard.settings.data.SettingsRepository
+import org.prauga.keyboard.settings.data.DeviceSettingsActions
+import org.prauga.keyboard.settings.data.PreferenceSettingsRepository
+import org.prauga.keyboard.settings.data.PreferenceSettingsWriter
 import org.prauga.keyboard.settings.data.SettingsSnapshot
-import org.prauga.keyboard.settings.data.SettingsWriter
 import org.prauga.keyboard.settings.data.StyleChoices
+import org.prauga.keyboard.settings.data.SystemInputStylesRepository
 import org.prauga.keyboard.utils.IntentUtils
 
 internal enum class SettingsRoute {
@@ -160,12 +160,12 @@ private fun SettingsRouteContent(
 internal fun settingsViewModel(): SettingsViewModel {
     val context = LocalContext.current.applicationContext
     return viewModel {
-        val styles = InputStylesRepository(context)
+        val styles = SystemInputStylesRepository(context)
         SettingsViewModel(
-            SettingsRepository(context, styles),
-            SettingsWriter(context),
+            PreferenceSettingsRepository(context, styles),
+            PreferenceSettingsWriter(context),
             styles,
-            SettingsActions(context),
+            DeviceSettingsActions(context),
         )
     }
 }
