@@ -1,7 +1,11 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.pvot.android.compose)
 }
+
+val releaseKeystore = rootProject.file("keystore.properties")
 
 android {
     namespace = "org.prauga.keyboard"
@@ -28,6 +32,15 @@ android {
         getByName("debug") {
             storeFile = file("shared.keystore")
         }
+        if (releaseKeystore.exists()) {
+            val keystore = Properties().apply { releaseKeystore.inputStream().use { load(it) } }
+            create("release") {
+                storeFile = rootProject.file(keystore.getProperty("storeFile"))
+                storePassword = keystore.getProperty("storePassword")
+                keyAlias = keystore.getProperty("keyAlias")
+                keyPassword = keystore.getProperty("keyPassword")
+            }
+        }
     }
 
     buildTypes {
@@ -37,7 +50,7 @@ android {
         }
         release {
             isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -95,4 +108,12 @@ dependencies {
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.uiautomator)
     androidTestImplementation(libs.androidx.annotation)
+}
+
+tasks.matching { it.name == "bundleRelease" }.configureEach {
+    doFirst {
+        check(releaseKeystore.exists()) {
+            "keystore.properties is missing: a Play bundle must be signed with the upload key"
+        }
+    }
 }

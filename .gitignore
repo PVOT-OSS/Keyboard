@@ -6,3 +6,7 @@
 *.iml
 build/
 local.properties
+
+# Release signing
+keystore.properties
+*.jks
