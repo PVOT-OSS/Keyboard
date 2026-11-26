@@ -75,9 +75,12 @@ class StripTextField(context: Context, attrs: AttributeSet?) : LinearLayout(cont
         textView.hint = if (text.isEmpty()) resources.getString(client.hint) else null
         results.removeAllViews()
         scroller.scrollTo(0, 0)
-        if (text.isBlank()) {
-            return
+        if (text.isNotBlank()) {
+            showResults(client)
         }
+    }
+
+    private fun showResults(client: StripTextFieldClient) {
         val found = client.results(text.toString())
         if (found.isEmpty()) {
             results.addView(

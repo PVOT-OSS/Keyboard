@@ -18,20 +18,11 @@ object MultilingualLocales {
         scriptOf: (Locale) -> Int,
     ): List<Locale> {
         val script = scriptOf(primary)
-        val result = ArrayList<Locale>()
-        for (locale in enabled) {
-            if (
-                locale.language == primary.language || result.any { it.language == locale.language }
-            ) {
-                continue
-            }
-            if (scriptOf(locale) == script) {
-                result.add(locale)
-            }
-            if (result.size == MAX_SECONDARY) {
-                break
-            }
-        }
-        return result
+        return enabled
+            .asSequence()
+            .filter { it.language != primary.language && scriptOf(it) == script }
+            .distinctBy { it.language }
+            .take(MAX_SECONDARY)
+            .toList()
     }
 }

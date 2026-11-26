@@ -61,7 +61,8 @@ class OneHandedSideView(context: Context, attrs: AttributeSet?) : LinearLayout(c
 
     private fun syncWithKeyboard() {
         val keyboard = keyboardView
-        if (keyboard == null || mode == OneHandedMode.OFF || sideWidth <= 0 || !keyboard.isShown) {
+        val hidden = mode == OneHandedMode.OFF || sideWidth <= 0 || keyboard?.isShown != true
+        if (keyboard == null || hidden) {
             if (visibility != GONE) {
                 visibility = GONE
             }
@@ -76,12 +77,12 @@ class OneHandedSideView(context: Context, attrs: AttributeSet?) : LinearLayout(c
                 keyboardRect.left
             }
         val params = layoutParams as FrameLayout.LayoutParams
-        if (
-            params.width != sideWidth ||
-                params.height != keyboardRect.height() ||
-                params.leftMargin != left ||
-                params.topMargin != keyboardRect.top
-        ) {
+        val placed =
+            params.width == sideWidth &&
+                params.height == keyboardRect.height() &&
+                params.leftMargin == left &&
+                params.topMargin == keyboardRect.top
+        if (!placed) {
             params.width = sideWidth
             params.height = keyboardRect.height()
             params.leftMargin = left

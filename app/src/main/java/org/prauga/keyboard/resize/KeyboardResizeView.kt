@@ -115,12 +115,12 @@ class KeyboardResizeView(context: Context, attrs: AttributeSet?) : LinearLayout(
         keyboardRect.set(0, 0, keyboard.width, keyboard.height)
         (parent as ViewGroup).offsetDescendantRectToMyCoords(keyboard, keyboardRect)
         val params = layoutParams as FrameLayout.LayoutParams
-        if (
-            params.width != keyboardRect.width() ||
-                params.height != keyboardRect.height() ||
-                params.leftMargin != keyboardRect.left ||
-                params.topMargin != keyboardRect.top
-        ) {
+        val placed =
+            params.width == keyboardRect.width() &&
+                params.height == keyboardRect.height() &&
+                params.leftMargin == keyboardRect.left &&
+                params.topMargin == keyboardRect.top
+        if (!placed) {
             params.width = keyboardRect.width()
             params.height = keyboardRect.height()
             params.leftMargin = keyboardRect.left

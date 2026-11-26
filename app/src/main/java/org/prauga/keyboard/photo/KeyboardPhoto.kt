@@ -38,42 +38,47 @@ object KeyboardPhoto {
     fun newDrawable(context: Context): Drawable? {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val version = version(prefs)
-        if (version == 0L) {
-            return null
-        }
-        if (version != cachedVersion || cachedBitmap == null) {
+        if (version != 0L && (version != cachedVersion || cachedBitmap == null)) {
             cachedBitmap = BitmapFactory.decodeFile(file(context).path)
             cachedVersion = version
         }
-        val bitmap = cachedBitmap ?: return null
+        val bitmap = cachedBitmap?.takeIf { version != 0L } ?: return null
         return PhotoDrawable(bitmap, dimAlpha(prefs.getString(PREF_PHOTO_DARKNESS, null)))
     }
 
     fun save(context: Context, source: Uri): Boolean {
-        val bitmap =
-            try {
-                decodeScaled(context, source)
-            } catch (e: IOException) {
-                Log.w(TAG, "Cannot read the photo", e)
-                null
-            } catch (e: SecurityException) {
-                Log.w(TAG, "Cannot read the photo", e)
-                null
-            } ?: return false
+        val bitmap = readScaled(context, source)
+        val saved = bitmap != null && write(context, bitmap)
+        if (saved) {
+            PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putLong(PREF_PHOTO_VERSION, System.currentTimeMillis())
+                .apply()
+        }
+        return saved
+    }
+
+    private fun readScaled(context: Context, source: Uri): Bitmap? =
+        try {
+            decodeScaled(context, source)
+        } catch (e: IOException) {
+            Log.w(TAG, "Cannot read the photo", e)
+            null
+        } catch (e: SecurityException) {
+            Log.w(TAG, "Cannot read the photo", e)
+            null
+        }
+
+    private fun write(context: Context, bitmap: Bitmap): Boolean =
         try {
             file(context).outputStream().use {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, it)
             }
+            true
         } catch (e: IOException) {
             Log.w(TAG, "Cannot save the photo", e)
-            return false
+            false
         }
-        PreferenceManager.getDefaultSharedPreferences(context)
-            .edit()
-            .putLong(PREF_PHOTO_VERSION, System.currentTimeMillis())
-            .apply()
-        return true
-    }
 
     fun remove(context: Context) {
         if (!file(context).delete()) {
