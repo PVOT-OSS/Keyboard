@@ -42,12 +42,16 @@ import org.prauga.keyboard.preview.KeyboardPreview
 import org.prauga.keyboard.setup.SetupStep
 
 @Composable
-internal fun SetupWizardScreen(state: SetupUiState, appName: String, actions: SetupActions) {
+internal fun SetupWizardScreen(
+    state: SetupUiState,
+    appName: String,
+    onEvent: (SetupEvent) -> Unit,
+) {
     val step = state.step ?: return
     if (state.welcome) {
-        WelcomeScreen(appName, actions.onStart)
+        WelcomeScreen(appName) { onEvent(SetupEvent.Start) }
     } else {
-        StepsScreen(step, appName, actions)
+        StepsScreen(step, appName, onEvent)
     }
 }
 
@@ -87,8 +91,11 @@ private fun WelcomeScreen(appName: String, onStart: () -> Unit) {
 }
 
 @Composable
-private fun StepsScreen(step: SetupStep, appName: String, actions: SetupActions) {
-    PvotSubScreen(stringResource(R.string.setup_steps_title, appName), actions.onFinish) {
+private fun StepsScreen(step: SetupStep, appName: String, onEvent: (SetupEvent) -> Unit) {
+    PvotSubScreen(
+        stringResource(R.string.setup_steps_title, appName),
+        { onEvent(SetupEvent.Finish) },
+    ) {
         item {
             StepCard(
                 number = 1,
@@ -104,7 +111,7 @@ private fun StepsScreen(step: SetupStep, appName: String, actions: SetupActions)
             ) {
                 PvotButton(
                     text = stringResource(R.string.setup_step1_action),
-                    onClick = actions.onEnable,
+                    onClick = { onEvent(SetupEvent.EnableKeyboard) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -119,7 +126,7 @@ private fun StepsScreen(step: SetupStep, appName: String, actions: SetupActions)
             ) {
                 PvotButton(
                     text = stringResource(R.string.setup_step2_action),
-                    onClick = actions.onSwitch,
+                    onClick = { onEvent(SetupEvent.SwitchKeyboard) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -132,25 +139,25 @@ private fun StepsScreen(step: SetupStep, appName: String, actions: SetupActions)
                 title = stringResource(R.string.setup_step3_title),
                 text = stringResource(R.string.setup_step3_instruction, appName),
             ) {
-                FinishButtons(actions)
+                FinishButtons(onEvent)
             }
         }
     }
 }
 
 @Composable
-private fun FinishButtons(actions: SetupActions, modifier: Modifier = Modifier) {
+private fun FinishButtons(onEvent: (SetupEvent) -> Unit, modifier: Modifier = Modifier) {
     Column(modifier) {
         PvotButton(
             text = stringResource(R.string.setup_step3_action),
-            onClick = actions.onLanguages,
+            onClick = { onEvent(SetupEvent.ConfigureLanguages) },
             style = PvotButtonStyle.Tonal,
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(PvotSpacing.S))
         PvotButton(
             text = stringResource(R.string.setup_finish_action),
-            onClick = actions.onFinish,
+            onClick = { onEvent(SetupEvent.Finish) },
             modifier = Modifier.fillMaxWidth(),
         )
     }

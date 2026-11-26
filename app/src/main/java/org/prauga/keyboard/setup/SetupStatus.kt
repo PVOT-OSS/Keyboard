@@ -17,7 +17,13 @@ internal enum class SetupStep {
     DONE,
 }
 
-internal class SetupStatus(context: Context) {
+internal interface SetupStatusSource {
+    suspend fun current(): SetupStep
+
+    suspend fun imeId(): String?
+}
+
+internal class SetupStatus(context: Context) : SetupStatusSource {
 
     private val context: Context = context.applicationContext
     private val imm: InputMethodManager =
@@ -25,12 +31,12 @@ internal class SetupStatus(context: Context) {
             "No InputMethodManager"
         }
 
-    suspend fun imeId(): String? =
+    override suspend fun imeId(): String? =
         withContext(Dispatchers.IO) {
             UncachedInputMethodManagerUtils.getInputMethodInfoOf(context.packageName, imm)?.id
         }
 
-    suspend fun current(): SetupStep =
+    override suspend fun current(): SetupStep =
         withContext(Dispatchers.IO) {
             when {
                 !UncachedInputMethodManagerUtils.isThisImeEnabled(context, imm) -> SetupStep.ENABLE
