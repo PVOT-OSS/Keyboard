@@ -51,6 +51,7 @@ import org.prauga.keyboard.common.InputPointers;
 import org.prauga.keyboard.common.StringUtils;
 import org.prauga.keyboard.define.DebugFlags;
 import org.prauga.keyboard.settings.SettingsValues;
+import org.prauga.keyboard.stats.TypingStats;
 import org.prauga.keyboard.settings.SettingsValuesForSuggestion;
 import org.prauga.keyboard.settings.SpacingAndPunctuations;
 import org.prauga.keyboard.suggestions.SuggestionStripViewAccessor;
@@ -2226,6 +2227,10 @@ public final class InputLogic {
         // what user typed. Note: currently this is done much later in
         // LastComposedWord#didCommitTypedWord by string equality of the remembered
         // strings.
+        if (settingsValues.isPersonalizedLearningEnabled()) {
+            TypingStats.record(mLatinIME, mWordComposer.getTypedWord(), chosenWord, commitType,
+                    mWordComposer.isBatchMode());
+        }
         mLastComposedWord = mWordComposer.commitWord(commitType,
                 chosenWordWithSuggestions, separatorString, ngramContext);
         if (DebugFlags.DEBUG_ENABLED) {

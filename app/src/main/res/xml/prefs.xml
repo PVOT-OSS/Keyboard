@@ -39,6 +39,11 @@
         android:key="screen_correction"
         android:icon="@drawable/ic_settings_spellcheck" />
     <Preference
+        android:fragment="org.prauga.keyboard.stats.TypingStatsFragment"
+        android:title="@string/typing_stats"
+        android:key="screen_typing_stats"
+        android:icon="@drawable/ic_settings_stats" />
+    <Preference
         android:fragment="org.prauga.keyboard.settings.AdvancedSettingsFragment"
         android:title="@string/settings_screen_advanced"
         android:key="screen_advanced"

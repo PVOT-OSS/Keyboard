@@ -122,6 +122,7 @@ import org.prauga.keyboard.personalization.PersonalizationHelper;
 import org.prauga.keyboard.settings.Settings;
 import org.prauga.keyboard.settings.SettingsActivity;
 import org.prauga.keyboard.settings.SettingsValues;
+import org.prauga.keyboard.stats.TypingStats;
 import org.prauga.keyboard.suggestions.SuggestionStripView;
 import org.prauga.keyboard.textfield.StripTextField;
 import org.prauga.keyboard.textfield.StripTextFieldClient;
@@ -1220,6 +1221,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     void onFinishInputViewInternal(final boolean finishingInput) {
         super.onFinishInputView(finishingInput);
         mClipboardSuggestionMonitor.stop();
+        TypingStats.flush();
         cleanupInternalStateForFinishInput();
     }
 

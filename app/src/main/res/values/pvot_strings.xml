@@ -65,6 +65,14 @@
     <string name="space_inserts_prediction_summary">Before you start typing a word, space inserts the middle prediction</string>
     <string name="auto_space_after_punctuation">Auto-space after punctuation</string>
     <string name="auto_space_after_punctuation_summary">Add a space when you start a word right after . , ! ? ; or :</string>
+    <string name="typing_stats">Typing stats</string>
+    <string name="typing_stats_words">Words typed</string>
+    <string name="typing_stats_glided">Words glided</string>
+    <string name="typing_stats_autocorrections">Autocorrections</string>
+    <string name="typing_stats_keystrokes_saved">Keystrokes saved</string>
+    <string name="typing_stats_reset">Reset typing stats</string>
+    <string name="typing_stats_reset_confirm">Reset</string>
+    <string name="typing_stats_privacy">Counted on this device only, never in incognito or private fields</string>
     <string name="multilingual_typing">Multilingual typing</string>
     <string name="multilingual_typing_summary">Suggest words from your other languages without switching</string>
     <string name="toolbar_keys_summary">Choose and order the keys in the toolbar</string>
