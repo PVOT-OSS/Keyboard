@@ -121,6 +121,7 @@ import org.prauga.keyboard.common.InputPointers;
 import org.prauga.keyboard.define.DebugFlags;
 import org.prauga.keyboard.define.ProductionFlags;
 import org.prauga.keyboard.inputlogic.InputLogic;
+import org.prauga.keyboard.insets.BottomStripDrawable;
 import org.prauga.keyboard.permissions.PermissionsManager;
 import org.prauga.keyboard.personalization.PersonalizationHelper;
 import org.prauga.keyboard.settings.Settings;
@@ -2745,8 +2746,10 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
             // Since Android 15 the keyboard draws behind the navigation bar and has to fill it.
             mInputView.setPadding(mInputView.getPaddingLeft(), mInputView.getPaddingTop(),
                     mInputView.getPaddingRight(), isFloating ? 0 : mNavigationBarInset);
-            mInputView.setBackgroundColor(!isFloating && bg instanceof ColorDrawable
-                    ? ((ColorDrawable) bg).getColor() : Color.TRANSPARENT);
+            mInputView.setBackground(!isFloating && bg instanceof ColorDrawable
+                    && mNavigationBarInset > 0
+                    ? new BottomStripDrawable(((ColorDrawable) bg).getColor(), mNavigationBarInset)
+                    : null);
             final WindowInsetsController insetsController = w.getInsetsController();
             if (insetsController != null) {
                 if (isFloating) {
