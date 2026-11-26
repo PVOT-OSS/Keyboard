@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <color name="keyboard_background_high_contrast">#FF000000</color>
+    <color name="key_text_color_high_contrast">#FFFFFFFF</color>
+    <color name="key_hint_color_high_contrast">#FFE0E0E0</color>
+    <color name="key_border_high_contrast">#FFFFFFFF</color>
+    <color name="key_pressed_high_contrast">#FF555555</color>
+</resources>

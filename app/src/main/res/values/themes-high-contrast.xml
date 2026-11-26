@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <style name="KeyboardTheme.HighContrast" parent="KeyboardTheme.OLED">
+        <item name="keyIconTint">@color/key_text_color_high_contrast</item>
+        <item name="keyboardViewStyle">@style/KeyboardView.HighContrast</item>
+        <item name="mainKeyboardViewStyle">@style/MainKeyboardView.HighContrast</item>
+        <item name="moreKeysKeyboardViewStyle">@style/MoreKeysKeyboardView.HighContrast</item>
+        <item name="suggestionStripViewStyle">@style/SuggestionStripView.HighContrast</item>
+        <item name="suggestionWordStyle">@style/SuggestionWord.HighContrast</item>
+    </style>
+
+    <style name="SuggestionWord.HighContrast" parent="SuggestionWord.OLED">
+        <item name="android:textColor">@color/key_text_color_high_contrast</item>
+    </style>
+
+    <style name="KeyboardView.HighContrast" parent="KeyboardView.OLED">
+        <item name="android:background">@color/keyboard_background_high_contrast</item>
+        <item name="keyBackground">@drawable/btn_keyboard_key_high_contrast</item>
+        <item name="functionalKeyBackground">@drawable/btn_keyboard_key_high_contrast</item>
+        <item name="spacebarBackground">@drawable/btn_keyboard_key_high_contrast</item>
+        <item name="keyTextColor">@color/key_text_color_high_contrast</item>
+        <item name="functionalTextColor">@color/key_text_color_high_contrast</item>
+        <item name="keyHintLetterColor">@color/key_hint_color_high_contrast</item>
+        <item name="keyHintLabelColor">@color/key_hint_color_high_contrast</item>
+        <item name="keyShiftedLetterHintActivatedColor">@color/key_text_color_high_contrast</item>
+        <item name="keyPreviewTextColor">@color/key_text_color_high_contrast</item>
+    </style>
+
+    <style name="MainKeyboardView.HighContrast" parent="KeyboardView.HighContrast">
+        <item name="moreKeysKeyboardForActionLayout">@layout/more_keys_keyboard_for_action_lxx</item>
+        <item name="keyPreviewBackground">@drawable/keyboard_key_feedback_oled</item>
+        <item name="keyPreviewHeight">@dimen/config_key_preview_height_you</item>
+        <item name="keyPreviewOffset">@dimen/config_key_preview_offset_you</item>
+        <item name="keyPreviewShowUpAnimator">@anim/key_preview_show_up_lxx</item>
+        <item name="keyPreviewDismissAnimator">@anim/key_preview_dismiss_lxx</item>
+        <item name="gestureFloatingPreviewTextColor">@color/gesture_floating_preview_text_color_oled</item>
+        <item name="gestureFloatingPreviewColor">@color/gesture_floating_preview_color_oled</item>
+        <item name="gestureTrailColor">@color/key_text_color_high_contrast</item>
+        <item name="slidingKeyInputPreviewColor">@color/sliding_key_input_preview_color_oled</item>
+        <item name="languageOnSpacebarTextColor">@color/key_hint_color_high_contrast</item>
+        <item name="languageOnSpacebarTextShadowRadius">-1.0</item>
+    </style>
+
+    <style name="MoreKeysKeyboardView.HighContrast" parent="MoreKeysKeyboardView.OLED">
+        <item name="android:background">@drawable/btn_keyboard_key_normal_high_contrast</item>
+        <item name="keyBackground">@drawable/btn_keyboard_key_high_contrast</item>
+        <item name="keyTextColor">@color/key_text_color_high_contrast</item>
+    </style>
+
+    <style name="SuggestionStripView.HighContrast" parent="SuggestionStripView.OLED">
+        <item name="android:background">@color/keyboard_background_high_contrast</item>
+        <item name="colorValidTypedWord">@color/key_text_color_high_contrast</item>
+        <item name="colorTypedWord">@color/key_text_color_high_contrast</item>
+        <item name="colorAutoCorrect">@color/key_text_color_high_contrast</item>
+        <item name="colorSuggested">@color/key_text_color_high_contrast</item>
+    </style>
+</resources>

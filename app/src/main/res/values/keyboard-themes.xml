@@ -25,6 +25,7 @@
         <item>@string/keyboard_theme_material_follow_system</item>
         <item>@string/keyboard_theme_material_you</item>
         <item>@string/keyboard_theme_oled</item>
+        <item>@string/keyboard_theme_high_contrast</item>
     </string-array>
     <!-- An element must be a keyboard theme id of
          {@link org.prauga.keyboard.keyboard.KeyboardTheme#THEME_ID_ICS} etc. -->
@@ -34,5 +35,6 @@
         <item>5</item>
         <item>6</item>
         <item>7</item>
+        <item>8</item>
     </integer-array>
 </resources>

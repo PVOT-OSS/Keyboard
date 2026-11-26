@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+     SPDX-License-Identifier: Apache-2.0
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/keyboard_background_high_contrast" />
+    <stroke
+        android:width="@dimen/key_border_width_high_contrast"
+        android:color="@color/key_border_high_contrast" />
+    <corners android:radius="@dimen/keyboard_key_corner_radius_you" />
+</shape>
