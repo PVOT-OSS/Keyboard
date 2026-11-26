@@ -1875,6 +1875,9 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         if (isEmojiSearchShown() && handleEmojiSearchEvent(event)) {
             return;
         }
+        if (event.mCodePoint == Constants.CODE_SPACE && insertPredictionOnSpace()) {
+            return;
+        }
         if (Constants.CODE_SHORTCUT == event.mKeyCode) {
             mRichImm.switchToShortcutIme(this);
         }
@@ -2312,6 +2315,18 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     private boolean isShowingPanelOrEmoji() {
         return mKeyboardSwitcher.isShowingPanel() || mKeyboardSwitcher.isShowingEmojiPalettes()
                 || isEmojiSearchShown() || mKeyboardSwitcher.isShowingKeyboardResize();
+    }
+
+    private boolean insertPredictionOnSpace() {
+        if (!mSettings.getCurrent().mSpaceInsertsPrediction || mInputLogic.isComposingWord()) {
+            return false;
+        }
+        final SuggestedWords predictions = mInputLogic.mSuggestedWords;
+        if (!predictions.isPrediction() || predictions.size() == 0) {
+            return false;
+        }
+        pickSuggestionManually(predictions.getInfo(0));
+        return true;
     }
 
     private boolean isEmojiSearchShown() {

@@ -85,6 +85,10 @@ public final class InputLogic {
     private int mSpaceState;
     // Never null
     public SuggestedWords mSuggestedWords = SuggestedWords.getEmptyInstance();
+
+    public boolean isComposingWord() {
+        return mWordComposer.isComposingWord();
+    }
     public final Suggest mSuggest;
     private final DictionaryFacilitator mDictionaryFacilitator;
 

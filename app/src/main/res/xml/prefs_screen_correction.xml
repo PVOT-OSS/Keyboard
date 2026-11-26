@@ -87,6 +87,13 @@
         android:title="@string/clear_clipboard_history"
         android:summary="@string/clear_clipboard_history_summary" />
     <SwitchPreferenceCompat
+        android:key="pref_space_inserts_prediction"
+        android:dependency="next_word_prediction"
+        android:title="@string/space_inserts_prediction"
+        android:summary="@string/space_inserts_prediction_summary"
+        android:defaultValue="false"
+        android:persistent="true" />
+    <SwitchPreferenceCompat
         android:key="pref_auto_space_after_punctuation"
         android:title="@string/auto_space_after_punctuation"
         android:summary="@string/auto_space_after_punctuation_summary"

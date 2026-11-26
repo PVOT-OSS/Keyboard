@@ -96,6 +96,7 @@ public class SettingsValues {
     public final boolean mKeyboardGesturesEnabled;
     public final boolean mArrowKeyRowEnabled;
     public final boolean mAutoSpaceAfterPunctuation;
+    public final boolean mSpaceInsertsPrediction;
     public final boolean mUseContactsDict;
     public final boolean mUsePersonalizedDicts;
     public final boolean mUseDoubleSpacePeriod;
@@ -236,6 +237,7 @@ public class SettingsValues {
         mArrowKeyRowEnabled = prefs.getBoolean(Settings.PREF_ARROW_KEY_ROW, false);
         mAutoSpaceAfterPunctuation =
                 prefs.getBoolean(AutoSpace.PREF_AUTO_SPACE_AFTER_PUNCTUATION, false);
+        mSpaceInsertsPrediction = prefs.getBoolean(Settings.PREF_SPACE_INSERTS_PREDICTION, false);
         mGestureInputEnabled = Settings.readGestureInputEnabled(prefs, res)
                 || mKeyboardGesturesEnabled;
         mGestureTrailEnabled = !mKeyboardGesturesEnabled
