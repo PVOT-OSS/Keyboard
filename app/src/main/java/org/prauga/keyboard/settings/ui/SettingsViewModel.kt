@@ -67,6 +67,11 @@ internal class SettingsViewModel(private val repository: SettingsRepository) : V
                     effectChannel.send(SettingsEffect.Message(R.string.clear_learned_words_done))
                 }
             SettingsEvent.ResetStats -> refreshAfter { repository.resetStats() }
+            is SettingsEvent.ShowLicense ->
+                viewModelScope.launch {
+                    val text = repository.readDocument(event.path)
+                    effectChannel.send(SettingsEffect.ShowDocument(event.title, text))
+                }
         }
     }
 

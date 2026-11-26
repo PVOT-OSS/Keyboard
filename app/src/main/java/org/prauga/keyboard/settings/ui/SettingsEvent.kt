@@ -43,4 +43,6 @@ internal sealed interface SettingsEvent {
     data object ClearLearnedWords : SettingsEvent
 
     data object ResetStats : SettingsEvent
+
+    data class ShowLicense(val title: String, val path: String) : SettingsEvent
 }

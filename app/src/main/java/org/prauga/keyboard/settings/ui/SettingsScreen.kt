@@ -45,6 +45,7 @@ internal enum class SettingsRoute {
     TOOLBAR_KEYS,
     BLOCKED_WORDS,
     CUSTOM_STYLES,
+    LICENSES,
 }
 
 internal class SettingsNavigator(initial: List<SettingsRoute>) {
@@ -127,6 +128,7 @@ private fun SettingsRouteContent(
         SettingsRoute.TYPING_STATS -> TypingStatsScreen(snapshot, onEvent, dialogs, onBack)
         SettingsRoute.TOOLBAR_KEYS -> ToolbarKeysScreen(snapshot, onEvent, onBack)
         SettingsRoute.BLOCKED_WORDS -> BlockedWordsScreen(snapshot, onEvent, dialogs, onBack)
+        SettingsRoute.LICENSES -> LicensesScreen(onEvent, onBack)
         SettingsRoute.CUSTOM_STYLES -> {
             val choices by viewModel.styleChoices.collectAsStateWithLifecycle()
             LaunchedEffect(Unit) { viewModel.loadStyleChoices() }
@@ -155,6 +157,7 @@ internal fun screenTitle(route: SettingsRoute): String =
         SettingsRoute.TOOLBAR_KEYS -> stringResource(R.string.toolbar_keys)
         SettingsRoute.BLOCKED_WORDS -> stringResource(R.string.blocked_words)
         SettingsRoute.CUSTOM_STYLES -> stringResource(R.string.custom_input_styles_title)
+        SettingsRoute.LICENSES -> stringResource(R.string.open_source_licenses)
     }
 
 private fun handleEffect(context: Context, effect: SettingsEffect, dialogs: SettingsDialogState) {
@@ -165,6 +168,8 @@ private fun handleEffect(context: Context, effect: SettingsEffect, dialogs: Sett
                 else context.getString(effect.text, effect.arg)
             Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
         }
+        is SettingsEffect.ShowDocument ->
+            dialogs.document = DocumentRequest(effect.title, effect.text)
         is SettingsEffect.OfferEnableStyle ->
             dialogs.confirm =
                 ConfirmRequest(

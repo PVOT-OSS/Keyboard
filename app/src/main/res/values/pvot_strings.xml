@@ -147,6 +147,9 @@
     <string name="settings_group_timing">Timing</string>
     <string name="settings_group_keyboard">Keyboard</string>
     <string name="settings_group_other">Other</string>
+    <string name="settings_group_about">About</string>
+    <string name="app_version">Version</string>
+    <string name="open_source_licenses">Open source licences</string>
     <string name="custom_input_style_remove_title">Remove “<xliff:g id="style" example="English (US) (Colemak)">%1$s</xliff:g>”?</string>
     <string name="custom_input_styles_empty">No custom input styles</string>
 </resources>

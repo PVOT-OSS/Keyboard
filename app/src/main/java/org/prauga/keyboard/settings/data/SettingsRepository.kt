@@ -200,6 +200,14 @@ internal class SettingsRepository(context: Context) {
             )
         }
 
+    suspend fun readDocument(path: String): String =
+        withContext(Dispatchers.IO) {
+            val text = context.assets.open(path).bufferedReader().use { it.readText() }
+            text.trim().split(PARAGRAPH_BREAK).joinToString("\n\n") { paragraph ->
+                paragraph.lines().joinToString(" ") { it.trim() }
+            }
+        }
+
     fun playKeySound(percent: Int) {
         val audio = context.getSystemService(AudioManager::class.java) ?: return
         audio.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, percent / PERCENT)
@@ -254,5 +262,6 @@ internal class SettingsRepository(context: Context) {
 
     private companion object {
         const val PERCENT = 100f
+        val PARAGRAPH_BREAK = Regex("\\n\\s*\\n")
     }
 }

@@ -11,4 +11,6 @@ internal sealed interface SettingsEffect {
     data class Message(@param:StringRes val text: Int, val arg: String? = null) : SettingsEffect
 
     data class OfferEnableStyle(val imeId: String) : SettingsEffect
+
+    data class ShowDocument(val title: String, val text: String) : SettingsEffect
 }

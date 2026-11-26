@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <string-array name="license_names" translatable="false">
+        <item>AOSP keyboard (LatinIME)</item>
+        <item>LineageOS keyboard changes</item>
+        <item>AOSP dictionaries</item>
+        <item>Unicode CLDR emoji annotations</item>
+        <item>PvotLib</item>
+        <item>Tabler Icons</item>
+        <item>Glisse</item>
+        <item>AndroidX, Compose and Material</item>
+        <item>Kotlin and kotlinx.coroutines</item>
+        <item>JSR 305 annotations</item>
+    </string-array>
+    <string-array name="license_notices" translatable="false">
+        <item>Copyright 2008 The Android Open Source Project. Apache License 2.0</item>
+        <item>Copyright The LineageOS Project. Apache License 2.0</item>
+        <item>Copyright The Android Open Source Project. Apache License 2.0</item>
+        <item>Copyright 2015-2024 Unicode, Inc. Unicode License V3</item>
+        <item>Copyright 2026 Saalim Quadri. Apache License 2.0</item>
+        <item>Copyright 2020-2026 Paweł Kuna. MIT License</item>
+        <item>Copyright 2026 Kelvin Zhang. MIT License</item>
+        <item>Copyright Google LLC and The Android Open Source Project. Apache License 2.0</item>
+        <item>Copyright JetBrains s.r.o. and Kotlin contributors. Apache License 2.0</item>
+        <item>Copyright FindBugs authors. Apache License 2.0</item>
+    </string-array>
+    <string-array name="license_files" translatable="false">
+        <item>licenses/Apache-2.0.txt</item>
+        <item>licenses/Apache-2.0.txt</item>
+        <item>licenses/Apache-2.0.txt</item>
+        <item>emoji/LICENSE-Unicode.txt</item>
+        <item>licenses/Apache-2.0.txt</item>
+        <item>licenses/MIT-Tabler.txt</item>
+        <item>licenses/MIT-Glisse.txt</item>
+        <item>licenses/Apache-2.0.txt</item>
+        <item>licenses/Apache-2.0.txt</item>
+        <item>licenses/Apache-2.0.txt</item>
+    </string-array>
+</resources>

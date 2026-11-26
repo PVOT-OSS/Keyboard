@@ -6,6 +6,9 @@
 package org.prauga.keyboard.settings.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.prauga.pvot.designsystem.components.PvotChoiceSheet
 import com.prauga.pvot.designsystem.components.PvotDialog
 import com.prauga.pvot.designsystem.components.PvotDialogAction
@@ -57,6 +61,8 @@ internal class SliderRequest(
     val onDefault: () -> Unit,
 )
 
+internal class DocumentRequest(val title: String, val text: String)
+
 internal class TextRequest(
     val title: String,
     val hint: String,
@@ -70,6 +76,7 @@ internal class SettingsDialogState {
     var confirm by mutableStateOf<ConfirmRequest?>(null)
     var slider by mutableStateOf<SliderRequest?>(null)
     var text by mutableStateOf<TextRequest?>(null)
+    var document by mutableStateOf<DocumentRequest?>(null)
 }
 
 @Composable
@@ -92,7 +99,39 @@ internal fun SettingsDialogs(state: SettingsDialogState) {
     ConfirmDialog(state)
     SliderDialog(state)
     TextDialog(state)
+    DocumentDialog(state)
 }
+
+@Composable
+private fun DocumentDialog(state: SettingsDialogState) {
+    val shown = remember { mutableStateOf<DocumentRequest?>(null) }
+    state.document?.let { shown.value = it }
+    val request = shown.value ?: return
+    PvotDialog(
+        visible = state.document != null,
+        onDismissRequest = { state.document = null },
+        title = request.title,
+        content = {
+            Text(
+                text = request.text,
+                style = MaterialTheme.typography.bodySmall,
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .heightIn(max = DOCUMENT_MAX_HEIGHT)
+                        .verticalScroll(rememberScrollState()),
+            )
+        },
+        actions = {
+            PvotDialogAction(
+                label = stringResource(android.R.string.ok),
+                onClick = { state.document = null },
+                style = PvotDialogActionStyle.Primary,
+            )
+        },
+    )
+}
+
+private val DOCUMENT_MAX_HEIGHT = 340.dp
 
 @Composable
 private fun ConfirmDialog(state: SettingsDialogState) {

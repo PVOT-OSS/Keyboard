@@ -11,7 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.prauga.pvot.designsystem.components.PvotSubScreen
+import androidx.compose.material3.Text
 import com.prauga.pvot.designsystem.components.list.PvotListGroup
+import com.prauga.pvot.designsystem.components.list.PvotListRow
+import org.prauga.keyboard.BuildConfig
 import org.prauga.keyboard.R
 import org.prauga.keyboard.settings.data.SettingsSnapshot
 
@@ -79,6 +82,17 @@ internal fun RootScreen(
                     { onOpen(SettingsRoute.ADVANCED) },
                     icon = R.drawable.ic_settings_advanced,
                 )
+            }
+        }
+        item {
+            PvotListGroup(title = stringResource(R.string.settings_group_about)) {
+                item {
+                    PvotListRow(
+                        title = stringResource(R.string.app_version),
+                        trailing = { Text(BuildConfig.VERSION_NAME) },
+                    )
+                }
+                linkRow(R.string.open_source_licenses, { onOpen(SettingsRoute.LICENSES) })
             }
         }
     }
