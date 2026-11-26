@@ -19,7 +19,7 @@ class ClipboardSearchClient(
 
     override fun results(text: String) =
         manager.getItems()
-            .filter { it.text.contains(text.trim(), ignoreCase = true) }
+            .filter { !it.isImage && it.text.contains(text.trim(), ignoreCase = true) }
             .map { item ->
                 StripTextFieldClient.Result(label(item.text), item.text) { onPaste.accept(item.text) }
             }

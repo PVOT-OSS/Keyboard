@@ -9,6 +9,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.net.Uri;
 import android.os.PersistableBundle;
 import android.util.Log;
 
@@ -23,7 +24,8 @@ public final class ClipboardSuggestionMonitor
     public interface Listener {
         void onClipboardSuggestionChanged(@Nullable ClipboardSuggestion suggestion);
 
-        void onClipRead(@Nullable CharSequence text, long timestamp, boolean isSensitive);
+        void onClipRead(@Nullable CharSequence text, long timestamp, boolean isSensitive,
+                @Nullable Uri imageUri, @Nullable String imageMimeType);
     }
 
     private final ClipboardManager mClipboardManager;
@@ -69,8 +71,10 @@ public final class ClipboardSuggestionMonitor
             return null;
         }
         final ClipDescription description = clip.getDescription();
+        final String imageMimeType = findImageMimeType(description);
         mListener.onClipRead(clip.getItemAt(0).getText(), description.getTimestamp(),
-                isSensitive(description));
+                isSensitive(description), imageMimeType == null ? null : clip.getItemAt(0).getUri(),
+                imageMimeType);
         if (description.getTimestamp() == mConsumedTimestamp) {
             return null;
         }
@@ -87,6 +91,17 @@ public final class ClipboardSuggestionMonitor
             Log.w(TAG, "Clipboard is not accessible", e);
             return null;
         }
+    }
+
+    @Nullable
+    private static String findImageMimeType(@Nonnull final ClipDescription description) {
+        for (int i = 0; i < description.getMimeTypeCount(); i++) {
+            final String mimeType = description.getMimeType(i);
+            if (ClipDescription.compareMimeTypes(mimeType, "image/*")) {
+                return mimeType;
+            }
+        }
+        return null;
     }
 
     private static boolean isSensitive(@Nonnull final ClipDescription description) {

@@ -14,12 +14,22 @@ class ClipboardHistory {
         val timestamp: Long,
         val pinned: Boolean,
         val shortcut: String? = null,
-    )
+        val mimeType: String? = null,
+    ) {
+        val isImage: Boolean
+            get() = mimeType != null
+    }
 
     private val items = ArrayList<Item>()
     private var forgottenTimestamp = Long.MIN_VALUE
 
-    fun add(clipText: CharSequence?, timestamp: Long, isSensitive: Boolean, now: Long): Boolean {
+    fun add(
+        clipText: CharSequence?,
+        timestamp: Long,
+        isSensitive: Boolean,
+        now: Long,
+        mimeType: String? = null,
+    ): Boolean {
         if (clipText == null || isSensitive || now - timestamp > UNPINNED_LIFETIME_MS ||
             timestamp <= forgottenTimestamp
         ) {
@@ -41,7 +51,7 @@ class ClipboardHistory {
             shortcut = existing.shortcut
             items.removeAt(index)
         }
-        items.add(0, Item(text, timestamp, pinned, shortcut))
+        items.add(0, Item(text, timestamp, pinned, shortcut, mimeType))
         trimToMaxItems()
         return true
     }
@@ -57,6 +67,7 @@ class ClipboardHistory {
                     timestamp = maxOf(existing.timestamp, item.timestamp),
                     pinned = true,
                     shortcut = item.shortcut ?: existing.shortcut,
+                    mimeType = item.mimeType ?: existing.mimeType,
                 )
             }
         }
@@ -70,6 +81,8 @@ class ClipboardHistory {
     }
 
     fun getPinnedItems(): List<Item> = items.filter { it.pinned }
+
+    fun imageNames(): Set<String> = items.filter { it.isImage }.mapTo(HashSet()) { it.text }
 
     fun setShortcut(text: String, shortcut: String?) {
         val normalized = shortcut?.trim()?.lowercase(Locale.ROOT)?.takeIf { it.isNotEmpty() }
@@ -114,7 +127,10 @@ class ClipboardHistory {
         }
         val index = indexOf(text)
         val existing = if (index >= 0) items.removeAt(index) else null
-        items.add(0, Item(text, now, pinned || existing?.pinned == true, existing?.shortcut))
+        items.add(
+            0,
+            Item(text, now, pinned || existing?.pinned == true, existing?.shortcut, existing?.mimeType)
+        )
         trimToMaxItems()
         return true
     }

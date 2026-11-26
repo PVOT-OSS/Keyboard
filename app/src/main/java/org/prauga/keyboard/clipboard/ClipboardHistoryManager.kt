@@ -13,18 +13,26 @@ import org.prauga.keyboard.utils.ExecutorUtils
 import java.io.File
 import java.io.IOException
 
-class ClipboardHistoryManager private constructor(context: Context) {
+class ClipboardHistoryManager private constructor(private val context: Context) {
     private val history = ClipboardHistory()
     private val pinsFile = File(context.noBackupFilesDir, PINS_FILE_NAME)
     private val mainHandler = Handler(Looper.getMainLooper())
+    private var lastImageNames: Set<String>? = null
+    private var pinsLoaded = false
 
     init {
         ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
             try {
                 val pinned = ClipboardHistoryStore.read(pinsFile)
-                mainHandler.post { synchronized(this) { history.restorePinned(pinned) } }
+                mainHandler.post {
+                    synchronized(this) {
+                        history.restorePinned(pinned)
+                        pinsLoaded = true
+                    }
+                }
             } catch (e: IOException) {
                 Log.w(TAG, "Cannot read pinned clips", e)
+                mainHandler.post { synchronized(this) { pinsLoaded = true } }
             }
         }
     }
@@ -35,7 +43,18 @@ class ClipboardHistoryManager private constructor(context: Context) {
     }
 
     @Synchronized
-    fun getItems(): List<ClipboardHistory.Item> = history.getItems(System.currentTimeMillis())
+    fun getItems(): List<ClipboardHistory.Item> {
+        val items = history.getItems(System.currentTimeMillis())
+        deleteUnusedImages()
+        return items
+    }
+
+    @Synchronized
+    fun addImage(name: String, mimeType: String, timestamp: Long) {
+        history.add(name, timestamp, false, System.currentTimeMillis(), mimeType)
+        ClipImages.markAdded(name)
+        deleteUnusedImages()
+    }
 
     @Synchronized
     fun setPinned(text: String, pinned: Boolean) {
@@ -47,6 +66,7 @@ class ClipboardHistoryManager private constructor(context: Context) {
     fun remove(text: String) {
         history.remove(text)
         savePins()
+        deleteUnusedImages()
     }
 
     @Synchronized
@@ -81,12 +101,28 @@ class ClipboardHistoryManager private constructor(context: Context) {
     @Synchronized
     fun clearUnpinned() {
         history.clearUnpinned()
+        deleteUnusedImages()
     }
 
     @Synchronized
     fun clearAll() {
         history.clearAll()
         savePins()
+        deleteUnusedImages()
+    }
+
+    private fun deleteUnusedImages() {
+        if (!pinsLoaded) {
+            return
+        }
+        val names = history.imageNames()
+        if (names == lastImageNames) {
+            return
+        }
+        lastImageNames = names
+        ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
+            ClipImages.deleteUnreferenced(context, names)
+        }
     }
 
     private fun savePins() {

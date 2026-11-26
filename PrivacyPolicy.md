@@ -21,7 +21,9 @@ is sent anywhere by the app. There are no ads, analytics, trackers or third-part
   offer it as a suggestion. Clips that apps mark as sensitive are shown masked.
 - **Clipboard history**: with "Clipboard history" on (the default), text you copy while the
   keyboard can read the clipboard is kept in memory for up to one hour (at most 25 items) so you
-  can paste it again. Clips that apps mark as sensitive, and clips copied while you type in a
+  can paste it again. Copied images are kept the same way, as private copies in the app's
+  storage that are deleted when the clip expires or is removed. Clips that apps mark as sensitive,
+  and clips copied while you type in a
   password field or a private field (such as an incognito browser tab), are never kept. Items you pin are saved in
   the app's private storage until you unpin or delete them; they are excluded from device backups.
 - **Contacts**: with "Suggest Contact names" on and the contacts permission granted, contact names

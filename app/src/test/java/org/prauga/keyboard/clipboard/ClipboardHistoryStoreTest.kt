@@ -33,6 +33,24 @@ class ClipboardHistoryStoreTest {
     }
 
     @Test
+    fun imageClipsRoundTrip() {
+        val file = File(Files.createTempDirectory("pins").toFile(), "pins")
+        val pinned = listOf(ClipboardHistory.Item("clip-1.png", 1, true, null, "image/png"))
+        ClipboardHistoryStore.write(file, pinned)
+        assertEquals(pinned, ClipboardHistoryStore.read(file))
+    }
+
+    @Test
+    fun versionTwoFilesStillLoad() {
+        val file = Files.createTempFile("pins", null).toFile()
+        file.writeText("pvot-clipboard-pins 2\n42\taGVsbG8=\tYQ==\n")
+        assertEquals(
+            listOf(ClipboardHistory.Item("hello", 42, true, "a")),
+            ClipboardHistoryStore.read(file),
+        )
+    }
+
+    @Test
     fun versionOneFilesStillLoad() {
         val file = Files.createTempFile("pins", null).toFile()
         file.writeText("pvot-clipboard-pins 1\n42\taGVsbG8=\n")

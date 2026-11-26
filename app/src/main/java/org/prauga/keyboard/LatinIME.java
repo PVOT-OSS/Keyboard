@@ -26,6 +26,9 @@ import android.Manifest.permission;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -40,6 +43,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.inputmethodservice.InputMethodService;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
@@ -66,6 +70,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InlineSuggestionsRequest;
 import android.view.inputmethod.InlineSuggestionsResponse;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputContentInfo;
 import android.view.inputmethod.InputMethodSubtype;
 
 import androidx.annotation.NonNull;
@@ -91,6 +96,7 @@ import org.prauga.keyboard.Suggest.OnGetSuggestedWordsCallback;
 import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo;
 import org.prauga.keyboard.clipboard.ClipboardSuggestion;
 import org.prauga.keyboard.clipboard.ClipEditClient;
+import org.prauga.keyboard.clipboard.ClipImages;
 import org.prauga.keyboard.clipboard.ClipboardHistoryManager;
 import org.prauga.keyboard.clipboard.ClipboardSearchClient;
 import org.prauga.keyboard.clipboard.ClipboardHistoryView;
@@ -130,6 +136,7 @@ import org.prauga.keyboard.utils.LeakGuardHandlerWrapper;
 import org.prauga.keyboard.utils.RecapitalizeStatus;
 import org.prauga.keyboard.utils.ScriptUtils;
 import org.prauga.keyboard.utils.StatsUtils;
+import org.prauga.keyboard.utils.ExecutorUtils;
 import org.prauga.keyboard.utils.FloatingKeyboardUtils;
 import org.prauga.keyboard.utils.SplitKeyboardUtils;
 import org.prauga.keyboard.utils.StatsUtilsManager;
@@ -1530,12 +1537,29 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     @Override
     public void onClipRead(@Nullable final CharSequence text, final long timestamp,
-            final boolean isSensitive) {
+            final boolean isSensitive, @Nullable final Uri imageUri,
+            @Nullable final String imageMimeType) {
         final SettingsValues settingsValues = mSettings.getCurrent();
-        if (settingsValues.mClipboardHistoryEnabled
-                && settingsValues.isPersonalizedLearningEnabled()) {
-            ClipboardHistoryManager.getInstance(this).add(text, timestamp, isSensitive);
+        if (!settingsValues.mClipboardHistoryEnabled
+                || !settingsValues.isPersonalizedLearningEnabled()) {
+            return;
         }
+        final ClipboardHistoryManager manager = ClipboardHistoryManager.getInstance(this);
+        if (imageUri == null || imageMimeType == null) {
+            manager.add(text, timestamp, isSensitive);
+            return;
+        }
+        if (isSensitive || ClipImages.INSTANCE.authority(this).equals(imageUri.getAuthority())) {
+            return;
+        }
+        final Context appContext = getApplicationContext();
+        ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute(() -> {
+            final String name = ClipImages.INSTANCE.copy(appContext, imageUri, imageMimeType,
+                    timestamp);
+            if (name != null) {
+                mHandler.post(() -> manager.addImage(name, imageMimeType, timestamp));
+            }
+        });
     }
 
     @Override
@@ -1543,6 +1567,40 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         if (hasSuggestionStripView()) {
             mKeyboardSwitcher.showClipboardHistory(mSuggestionStripView.getPanelTintList());
         }
+    }
+
+    @Override
+    public void onClipboardHistoryPasteImage(@Nonnull final String name,
+            @Nonnull final String mimeType) {
+        mKeyboardSwitcher.hidePanels();
+        final Uri uri = ClipImages.INSTANCE.uriFor(this, name);
+        final ClipDescription description =
+                new ClipDescription(getString(R.string.clipboard_history_image),
+                        new String[] { mimeType });
+        final InputConnection ic = getCurrentInputConnection();
+        final EditorInfo editorInfo = getCurrentInputEditorInfo();
+        if (ic != null && editorInfo != null && acceptsContent(editorInfo, mimeType)) {
+            ic.commitContent(new InputContentInfo(uri, description),
+                    InputConnection.INPUT_CONTENT_GRANT_READ_URI_PERMISSION, null);
+            return;
+        }
+        final ClipboardManager clipboard = getSystemService(ClipboardManager.class);
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(new ClipData(description, new ClipData.Item(uri)));
+        }
+    }
+
+    private static boolean acceptsContent(@Nonnull final EditorInfo editorInfo,
+            @Nonnull final String mimeType) {
+        if (editorInfo.contentMimeTypes == null) {
+            return false;
+        }
+        for (final String accepted : editorInfo.contentMimeTypes) {
+            if (ClipDescription.compareMimeTypes(mimeType, accepted)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

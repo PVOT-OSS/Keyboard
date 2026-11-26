@@ -7,6 +7,10 @@ package org.prauga.keyboard.clipboard
 
 import android.content.Context
 import android.content.res.ColorStateList
+import org.prauga.keyboard.utils.ExecutorUtils
+import android.widget.ImageView
+import android.graphics.BitmapFactory
+import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +25,8 @@ import org.prauga.keyboard.suggestions.InlineSuggestionsStrip
 class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
     interface Listener {
         fun onClipboardHistoryPaste(text: String)
+
+        fun onClipboardHistoryPasteImage(name: String, mimeType: String)
 
         fun onClipboardHistoryClose()
 
@@ -117,7 +123,8 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
     private fun select(item: ClipboardHistory.Item?) {
         selected = item
         actions.visibility = if (item == null) GONE else VISIBLE
-        shortcut.visibility = if (item?.pinned == true) VISIBLE else GONE
+        shortcut.visibility = if (item?.pinned == true && !item.isImage) VISIBLE else GONE
+        edit.visibility = if (item?.isImage == true) GONE else VISIBLE
         if (item != null) {
             pin.setText(
                 if (item.pinned) R.string.clipboard_history_unpin else R.string.clipboard_history_pin
@@ -134,6 +141,10 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
         val chipColor = InlineSuggestionsStrip.getChipBackgroundColor(tint.defaultColor)
         val selectedColor = ColorUtils.setAlphaComponent(tint.defaultColor, SELECTED_ALPHA)
         for (item in history) {
+            if (item.isImage) {
+                items.addView(imageView(item, if (selected?.text == item.text) selectedColor else chipColor))
+                continue
+            }
             val view = inflater.inflate(R.layout.clipboard_history_item, items, false) as TextView
             view.text = item.text
             view.setTextColor(tint)
@@ -154,7 +165,51 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
         clear.visibility = if (history.any { !it.pinned }) VISIBLE else INVISIBLE
     }
 
+    private fun imageView(item: ClipboardHistory.Item, background: Int): View {
+        val view = ImageView(context).apply {
+            setBackgroundResource(R.drawable.inline_suggestion_chip)
+            backgroundTintList = ColorStateList.valueOf(background)
+            scaleType = ImageView.ScaleType.CENTER_CROP
+            clipToOutline = true
+            contentDescription = resources.getString(R.string.clipboard_history_image)
+            setOnClickListener {
+                item.mimeType?.let { listener.onClipboardHistoryPasteImage(item.text, it) }
+            }
+            setOnLongClickListener {
+                select(item)
+                true
+            }
+        }
+        val margin = resources.getDimensionPixelSize(R.dimen.clipboard_history_item_margin)
+        view.layoutParams = GridLayout.LayoutParams(
+            GridLayout.spec(GridLayout.UNDEFINED), GridLayout.spec(GridLayout.UNDEFINED, 1f)
+        ).apply {
+            width = 0
+            height = resources.getDimensionPixelSize(R.dimen.clipboard_history_image_height)
+            setMargins(margin, margin, margin, margin)
+        }
+        val file = ClipImages.fileFor(context, item.text)
+        val size = resources.getDimensionPixelSize(R.dimen.clipboard_history_image_height)
+        if (file != null) {
+            ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
+                val bitmap = decodeThumbnail(file.path, size)
+                view.post { view.setImageBitmap(bitmap) }
+            }
+        }
+        return view
+    }
+
     private companion object {
+        fun decodeThumbnail(path: String, size: Int): Bitmap? {
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            BitmapFactory.decodeFile(path, bounds)
+            var sample = 1
+            while (bounds.outWidth / (sample * 2) >= size && bounds.outHeight / (sample * 2) >= size) {
+                sample *= 2
+            }
+            return BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample })
+        }
+
         const val SELECTED_ALPHA = 0x66
     }
 }

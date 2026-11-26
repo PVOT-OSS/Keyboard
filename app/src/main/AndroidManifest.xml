@@ -146,5 +146,10 @@
                 <action android:name="android.intent.action.LOCALE_CHANGED"/>
             </intent-filter>
         </receiver>
+        <provider
+            android:name="org.prauga.keyboard.clipboard.ClipImageProvider"
+            android:authorities="${applicationId}.clipimages"
+            android:exported="false"
+            android:grantUriPermissions="true" />
     </application>
 </manifest>

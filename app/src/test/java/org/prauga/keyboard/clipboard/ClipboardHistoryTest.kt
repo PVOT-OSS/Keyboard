@@ -174,6 +174,15 @@ class ClipboardHistoryTest {
         assertEquals(null, history.findByShortcut("x"))
     }
 
+    @Test
+    fun imageClipsAreListedByName() {
+        val history = ClipboardHistory()
+        history.add("clip-1.png", NOW, false, NOW, "image/png")
+        history.add("text", NOW, false, NOW)
+        assertEquals(setOf("clip-1.png"), history.imageNames())
+        assertTrue(history.getItems(NOW).first { it.text == "clip-1.png" }.isImage)
+    }
+
     private companion object {
         const val NOW = 10_000_000L
     }

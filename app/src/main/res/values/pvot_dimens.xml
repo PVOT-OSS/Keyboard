@@ -11,6 +11,7 @@
     <dimen name="clipboard_history_item_padding">12dp</dimen>
     <dimen name="clipboard_history_text_size">14sp</dimen>
     <dimen name="clipboard_history_title_size">16sp</dimen>
+    <dimen name="clipboard_history_image_height">96dp</dimen>
     <dimen name="emoji_search_query_max_width">160dp</dimen>
     <dimen name="keyboard_resize_button_min_width">96dp</dimen>
     <dimen name="key_border_width_high_contrast">2dp</dimen>

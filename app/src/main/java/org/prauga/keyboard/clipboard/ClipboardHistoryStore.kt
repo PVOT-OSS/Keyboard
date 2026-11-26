@@ -10,7 +10,8 @@ import java.io.IOException
 import java.util.Base64
 
 object ClipboardHistoryStore {
-    private const val HEADER = "pvot-clipboard-pins 2"
+    private const val HEADER = "pvot-clipboard-pins 3"
+    private const val HEADER_V2 = "pvot-clipboard-pins 2"
     private const val HEADER_V1 = "pvot-clipboard-pins 1"
     private const val SEPARATOR = "\t"
 
@@ -21,7 +22,8 @@ object ClipboardHistoryStore {
         }
         val lines = file.readLines(Charsets.UTF_8)
         val fieldCount = when (lines.firstOrNull()) {
-            HEADER -> 3
+            HEADER -> 4
+            HEADER_V2 -> 3
             HEADER_V1 -> 2
             else -> throw IOException("Unknown clipboard pins format")
         }
@@ -36,6 +38,7 @@ object ClipboardHistoryStore {
                     fields[0].toLong(),
                     true,
                     fields.getOrNull(2)?.let(::decode)?.takeIf { it.isNotEmpty() },
+                    fields.getOrNull(3)?.let(::decode)?.takeIf { it.isNotEmpty() },
                 )
             } catch (e: IllegalArgumentException) {
                 throw IOException("Malformed clipboard pin", e)
@@ -59,6 +62,8 @@ object ClipboardHistoryStore {
                 writer.write(encode(item.text))
                 writer.write(SEPARATOR)
                 writer.write(encode(item.shortcut.orEmpty()))
+                writer.write(SEPARATOR)
+                writer.write(encode(item.mimeType.orEmpty()))
                 writer.write("\n")
             }
         }
