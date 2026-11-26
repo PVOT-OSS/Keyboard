@@ -16,6 +16,7 @@ import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo
 import org.prauga.keyboard.blockedwords.BlockedWords
 import org.prauga.keyboard.common.InputPointers
 import org.prauga.keyboard.keyboard.Keyboard
+import org.prauga.keyboard.makedict.WordProperty
 import org.prauga.keyboard.settings.SettingsValuesForSuggestion
 import org.prauga.keyboard.utils.ExecutorUtils
 
@@ -42,19 +43,19 @@ object GlideTyping {
 
     @JvmStatic
     fun prepare(facilitator: DictionaryFacilitator) {
-        val locale = facilitator.locale ?: return
-        val main = facilitator.mainDictionary ?: return
+        val locale = facilitator.locale
+        val main = facilitator.mainDictionary
+        if (locale == null || main == null) {
+            return
+        }
         val personal =
             listOfNotNull(
                 facilitator.getSubDictionary(Dictionary.TYPE_USER),
                 facilitator.getSubDictionary(Dictionary.TYPE_CONTACTS),
             )
         val source = Source(locale, listOf(main) + facilitator.secondaryMainDictionaries)
-        synchronized(this) {
-            if (source == loadedSource || source == loadingSource) {
-                return
-            }
-            loadingSource = source
+        if (!claim(source)) {
+            return
         }
         ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
             val loaded = load(source.dictionaries, personal, locale)
@@ -158,33 +159,12 @@ object GlideTyping {
         }
         val frequencies = HashMap<String, Int>()
         val offensive = HashSet<String>()
-        for (dictionary in dictionaries) {
-            if (dictionary !is ReadOnlyBinaryDictionary) {
-                continue
-            }
-            var token = 0
-            do {
-                val result = dictionary.getNextWordProperty(token) ?: break
-                val property = result.mWordProperty ?: break
-                val word = property.mWord
-                if (!property.mIsNotAWord && word.isNotEmpty() && ' ' !in word) {
-                    val frequency = property.mProbabilityInfo.mProbability
-                    if (frequency > (frequencies[word] ?: -1)) {
-                        frequencies[word] = frequency
-                    }
-                    if (property.mIsPossiblyOffensive) {
-                        offensive.add(word)
-                    }
-                }
-                token = result.mNextToken
-            } while (token != 0)
+        dictionaries.filterIsInstance<ReadOnlyBinaryDictionary>().forEach {
+            addWords(it, frequencies, offensive)
         }
         for (dictionary in personal) {
-            for (property in dictionary.wordPropertiesForSyncing.orEmpty()) {
-                val word = property.mWord
-                if (!property.mIsNotAWord && word.isNotEmpty() && ' ' !in word) {
-                    frequencies[word] = maxOf(frequencies[word] ?: -1, PERSONAL_FREQUENCY)
-                }
+            dictionary.wordPropertiesForSyncing.orEmpty().filter(::isGlideWord).forEach {
+                frequencies[it.mWord] = maxOf(frequencies[it.mWord] ?: -1, PERSONAL_FREQUENCY)
             }
         }
         val words = frequencies.keys.toTypedArray()
@@ -195,4 +175,39 @@ object GlideTyping {
             BooleanArray(words.size) { words[it] in offensive },
         )
     }
+
+    private fun claim(source: Source): Boolean =
+        synchronized(this) {
+            val free = source != loadedSource && source != loadingSource
+            if (free) {
+                loadingSource = source
+            }
+            free
+        }
+
+    private fun addWords(
+        dictionary: ReadOnlyBinaryDictionary,
+        frequencies: MutableMap<String, Int>,
+        offensive: MutableSet<String>,
+    ) {
+        var token = 0
+        do {
+            val result = dictionary.getNextWordProperty(token)
+            val property = result?.mWordProperty
+            if (property != null && isGlideWord(property)) {
+                val word = property.mWord
+                val frequency = property.mProbabilityInfo.mProbability
+                if (frequency > (frequencies[word] ?: -1)) {
+                    frequencies[word] = frequency
+                }
+                if (property.mIsPossiblyOffensive) {
+                    offensive.add(word)
+                }
+            }
+            token = if (property == null) 0 else result.mNextToken
+        } while (token != 0)
+    }
+
+    private fun isGlideWord(property: WordProperty): Boolean =
+        !property.mIsNotAWord && property.mWord.isNotEmpty() && ' ' !in property.mWord
 }

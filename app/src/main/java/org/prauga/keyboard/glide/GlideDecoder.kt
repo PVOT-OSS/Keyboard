@@ -53,18 +53,20 @@ class GlideDecoder(private val layout: GlideKeyLayout, private val wordList: Gli
                 val ids = index[bucket(start, end)] ?: continue
                 for (id in ids) {
                     val word = wordList.words[id]
-                    if (!accept(word, wordList.offensive[id])) {
-                        continue
-                    }
                     val score =
-                        score(word, wordList.frequencies[id], input, normalizedInput, inputLength)
-                            ?: continue
-                    val worst = best.peek()
-                    if (best.size < maxResults) {
-                        best.add(Candidate(word, score))
-                    } else if (worst != null && score > worst.score) {
-                        best.poll()
-                        best.add(Candidate(word, score))
+                        if (accept(word, wordList.offensive[id])) {
+                            score(
+                                word,
+                                wordList.frequencies[id],
+                                input,
+                                normalizedInput,
+                                inputLength,
+                            )
+                        } else {
+                            null
+                        }
+                    if (score != null) {
+                        offer(best, Candidate(word, score), maxResults)
                     }
                 }
             }
@@ -80,17 +82,9 @@ class GlideDecoder(private val layout: GlideKeyLayout, private val wordList: Gli
         inputLength: Float,
     ): Float? {
         val keys = keyPath(word)
-        if (keys.isEmpty()) {
-            return null
-        }
         val rawX = FloatArray(keys.size) { layout.x(keys[it]) }
         val rawY = FloatArray(keys.size) { layout.y(keys[it]) }
-        val idealLength = pathLength(rawX, rawY)
-        val longest = max(idealLength, inputLength)
-        if (
-            longest > layout.keyWidth * 2 &&
-                min(idealLength, inputLength) / longest < MIN_LENGTH_RATIO
-        ) {
+        if (keys.isEmpty() || !lengthsMatch(pathLength(rawX, rawY), inputLength)) {
             return null
         }
         val ideal = resample(rawX, rawY)
@@ -106,6 +100,22 @@ class GlideDecoder(private val layout: GlideKeyLayout, private val wordList: Gli
         val endsTerm = ends / ENDS_SIGMA
         return -(shapeTerm * shapeTerm) - (locationTerm * locationTerm) - (endsTerm * endsTerm) +
             FREQUENCY_WEIGHT * frequency / MAX_FREQUENCY
+    }
+
+    private fun lengthsMatch(idealLength: Float, inputLength: Float): Boolean {
+        val longest = max(idealLength, inputLength)
+        return longest <= layout.keyWidth * 2 ||
+            min(idealLength, inputLength) / longest >= MIN_LENGTH_RATIO
+    }
+
+    private fun offer(best: PriorityQueue<Candidate>, candidate: Candidate, maxResults: Int) {
+        val worst = best.peek()
+        if (best.size < maxResults) {
+            best.add(candidate)
+        } else if (worst != null && candidate.score > worst.score) {
+            best.poll()
+            best.add(candidate)
+        }
     }
 
     private fun keyPath(word: String): IntArray {
