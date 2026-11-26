@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2022 The LineageOS Project
+     SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style
+        name="InputView.Pvot"
+        parent="InputView"
+    />
+    <style
+        name="KeyboardView.Pvot_Common"
+        parent="KeyboardView"
+    >
+        <item name="keyTypeface">normal</item>
+        <item name="keyLetterSize">@fraction/config_key_letter_ratio_you</item>
+        <item name="keyLabelSize">@fraction/config_key_label_ratio_lxx</item>
+        <item name="keyHintLetterRatio">@fraction/config_key_hint_letter_ratio_lxx</item>
+        <item name="keyShiftedLetterHintRatio">@fraction/config_key_shifted_letter_hint_ratio_lxx</item>
+        <item name="keyLargeLetterRatio">@fraction/config_key_large_letter_ratio_lxx</item>
+        <item name="keyLabelOffCenterRatio">-80%</item>
+        <item name="keyHintLabelRatio">@fraction/config_key_hint_label_ratio_lxx</item>
+        <item name="keyHintLabelOffCenterRatio">300%</item>
+        <item name="keyLabelFlags">alignHintLabelToBottom</item>
+        <item name="spacebarIconWidthRatio">0.9</item>
+        <item name="keyPopupHintLetter"></item>
+        <item name="keyHintLetterPadding">@dimen/config_key_hint_letter_padding_you</item>
+        <item name="keyHintLetterPaddingVertical">@dimen/config_key_hint_letter_padding_vertical_you</item>
+        <item name="keyPreviewTextRatio">@fraction/config_key_preview_text_ratio_you</item>
+    </style>
+
+    <style name="KeyboardTheme.Pvot" parent="KeyboardIcons.You">
+        <item name="keyIconTint">@color/icon_color_pvot</item>
+        <item name="inputViewStyle">@style/InputView.Pvot</item>
+        <item name="keyboardStyle">@style/Keyboard.You</item>
+        <item name="keyboardViewStyle">@style/KeyboardView.Pvot</item>
+        <item name="mainKeyboardViewStyle">@style/MainKeyboardView.Pvot</item>
+        <item name="emojiPalettesViewStyle">@style/EmojiPalettesView.Pvot</item>
+        <item name="moreKeysKeyboardStyle">@style/MoreKeysKeyboard.Pvot</item>
+        <item name="moreKeysKeyboardViewStyle">@style/MoreKeysKeyboardView.Pvot</item>
+        <item name="moreKeysKeyboardViewForActionStyle">@style/MoreKeysKeyboardView.Pvot.Action</item>
+        <item name="suggestionStripViewStyle">@style/SuggestionStripView.Pvot</item>
+        <item name="suggestionWordStyle">@style/SuggestionWord.Pvot</item>
+    </style>
+    <style
+        name="KeyboardView.Pvot"
+        parent="KeyboardView.Pvot_Common"
+    >
+        <item name="android:background">@color/keyboard_background_pvot</item>
+        <item name="keyBackground">@drawable/btn_keyboard_key_pvot</item>
+        <item name="functionalKeyBackground">@drawable/btn_keyboard_key_functional_pvot</item>
+        <item name="spacebarBackground">@drawable/btn_keyboard_spacebar_pvot</item>
+        <item name="keyTextColor">@color/keyboard_key_text_color_pvot</item>
+        <item name="keyTextInactivatedColor">@color/keyboard_key_functional_text_color_pvot</item>
+        <item name="functionalTextColor">@color/keyboard_key_functional_text_color_pvot</item>
+        <item name="keyHintLetterColor">@color/key_hint_letter_color_pvot</item>
+        <item name="keyHintLabelColor">@color/key_hint_letter_color_pvot</item>
+        <item name="keyShiftedLetterHintInactivatedColor">@color/key_text_inactive_color_lxx_dark</item>
+        <item name="keyShiftedLetterHintActivatedColor">@color/key_text_color_lxx_dark</item>
+        <item name="keyPreviewTextColor">@color/keyboard_key_text_color_pvot</item>
+        <item name="gestureFloatingPreviewRoundRadius">@dimen/config_gesture_floating_preview_round_radius_you</item>
+    </style>
+    <style
+        name="MainKeyboardView.Pvot"
+        parent="KeyboardView.Pvot"
+    >
+        <item name="moreKeysKeyboardForActionLayout">@layout/more_keys_keyboard_for_action_lxx</item>
+        <item name="keyPreviewBackground">@drawable/keyboard_key_feedback_pvot</item>
+        <item name="keyPreviewHeight">@dimen/config_key_preview_height_you</item>
+        <item name="keyPreviewOffset">@dimen/config_key_preview_offset_you</item>
+        <item name="keyPreviewShowUpAnimator">@anim/key_preview_show_up_lxx</item>
+        <item name="keyPreviewDismissAnimator">@anim/key_preview_dismiss_lxx</item>
+        <item name="gestureFloatingPreviewTextColor">@color/gesture_floating_preview_text_color_pvot</item>
+        <item name="gestureFloatingPreviewColor">@color/gesture_floating_preview_color_pvot</item>
+        <item name="gestureTrailColor">@color/gesture_trail_color_pvot</item>
+        <item name="slidingKeyInputPreviewColor">@color/sliding_key_input_preview_color_pvot</item>
+        <item name="languageOnSpacebarTextColor">@color/key_hint_letter_color_pvot</item>
+        <item name="languageOnSpacebarTextShadowRadius">-1.0</item>
+    </style>
+    <style
+        name="EmojiPalettesView.Pvot"
+        parent="MainKeyboardView.Pvot"
+    >
+        <item name="categoryIndicatorEnabled">false</item>
+        <item name="categoryPageIndicatorColor">@color/highlight_color_pvot</item>
+        <item name="categoryPageIndicatorBackground">@color/emoji_tab_page_indicator_background_pvot</item>
+        <item name="iconEmojiRecentsTab">@drawable/ic_emoji_recents_lxx_light</item>
+        <item name="iconEmojiCategory1Tab">@drawable/ic_emoji_people_lxx_light</item>
+        <item name="iconEmojiCategory2Tab">@drawable/ic_emoji_objects_lxx_light</item>
+        <item name="iconEmojiCategory3Tab">@drawable/ic_emoji_nature_lxx_light</item>
+        <item name="iconEmojiCategory4Tab">@drawable/ic_emoji_places_lxx_light</item>
+        <item name="iconEmojiCategory5Tab">@drawable/ic_emoji_symbols_lxx_light</item>
+        <item name="iconEmojiCategory6Tab">@drawable/ic_emoji_emoticons_lxx_light</item>
+        <item name="iconEmojiCategory7Tab">@drawable/ic_emoji_flag_lxx_light</item>
+        <item name="iconEmojiCategory8Tab">@drawable/ic_emoji_people_lxx_light</item>
+        <item name="iconEmojiCategory9Tab">@drawable/ic_emoji_nature_lxx_light</item>
+        <item name="iconEmojiCategory10Tab">@drawable/ic_emoji_food_lxx_light</item>
+        <item name="iconEmojiCategory11Tab">@drawable/ic_emoji_places_lxx_light</item>
+        <item name="iconEmojiCategory12Tab">@drawable/ic_emoji_activity_lxx_light</item>
+        <item name="iconEmojiCategory13Tab">@drawable/ic_emoji_objects_lxx_light</item>
+        <item name="iconEmojiCategory14Tab">@drawable/ic_emoji_symbols_lxx_light</item>
+        <item name="iconEmojiCategory15Tab">@drawable/ic_emoji_flag_lxx_light</item>
+        <item name="iconEmojiCategory16Tab">@drawable/ic_emoji_people_lxx_light</item>
+    </style>
+    <style
+        name="MoreKeysKeyboard.Pvot"
+        parent="Keyboard.You"
+    >
+        <item name="keyboardTopPadding">0%p</item>
+        <item name="keyboardBottomPadding">0%p</item>
+        <item name="keyboardLeftPadding">0%p</item>
+        <item name="keyboardRightPadding">0%p</item>
+        <item name="horizontalGap">0%p</item>
+        <item name="touchPositionCorrectionData">@null</item>
+    </style>
+    <style
+        name="MoreKeysKeyboardView.Pvot"
+        parent="KeyboardView.Pvot"
+    >
+        <item name="android:background">@drawable/btn_keyboard_key_pvot</item>
+        <item name="keyBackground">@drawable/btn_keyboard_key_pvot</item>
+        <item name="divider">@drawable/more_keys_divider</item>
+        <item name="keyTypeface">normal</item>
+        <item name="verticalCorrection">@dimen/config_more_keys_keyboard_vertical_correction_holo</item>
+    </style>
+    <style
+        name="MoreKeysKeyboardView.Pvot.Action"
+        parent="MoreKeysKeyboardView.Pvot"
+    >
+        <item name="android:background">@android:color/transparent</item>
+        <item name="keyBackground">@drawable/btn_keyboard_key_popup_action_pvot</item>
+        <item name="divider">@null</item>
+        <item name="keyLabelFlags">keepBackgroundAspectRatio</item>
+    </style>
+    <style
+        name="SuggestionStripView.Pvot"
+        parent="KeyboardView.Pvot"
+    >
+        <item name="suggestionsCountInStrip">@integer/config_suggestions_count_in_strip</item>
+        <item name="centerSuggestionPercentile">@fraction/config_center_suggestion_percentile</item>
+        <item name="maxMoreSuggestionsRow">@integer/config_max_more_suggestions_row</item>
+        <item name="minMoreSuggestionsWidth">@fraction/config_min_more_suggestions_width</item>
+        <item name="android:background">@color/keyboard_background_pvot</item>
+        <item name="android:src">@drawable/suggestions_strip_divider_lxx_dark</item>
+        <item name="suggestionStripOptions">autoCorrectBold|validTypedWordBold</item>
+        <item name="colorValidTypedWord">@color/typed_word_color_pvot</item>
+        <item name="colorTypedWord">@color/typed_word_color_pvot</item>
+        <item name="colorAutoCorrect">@color/auto_correct_color_pvot</item>
+        <item name="colorSuggested">@color/suggested_word_color_pvot</item>
+        <item name="alphaObsoleted">70%</item>
+    </style>
+    <style
+        name="SuggestionWord.Pvot"
+        parent="SuggestionWord"
+    >
+        <item name="android:background">@drawable/btn_suggestion_lxx_dark</item>
+        <item name="android:textColor">@color/highlight_color_pvot</item>
+    </style>
+</resources>

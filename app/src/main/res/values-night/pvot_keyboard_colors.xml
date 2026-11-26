@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <color name="keyboard_background_pvot">@color/pvot_surface_dark</color>
+    <color name="keyboard_key_normal_color_pvot">@color/pvot_surface_variant_dark</color>
+    <color name="keyboard_key_pressed_color_pvot">@color/pvot_outline_variant_dark</color>
+    <color name="keyboard_key_text_color_pvot">@color/pvot_on_surface_dark</color>
+    <color name="keyboard_key_functional_normal_color_pvot">@color/pvot_outline_variant_dark</color>
+    <color name="keyboard_key_functional_pressed_color_pvot">@color/pvot_surface_variant_dark</color>
+    <color name="keyboard_key_functional_text_color_pvot">@color/pvot_on_surface_dark</color>
+    <color name="keyboard_key_action_normal_color_pvot">@color/pvot_primary_container_dark</color>
+    <color name="keyboard_key_action_pressed_color_pvot">@color/pvot_inverse_primary_dark</color>
+    <color name="icon_color_pvot">@color/pvot_on_primary_container_dark</color>
+    <color name="key_hint_letter_color_pvot">@color/pvot_on_surface_variant_dark</color>
+    <color name="typed_word_color_pvot">@color/pvot_on_surface_dark</color>
+    <color name="auto_correct_color_pvot">@color/pvot_on_surface_dark</color>
+    <color name="suggested_word_color_pvot">@color/pvot_on_surface_dark</color>
+    <color name="gesture_trail_color_pvot">@color/pvot_primary_dark</color>
+    <color name="gesture_floating_preview_text_color_pvot">@color/pvot_on_surface_dark</color>
+    <color name="highlight_color_pvot">@color/pvot_primary_dark</color>
+    <color name="emoji_tab_page_indicator_background_pvot">@color/pvot_surface_dark</color>
+</resources>

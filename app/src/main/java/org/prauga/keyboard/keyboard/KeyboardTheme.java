@@ -44,7 +44,8 @@ public final class KeyboardTheme implements Comparable<KeyboardTheme> {
     public static final int THEME_ID_YOU = 6;
     public static final int THEME_ID_OLED = 7;
     public static final int THEME_ID_HIGH_CONTRAST = 8;
-    public static final int DEFAULT_THEME_ID = THEME_ID_AUTO_DARK;
+    public static final int THEME_ID_PVOT = 9;
+    public static final int DEFAULT_THEME_ID = THEME_ID_PVOT;
 
     private static KeyboardTheme[] AVAILABLE_KEYBOARD_THEMES;
 
@@ -64,6 +65,8 @@ public final class KeyboardTheme implements Comparable<KeyboardTheme> {
                 VERSION_CODES.BASE),
         new KeyboardTheme(THEME_ID_HIGH_CONTRAST, "HighContrast",
                 R.style.KeyboardTheme_HighContrast, VERSION_CODES.BASE),
+        new KeyboardTheme(THEME_ID_PVOT, "Pvot", R.style.KeyboardTheme_Pvot,
+                VERSION_CODES.BASE),
     };
 
     static {
@@ -119,7 +122,10 @@ public final class KeyboardTheme implements Comparable<KeyboardTheme> {
     /* package private for testing */
     static KeyboardTheme getDefaultKeyboardTheme(final SharedPreferences prefs,
             final int sdkVersion, final KeyboardTheme[] availableThemeArray) {
-        // TODO: This search algorithm isn't optimal if there are many themes.
+        final KeyboardTheme pvot = searchKeyboardThemeById(DEFAULT_THEME_ID, availableThemeArray);
+        if (pvot != null) {
+            return pvot;
+        }
         for (final KeyboardTheme theme : availableThemeArray) {
             if (sdkVersion >= theme.mMinApiVersion) {
                 return theme;
