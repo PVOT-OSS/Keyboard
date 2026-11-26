@@ -38,6 +38,7 @@ import org.prauga.keyboard.keyboard.internal.KeyVisualAttributes;
 import org.prauga.keyboard.R;
 import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.settings.Settings;
+import org.prauga.keyboard.settings.SettingsValues;
 import org.prauga.keyboard.utils.TypefaceUtils;
 
 import java.util.HashSet;
@@ -463,7 +464,8 @@ public class KeyboardView extends View {
 
         // Draw hint label.
         final String hintLabel = key.getHintLabel();
-        if (hintLabel != null && Settings.getInstance().getCurrent().mShowLongpressHints) {
+        final SettingsValues settingsValues = Settings.getInstance().getCurrent();
+        if (hintLabel != null && settingsValues != null && settingsValues.mShowLongpressHints) {
             paint.setTextSize(key.selectHintTextSize(params));
             paint.setColor(key.selectHintTextColor(params));
             // TODO: Should add a way to specify type face for hint letters
