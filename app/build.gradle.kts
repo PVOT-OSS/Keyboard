@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "org.prauga.keyboard"
-    compileSdk = 35
+    compileSdk { version = release(37) { minorApiLevel = 1 } }
     ndkVersion = "25.1.8937393"
 
     useLibrary("android.test.runner")
