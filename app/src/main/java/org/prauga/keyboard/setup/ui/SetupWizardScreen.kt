@@ -41,14 +41,6 @@ import org.prauga.keyboard.keyboard.KeyboardTheme
 import org.prauga.keyboard.preview.KeyboardPreview
 import org.prauga.keyboard.setup.SetupStep
 
-internal class SetupActions(
-    val onStart: () -> Unit,
-    val onEnable: () -> Unit,
-    val onSwitch: () -> Unit,
-    val onLanguages: () -> Unit,
-    val onFinish: () -> Unit,
-)
-
 @Composable
 internal fun SetupWizardScreen(state: SetupUiState, appName: String, actions: SetupActions) {
     val step = state.step ?: return
@@ -140,20 +132,27 @@ private fun StepsScreen(step: SetupStep, appName: String, actions: SetupActions)
                 title = stringResource(R.string.setup_step3_title),
                 text = stringResource(R.string.setup_step3_instruction, appName),
             ) {
-                PvotButton(
-                    text = stringResource(R.string.setup_step3_action),
-                    onClick = actions.onLanguages,
-                    style = PvotButtonStyle.Tonal,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Spacer(Modifier.height(PvotSpacing.S))
-                PvotButton(
-                    text = stringResource(R.string.setup_finish_action),
-                    onClick = actions.onFinish,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                FinishButtons(actions)
             }
         }
+    }
+}
+
+@Composable
+private fun FinishButtons(actions: SetupActions, modifier: Modifier = Modifier) {
+    Column(modifier) {
+        PvotButton(
+            text = stringResource(R.string.setup_step3_action),
+            onClick = actions.onLanguages,
+            style = PvotButtonStyle.Tonal,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(PvotSpacing.S))
+        PvotButton(
+            text = stringResource(R.string.setup_finish_action),
+            onClick = actions.onFinish,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
