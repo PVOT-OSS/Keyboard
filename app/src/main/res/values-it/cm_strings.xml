@@ -36,7 +36,6 @@
     <string name="show_longpress_hints_summary">Mostra i simboli di pressione prolungata per i tasti che li prevedono</string>
     <string name="show_emoji_key">Mostra tasto emoji</string>
     <string name="show_emoji_key_summary">Mostra sempre il tasto emoji. Quando questa opzione è abilitata, il tasto di selezione della lingua non può essere mostrato.</string>
-    <string name="enable_split_keyboard_summary">Solo in orizzontale</string>
     <string name="split_keyboard_duplicate_keys">Duplica tasti centrali</string>
     <string name="split_keyboard_duplicate_keys_summary">Mostra i tasti vicini al centro su entrambe le metà</string>
     <string name="spoken_description_split_keyboard">Dividi tastiera</string>

@@ -19,6 +19,4 @@
 -->
 
 <resources>
-    <!-- Description for option to enable sending usage statistics -->
-    <string name="enable_metrics_logging_summary" translatable="false"></string>
 </resources>
