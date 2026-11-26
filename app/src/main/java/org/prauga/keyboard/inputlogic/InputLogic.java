@@ -29,6 +29,7 @@ import android.view.KeyEvent;
 import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.EditorInfo;
 
+import org.prauga.keyboard.autospace.AutoSpace;
 import org.prauga.keyboard.compat.SuggestionSpanUtils;
 import org.prauga.keyboard.event.Event;
 import org.prauga.keyboard.event.InputTransaction;
@@ -823,6 +824,11 @@ public final class InputLogic {
                 // Validity check
                 throw new RuntimeException("Should not be composing here");
             }
+            insertAutomaticSpaceIfOptionsAndTextAllow(settingsValues);
+        } else if (!isComposingWord && settingsValues.mAutoSpaceAfterPunctuation
+                && Character.isLetter(codePoint)
+                && settingsValues.mInputAttributes.mIsGeneralTextInput
+                && AutoSpace.shouldInsertSpace(mConnection.getTextBeforeCursor(3, 0))) {
             insertAutomaticSpaceIfOptionsAndTextAllow(settingsValues);
         }
 

@@ -30,6 +30,7 @@ import org.prauga.keyboard.InputAttributes;
 import org.prauga.keyboard.R;
 import org.prauga.keyboard.RichInputMethodManager;
 import org.prauga.keyboard.blockedwords.BlockedWords;
+import org.prauga.keyboard.autospace.AutoSpace;
 import org.prauga.keyboard.gestures.KeyboardGestures;
 import org.prauga.keyboard.keyborders.BorderlessKeyBackground;
 import org.prauga.keyboard.keytextsize.KeyTextSize;
@@ -94,6 +95,7 @@ public class SettingsValues {
     public final boolean mIncognitoModeEnabled;
     public final boolean mKeyboardGesturesEnabled;
     public final boolean mArrowKeyRowEnabled;
+    public final boolean mAutoSpaceAfterPunctuation;
     public final boolean mUseContactsDict;
     public final boolean mUsePersonalizedDicts;
     public final boolean mUseDoubleSpacePeriod;
@@ -232,6 +234,8 @@ public class SettingsValues {
         mPlausibilityThreshold = Settings.readPlausibilityThreshold(res);
         mKeyboardGesturesEnabled = prefs.getBoolean(KeyboardGestures.PREF_KEYBOARD_GESTURES, false);
         mArrowKeyRowEnabled = prefs.getBoolean(Settings.PREF_ARROW_KEY_ROW, false);
+        mAutoSpaceAfterPunctuation =
+                prefs.getBoolean(AutoSpace.PREF_AUTO_SPACE_AFTER_PUNCTUATION, false);
         mGestureInputEnabled = Settings.readGestureInputEnabled(prefs, res)
                 || mKeyboardGesturesEnabled;
         mGestureTrailEnabled = !mKeyboardGesturesEnabled

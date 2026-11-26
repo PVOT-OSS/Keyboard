@@ -52,6 +52,8 @@
     <string name="key_borders_summary">Draw a background behind each key</string>
     <string name="keyboard_resize">Resize keyboard</string>
     <string name="toolbar_keys">Toolbar keys</string>
+    <string name="auto_space_after_punctuation">Auto-space after punctuation</string>
+    <string name="auto_space_after_punctuation_summary">Add a space when you start a word right after . , ! ? ; or :</string>
     <string name="multilingual_typing">Multilingual typing</string>
     <string name="multilingual_typing_summary">Suggest words from your other languages without switching</string>
     <string name="toolbar_keys_summary">Choose and order the keys in the toolbar</string>
