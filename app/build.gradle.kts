@@ -89,6 +89,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.assertk)
     androidTestImplementation(libs.mockito.core)
     androidTestImplementation(libs.dexmaker)
     androidTestImplementation(libs.dexmaker.mockito)
