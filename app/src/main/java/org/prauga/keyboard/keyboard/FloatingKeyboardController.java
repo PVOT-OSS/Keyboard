@@ -28,6 +28,7 @@ import org.prauga.keyboard.R;
 import org.prauga.keyboard.utils.FloatingKeyboardUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class FloatingKeyboardController {
     public interface Listener {
@@ -61,6 +62,8 @@ public final class FloatingKeyboardController {
     private final Runnable mExitResizeMode = () -> setResizeMode(false);
     private final int mTouchSlop;
     private final Drawable mPanelBackground;
+    @Nullable
+    private final Drawable mDockedBackground;
     private final int mPanelPadding;
     private final int mCornerHandleSize;
     private final float mCornerRadius;
@@ -91,6 +94,7 @@ public final class FloatingKeyboardController {
             @Nonnull final Listener listener) {
         mInputView = inputView;
         mPanel = panel;
+        mDockedBackground = panel.getBackground();
         mDockedOnlyView = dockedOnlyView;
         mDockedLayoutParams =
                 new FrameLayout.LayoutParams((FrameLayout.LayoutParams) panel.getLayoutParams());
@@ -153,7 +157,7 @@ public final class FloatingKeyboardController {
         } else {
             mPanel.setLayoutParams(new FrameLayout.LayoutParams(mDockedLayoutParams));
             mPanel.setPadding(0, 0, 0, 0);
-            mPanel.setBackground(null);
+            mPanel.setBackground(mDockedBackground);
             mPanel.setClipToOutline(false);
             mPanel.setTranslationX(0);
             mPanel.setTranslationY(0);

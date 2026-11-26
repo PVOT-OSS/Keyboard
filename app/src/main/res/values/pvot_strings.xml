@@ -57,6 +57,15 @@
     <string name="emoji_search_key">Search emoji</string>
     <string name="key_text_size">Key text size</string>
     <string name="key_borders">Key borders</string>
+    <string name="keyboard_photo">Background photo</string>
+    <string name="keyboard_photo_summary">Use one of your photos behind the keys</string>
+    <string name="keyboard_photo_set">Tap to choose a different photo. The keyboard uses light text on it.</string>
+    <string name="keyboard_photo_remove">Remove background photo</string>
+    <string name="keyboard_photo_failed">Couldn\'t use that photo</string>
+    <string name="keyboard_photo_darkness">Photo darkness</string>
+    <string name="keyboard_photo_darkness_light">Light</string>
+    <string name="keyboard_photo_darkness_medium">Medium</string>
+    <string name="keyboard_photo_darkness_dark">Dark</string>
     <string name="keyboard_theme_high_contrast">High contrast</string>
     <string name="key_borders_summary">Draw a background behind each key</string>
     <string name="keyboard_resize">Resize keyboard</string>

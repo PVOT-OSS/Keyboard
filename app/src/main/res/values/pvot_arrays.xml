@@ -26,4 +26,14 @@
         <item>large</item>
         <item>largest</item>
     </string-array>
+    <string-array name="keyboard_photo_darkness_entries" translatable="false">
+        <item>@string/keyboard_photo_darkness_light</item>
+        <item>@string/keyboard_photo_darkness_medium</item>
+        <item>@string/keyboard_photo_darkness_dark</item>
+    </string-array>
+    <string-array name="keyboard_photo_darkness_values" translatable="false">
+        <item>light</item>
+        <item>medium</item>
+        <item>dark</item>
+    </string-array>
 </resources>

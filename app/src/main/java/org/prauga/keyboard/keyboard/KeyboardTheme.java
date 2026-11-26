@@ -24,6 +24,7 @@ import android.os.Build.VERSION_CODES;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.prauga.keyboard.photo.KeyboardPhoto;
 import org.prauga.keyboard.compat.BuildCompatUtils;
 import org.prauga.keyboard.R;
 
@@ -164,7 +165,8 @@ public final class KeyboardTheme implements Comparable<KeyboardTheme> {
 
     /* package private for testing */
     static KeyboardTheme getKeyboardTheme(final Context context, final int sdkVersion) {
-        int themeId = getSelectedKeyboardThemeId(context);
+        int themeId = KeyboardPhoto.isSet(context)
+                ? THEME_ID_LXX_DARK : getSelectedKeyboardThemeId(context);
         if (THEME_ID_AUTO_DARK == themeId) {
             Configuration cfg = context.getResources().getConfiguration();
             int nightMode = cfg.uiMode & Configuration.UI_MODE_NIGHT_MASK;

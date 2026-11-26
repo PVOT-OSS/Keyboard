@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
@@ -39,6 +40,7 @@ import org.prauga.keyboard.editing.TextEditingView;
 import org.prauga.keyboard.onehanded.OneHandedMode;
 import org.prauga.keyboard.arrowkeys.ArrowKeyRow;
 import org.prauga.keyboard.onehanded.OneHandedSideView;
+import org.prauga.keyboard.photo.KeyboardPhoto;
 import org.prauga.keyboard.resize.KeyboardResizeView;
 import org.prauga.keyboard.event.Event;
 import org.prauga.keyboard.keyboard.KeyboardLayoutSet.KeyboardLayoutSetException;
@@ -76,6 +78,8 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
     private OneHandedSideView mOneHandedSideView;
     private KeyboardResizeView mKeyboardResizeView;
     private ArrowKeyRow mArrowKeyRow;
+    private long mPhotoVersion;
+    private boolean mPhotoActive;
     private FloatingKeyboardController mFloatingKeyboardController;
     private boolean mIsFloating;
     private int mFloatingKeyboardWidth;
@@ -129,8 +133,12 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         final boolean darkModeChanged = (mActiveUiMode & Configuration.UI_MODE_NIGHT_MASK)
                 != (context.getResources().getConfiguration().uiMode
                     & Configuration.UI_MODE_NIGHT_MASK);
+        final long photoVersion = KeyboardPhoto.version(
+                PreferenceManager.getDefaultSharedPreferences(context));
+        final boolean photoChanged = photoVersion != mPhotoVersion;
         if (mThemeContext == null || !keyboardTheme.equals(mKeyboardTheme) || darkModeChanged
-                || !mThemeContext.getResources().equals(context.getResources())) {
+                || photoChanged || !mThemeContext.getResources().equals(context.getResources())) {
+            mPhotoVersion = photoVersion;
             mKeyboardTheme = keyboardTheme;
             mThemeContext = new ContextThemeWrapper(context, keyboardTheme.mStyleId);
             mActiveUiMode = context.getResources().getConfiguration().uiMode;
@@ -392,7 +400,9 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         hideKeyboardResize();
         panel.getLayoutParams().height = mMainKeyboardFrame.getHeight();
         final Drawable background = mKeyboardView.getBackground();
-        if (background != null && background.getConstantState() != null) {
+        if (mPhotoActive) {
+            panel.setBackground(KeyboardPhoto.newDrawable(mThemeContext));
+        } else if (background != null && background.getConstantState() != null) {
             panel.setBackground(background.getConstantState().newDrawable());
         }
         mMainKeyboardFrame.setVisibility(View.GONE);
@@ -667,10 +677,20 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         mCurrentInputView = (InputView)LayoutInflater.from(mThemeContext).inflate(
                 R.layout.input_view, null);
         mMainKeyboardFrame = mCurrentInputView.findViewById(R.id.main_keyboard_frame);
+        final Drawable photo = KeyboardPhoto.newDrawable(mThemeContext);
+        mPhotoActive = photo != null;
+        if (mPhotoActive) {
+            mMainKeyboardFrame.setBackground(photo);
+        }
         mEmojiPalettesView = (EmojiPalettesView)mCurrentInputView.findViewById(
                 R.id.emoji_palettes_view);
 
         mKeyboardView = (MainKeyboardView) mCurrentInputView.findViewById(R.id.keyboard_view);
+        if (mPhotoActive) {
+            mKeyboardView.setBackgroundColor(Color.TRANSPARENT);
+            mCurrentInputView.findViewById(R.id.suggestion_strip_view)
+                    .setBackgroundColor(Color.TRANSPARENT);
+        }
         mKeyboardView.setHardwareAcceleratedDrawingEnabled(isHardwareAcceleratedDrawingEnabled);
         mKeyboardView.setKeyboardActionListener(mLatinIME);
         mEmojiPalettesView.setHardwareAcceleratedDrawingEnabled(
@@ -688,7 +708,11 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         mEmojiPalettesView.setKeyboardActionListener(mLatinIME);
 
         final View dragHandle = mCurrentInputView.findViewById(R.id.floating_drag_handle);
-        if (mKeyboardView.getBackground() != null) {
+        final Drawable floatingBackground = mPhotoActive
+                ? KeyboardPhoto.newDrawable(mThemeContext) : mKeyboardView.getBackground();
+        if (mPhotoActive) {
+            dragHandle.setBackground(KeyboardPhoto.newDrawable(mThemeContext));
+        } else if (mKeyboardView.getBackground() != null) {
             dragHandle.setBackground(
                     mKeyboardView.getBackground().getConstantState().newDrawable());
         }
@@ -697,7 +721,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         dragHandle.findViewById(R.id.floating_drag_handle_pill)
                 .setBackgroundTintList(strip.getToolKeyTintList());
         mFloatingKeyboardController = new FloatingKeyboardController(mCurrentInputView,
-                mMainKeyboardFrame, mEmojiPalettesView, dragHandle, mKeyboardView.getBackground(),
+                mMainKeyboardFrame, mEmojiPalettesView, dragHandle, floatingBackground,
                 strip.getToolKeyTintList(),
                 PreferenceManager.getDefaultSharedPreferences(mLatinIME),
                 new FloatingKeyboardController.Listener() {

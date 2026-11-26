@@ -126,6 +126,11 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".photo.KeyboardPhotoActivity"
+             android:theme="@android:style/Theme.Translucent.NoTitleBar"
+             android:excludeFromRecents="true"
+             android:exported="false"/>
+
         <activity android:name=".userdictionary.PersonalDictionaryBackupActivity"
              android:theme="@android:style/Theme.Translucent.NoTitleBar"
              android:excludeFromRecents="true"
