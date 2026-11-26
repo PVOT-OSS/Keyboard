@@ -16,8 +16,8 @@ android {
         applicationId = "org.prauga.keyboard"
         minSdk = 30
         targetSdk = 36
-        versionCode = 30
-        versionName = "1.0"
+        versionCode = rootProject.extra["computedVersionCode"] as Int
+        versionName = rootProject.extra["computedVersionName"] as String
 
         testApplicationId = "org.prauga.keyboard.tests"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -54,6 +54,12 @@ android {
     externalNativeBuild {
         ndkBuild {
             path = file("src/main/jni/AndroidNdk.mk")
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
         }
     }
 
