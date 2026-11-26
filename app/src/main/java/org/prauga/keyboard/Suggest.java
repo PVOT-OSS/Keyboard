@@ -26,6 +26,7 @@ import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo;
 import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.common.StringUtils;
 import org.prauga.keyboard.define.DebugFlags;
+import org.prauga.keyboard.blockedwords.BlockedWords;
 import org.prauga.keyboard.clipboard.ClipboardHistoryManager;
 import org.prauga.keyboard.emojisuggestions.EmojiKeywords;
 import org.prauga.keyboard.glide.GlideTyping;
@@ -37,6 +38,7 @@ import org.prauga.keyboard.utils.SuggestionResults;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
@@ -262,7 +264,8 @@ public final class Suggest {
         if (!TextUtils.isEmpty(typedWordString)) {
             suggestionsContainer.add(0, typedWordInfo);
             if (settingsValuesForSuggestion.mEmojiSuggestionsEnabled && !resultsArePredictions) {
-                addEmojiSuggestion(suggestionsContainer, typedWordString);
+                addEmojiSuggestion(suggestionsContainer, typedWordString,
+                        settingsValuesForSuggestion.mBlockedWords);
             }
             if (!resultsArePredictions) {
                 addClipShortcutSuggestion(suggestionsContainer, typedWordString);
@@ -311,10 +314,10 @@ public final class Suggest {
     }
 
     private void addEmojiSuggestion(@Nonnull final ArrayList<SuggestedWordInfo> suggestions,
-            @Nonnull final String typedWord) {
+            @Nonnull final String typedWord, @Nonnull final Set<String> blockedWords) {
         final String emoji = EmojiKeywords.lookup(typedWord,
                 mDictionaryFacilitator.getLocale());
-        if (emoji == null) {
+        if (emoji == null || BlockedWords.isBlocked(blockedWords, emoji)) {
             return;
         }
         suggestions.add(Math.min(EMOJI_SUGGESTION_INDEX, suggestions.size()),
