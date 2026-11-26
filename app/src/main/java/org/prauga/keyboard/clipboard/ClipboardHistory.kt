@@ -8,6 +8,8 @@ package org.prauga.keyboard.clipboard
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
+// One list of clips: every edit works on the same private items.
+@Suppress("TooManyFunctions")
 class ClipboardHistory {
     data class Item(
         val text: String,

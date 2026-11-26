@@ -13,6 +13,8 @@ import java.io.File
 import java.io.IOException
 import org.prauga.keyboard.utils.ExecutorUtils
 
+// The single synchronized entry point the IME's Java code uses for the clip list.
+@Suppress("TooManyFunctions")
 class ClipboardHistoryManager private constructor(private val context: Context) {
     private val history = ClipboardHistory()
     private val pinsFile = File(context.noBackupFilesDir, PINS_FILE_NAME)
