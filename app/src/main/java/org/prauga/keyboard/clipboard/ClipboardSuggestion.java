@@ -21,6 +21,9 @@ public final class ClipboardSuggestion {
 
     public enum Type {
         CODE,
+        EMAIL,
+        LINK,
+        PHONE,
         TEXT
     }
 
@@ -75,6 +78,12 @@ public final class ClipboardSuggestion {
     @Nonnull
     private static List<Match> findMatches(@Nonnull final String text) {
         final List<Match> matches = new ArrayList<>();
+        final ClipKinds.Kind kind = ClipKinds.kindOf(text);
+        if (kind != null) {
+            matches.add(new Match(text, kind == ClipKinds.Kind.EMAIL ? Type.EMAIL
+                    : kind == ClipKinds.Kind.LINK ? Type.LINK : Type.PHONE));
+            return matches;
+        }
         final String code = findSingleCode(text);
         if (code != null) {
             matches.add(new Match(code, Type.CODE));

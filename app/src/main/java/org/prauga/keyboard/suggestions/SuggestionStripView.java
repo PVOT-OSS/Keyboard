@@ -573,10 +573,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         chip.setCompoundDrawableTintList(tint);
         chip.setBackgroundTintList(ColorStateList.valueOf(
                 InlineSuggestionsStrip.getChipBackgroundColor(tint.getDefaultColor())));
-        chip.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                match.getType() == ClipboardSuggestion.Type.CODE
-                        ? R.drawable.ic_suggestion_code : R.drawable.ic_suggestion_clipboard,
-                0, 0, 0);
+        chip.setCompoundDrawablesRelativeWithIntrinsicBounds(chipIcon(match.getType()), 0, 0, 0);
         final Resources res = getResources();
         chip.setText(isSensitive ? SENSITIVE_CLIPBOARD_LABEL : match.getText());
         chip.setContentDescription(isSensitive
@@ -585,6 +582,21 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         chip.setTag(match);
         chip.setOnClickListener(this);
         return chip;
+    }
+
+    private static int chipIcon(@Nonnull final ClipboardSuggestion.Type type) {
+        switch (type) {
+            case CODE:
+                return R.drawable.ic_suggestion_code;
+            case EMAIL:
+                return R.drawable.ic_suggestion_email;
+            case LINK:
+                return R.drawable.ic_suggestion_link;
+            case PHONE:
+                return R.drawable.ic_suggestion_phone;
+            default:
+                return R.drawable.ic_suggestion_clipboard;
+        }
     }
 
     private void onToolbarCode(final int code) {
