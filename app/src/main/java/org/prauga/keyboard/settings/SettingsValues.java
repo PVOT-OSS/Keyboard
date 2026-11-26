@@ -30,6 +30,7 @@ import org.prauga.keyboard.InputAttributes;
 import org.prauga.keyboard.R;
 import org.prauga.keyboard.RichInputMethodManager;
 import org.prauga.keyboard.blockedwords.BlockedWords;
+import org.prauga.keyboard.gestures.KeyboardGestures;
 import org.prauga.keyboard.keyborders.BorderlessKeyBackground;
 import org.prauga.keyboard.keytextsize.KeyTextSize;
 import org.prauga.keyboard.multilingual.MultilingualLocales;
@@ -91,6 +92,7 @@ public class SettingsValues {
     public final boolean mMultilingualTypingEnabled;
     public final boolean mKeyBordersEnabled;
     public final boolean mIncognitoModeEnabled;
+    public final boolean mKeyboardGesturesEnabled;
     public final boolean mUseContactsDict;
     public final boolean mUsePersonalizedDicts;
     public final boolean mUseDoubleSpacePeriod;
@@ -227,12 +229,16 @@ public class SettingsValues {
         mAutoCorrectionThreshold = readAutoCorrectionThreshold(res,
                 autoCorrectionThresholdRawValue);
         mPlausibilityThreshold = Settings.readPlausibilityThreshold(res);
-        mGestureInputEnabled = Settings.readGestureInputEnabled(prefs, res);
-        mGestureTrailEnabled = prefs.getBoolean(Settings.PREF_GESTURE_PREVIEW_TRAIL, true);
+        mKeyboardGesturesEnabled = prefs.getBoolean(KeyboardGestures.PREF_KEYBOARD_GESTURES, false);
+        mGestureInputEnabled = Settings.readGestureInputEnabled(prefs, res)
+                || mKeyboardGesturesEnabled;
+        mGestureTrailEnabled = !mKeyboardGesturesEnabled
+                && prefs.getBoolean(Settings.PREF_GESTURE_PREVIEW_TRAIL, true);
         mCloudSyncEnabled = prefs.getBoolean(LocalSettingsConstants.PREF_ENABLE_CLOUD_SYNC, false);
         mAccount = prefs.getString(LocalSettingsConstants.PREF_ACCOUNT_NAME,
                 null /* default */);
-        mGestureFloatingPreviewTextEnabled = !mInputAttributes.mDisableGestureFloatingPreviewText
+        mGestureFloatingPreviewTextEnabled = !mKeyboardGesturesEnabled
+                && !mInputAttributes.mDisableGestureFloatingPreviewText
                 && prefs.getBoolean(Settings.PREF_GESTURE_FLOATING_PREVIEW_TEXT, true);
         mAutoCorrectionEnabledPerUserSettings = mAutoCorrectEnabled
                 && !mInputAttributes.mInputTypeNoAutoCorrect;

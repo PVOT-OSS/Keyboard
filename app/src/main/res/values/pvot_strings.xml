@@ -38,6 +38,8 @@
     <string name="show_toolbar_key">Show toolbar</string>
     <string name="incognito_mode">Incognito mode</string>
     <string name="keyboard_modes">Keyboard modes</string>
+    <string name="keyboard_gestures">Swipe gestures instead of glide typing</string>
+    <string name="keyboard_gestures_summary">Swipe left to delete a word, swipe down to hide the keyboard</string>
     <string name="keyboard_modes_back">Back to the toolbar</string>
     <string name="show_toolbar_key_incognito">Incognito: the keyboard is not learning. Show toolbar</string>
     <string name="hide_toolbar_key">Hide toolbar</string>

@@ -98,6 +98,7 @@ import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.editing.TextEditingView;
 import org.prauga.keyboard.emojisuggestions.EmojiKeywords;
 import org.prauga.keyboard.emojisuggestions.EmojiSearchBar;
+import org.prauga.keyboard.gestures.KeyboardGestures;
 import org.prauga.keyboard.glide.GlideTyping;
 import org.prauga.keyboard.onehanded.OneHandedMode;
 import org.prauga.keyboard.multilingual.MultilingualLocales;
@@ -152,6 +153,8 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         KeyboardResizeView.Listener,
         DictionaryFacilitator.DictionaryInitializationListener,
         PermissionsManager.PermissionsResultCallback {
+    private static final int MAX_WORD_DELETE_LOOKBACK = 64;
+
     static final String TAG = LatinIME.class.getSimpleName();
     private static final boolean TRACE = false;
 
@@ -1919,6 +1922,9 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     @Override
     public void onStartBatchInput() {
+        if (mSettings.getCurrent().mKeyboardGesturesEnabled) {
+            return;
+        }
         mInputLogic.onStartBatchInput(mSettings.getCurrent(), mKeyboardSwitcher, mHandler);
         mGestureConsumer.onGestureStarted(
                 mRichImm.getCurrentSubtypeLocale(),
@@ -1927,19 +1933,52 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     @Override
     public void onUpdateBatchInput(final InputPointers batchPointers) {
+        if (mSettings.getCurrent().mKeyboardGesturesEnabled) {
+            return;
+        }
         mInputLogic.onUpdateBatchInput(batchPointers);
     }
 
     @Override
     public void onEndBatchInput(final InputPointers batchPointers) {
+        if (mSettings.getCurrent().mKeyboardGesturesEnabled) {
+            onKeyboardGesture(batchPointers);
+            return;
+        }
         mInputLogic.onEndBatchInput(batchPointers);
         mGestureConsumer.onGestureCompleted(batchPointers);
     }
 
     @Override
     public void onCancelBatchInput() {
+        if (mSettings.getCurrent().mKeyboardGesturesEnabled) {
+            return;
+        }
         mInputLogic.onCancelBatchInput(mHandler);
         mGestureConsumer.onGestureCanceled();
+    }
+
+    private void onKeyboardGesture(@Nonnull final InputPointers pointers) {
+        final Keyboard keyboard = mKeyboardSwitcher.getKeyboard();
+        if (keyboard == null) {
+            return;
+        }
+        final KeyboardGestures.Gesture gesture = KeyboardGestures.classify(
+                pointers.getXCoordinates(), pointers.getYCoordinates(), pointers.getPointerSize(),
+                keyboard.mMostCommonKeyWidth, keyboard.mMostCommonKeyHeight);
+        if (gesture == KeyboardGestures.Gesture.HIDE_KEYBOARD) {
+            requestHideSelf(0);
+        } else if (gesture == KeyboardGestures.Gesture.DELETE_WORD) {
+            mInputLogic.finishInput();
+            final InputConnection ic = getCurrentInputConnection();
+            if (ic == null) {
+                return;
+            }
+            final CharSequence before = ic.getTextBeforeCursor(MAX_WORD_DELETE_LOOKBACK, 0);
+            if (before != null) {
+                ic.deleteSurroundingText(KeyboardGestures.lengthOfLastWord(before), 0);
+            }
+        }
     }
 
     /**
