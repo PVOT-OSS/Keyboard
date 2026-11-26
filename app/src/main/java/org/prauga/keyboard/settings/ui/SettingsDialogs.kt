@@ -115,6 +115,7 @@ private fun DocumentDialog(state: SettingsDialogState) {
             Text(
                 text = request.text,
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier =
                     Modifier.fillMaxWidth()
                         .heightIn(max = DOCUMENT_MAX_HEIGHT)
@@ -181,6 +182,7 @@ private fun SliderDialog(state: SettingsDialogState) {
             Text(
                 text = request.format(current),
                 style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(bottom = PvotSpacing.S),
             )
             PvotSlider(
