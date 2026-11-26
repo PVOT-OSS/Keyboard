@@ -10,13 +10,16 @@ import org.junit.Test
 
 class ToolbarKeysTest {
     @Test
-    fun defaultShowsTheStandardKeysAndHidesIncognito() {
+    fun defaultShowsAShortToolbar() {
         val entries = ToolbarKeys.parse(null)
         assertEquals(
             listOf("clipboard", "editing", "one_handed", "resize", "float", "emoji", "settings", "incognito"),
             entries.map { it.id },
         )
-        assertEquals(listOf("incognito"), entries.filter { !it.shown }.map { it.id })
+        assertEquals(
+            listOf("one_handed", "resize", "float", "incognito"),
+            entries.filter { !it.shown }.map { it.id },
+        )
     }
 
     @Test

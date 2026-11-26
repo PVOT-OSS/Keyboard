@@ -22,7 +22,7 @@ object ToolbarKeys {
     private const val HIDDEN_PREFIX = "!"
     private const val SEPARATOR = ","
     private val ALL = listOf(CLIPBOARD, EDITING, ONE_HANDED, RESIZE, FLOAT, EMOJI, SETTINGS, INCOGNITO)
-    private val HIDDEN_BY_DEFAULT = setOf(INCOGNITO)
+    private val HIDDEN_BY_DEFAULT = setOf(ONE_HANDED, RESIZE, FLOAT, INCOGNITO)
 
     data class Entry(val id: String, val shown: Boolean)
 

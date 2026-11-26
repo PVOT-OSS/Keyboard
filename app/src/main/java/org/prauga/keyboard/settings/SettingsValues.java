@@ -171,7 +171,7 @@ public class SettingsValues {
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
         mShowNumberRow = prefs.getBoolean(Settings.PREF_SHOW_NUMBER_ROW, false);
         mShowNumberRowPassword = prefs.getBoolean(Settings.PREF_SHOW_NUMBER_ROW_PASSWORD, false);
-        mShowLongpressHints = prefs.getBoolean(Settings.PREF_SHOW_LONGPRESS_HINTS, true);
+        mShowLongpressHints = prefs.getBoolean(Settings.PREF_SHOW_LONGPRESS_HINTS, false);
         mShowClipboardSuggestions =
                 prefs.getBoolean(Settings.PREF_SHOW_CLIPBOARD_SUGGESTIONS, true);
         mIncludesOtherImesInLanguageSwitchList = Settings.ENABLE_SHOW_LANGUAGE_SWITCH_KEY_SETTINGS
