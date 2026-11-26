@@ -90,7 +90,9 @@ import org.prauga.keyboard.keyboard.MainKeyboardView;
 import org.prauga.keyboard.Suggest.OnGetSuggestedWordsCallback;
 import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo;
 import org.prauga.keyboard.clipboard.ClipboardSuggestion;
+import org.prauga.keyboard.clipboard.ClipEditClient;
 import org.prauga.keyboard.clipboard.ClipboardHistoryManager;
+import org.prauga.keyboard.clipboard.ClipboardSearchClient;
 import org.prauga.keyboard.clipboard.ClipboardHistoryView;
 import org.prauga.keyboard.clipboard.ClipboardSuggestionMonitor;
 import org.prauga.keyboard.blockedwords.BlockedWords;
@@ -1547,6 +1549,35 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     public void onClipboardHistoryPaste(@Nonnull final String text) {
         mKeyboardSwitcher.hidePanels();
         onTextInput(text);
+    }
+
+    @Override
+    public void onClipboardHistorySearch() {
+        showTextField(new ClipboardSearchClient(ClipboardHistoryManager.getInstance(this),
+                text -> {
+                    hideTextField();
+                    commitTextInput(text);
+                }, this::showClipboardHistory));
+    }
+
+    @Override
+    public void onClipboardHistoryAdd() {
+        showTextField(new ClipEditClient("", R.string.clipboard_history_add,
+                getString(R.string.clipboard_history_save), text -> {
+                    ClipboardHistoryManager.getInstance(this).addClip(text);
+                    hideTextField();
+                    showClipboardHistory();
+                }, this::showClipboardHistory));
+    }
+
+    @Override
+    public void onClipboardHistoryEdit(@Nonnull final String oldText) {
+        showTextField(new ClipEditClient(oldText, R.string.clipboard_history_edit,
+                getString(R.string.clipboard_history_save), text -> {
+                    ClipboardHistoryManager.getInstance(this).replace(oldText, text);
+                    hideTextField();
+                    showClipboardHistory();
+                }, this::showClipboardHistory));
     }
 
     @Override

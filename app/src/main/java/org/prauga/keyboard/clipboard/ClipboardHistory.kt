@@ -61,6 +61,40 @@ class ClipboardHistory {
 
     fun getPinnedItems(): List<Item> = items.filter { it.pinned }
 
+    fun moveToTop(text: String, now: Long) {
+        val index = indexOf(text)
+        if (index >= 0) {
+            items.add(0, items.removeAt(index).copy(timestamp = now))
+        }
+    }
+
+    fun replace(oldText: String, newText: String, now: Long): Boolean {
+        if (newText.isBlank()) {
+            return false
+        }
+        val index = indexOf(oldText)
+        val pinned = index >= 0 && items[index].pinned
+        if (index >= 0) {
+            items.removeAt(index)
+        }
+        addManual(newText, now, pinned)
+        return true
+    }
+
+    fun addManual(text: String, now: Long, pinned: Boolean = false): Boolean {
+        if (text.isBlank()) {
+            return false
+        }
+        val index = indexOf(text)
+        val keepPin = pinned || (index >= 0 && items[index].pinned)
+        if (index >= 0) {
+            items.removeAt(index)
+        }
+        items.add(0, Item(text, now, keepPin))
+        trimToMaxItems()
+        return true
+    }
+
     fun setPinned(text: String, pinned: Boolean) {
         val index = indexOf(text)
         if (index >= 0) {

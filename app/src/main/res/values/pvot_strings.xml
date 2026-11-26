@@ -9,6 +9,12 @@
     <string name="emoji_suggestions">Emoji suggestions</string>
     <string name="emoji_suggestions_summary">Suggest an emoji for the word you are typing (English)</string>
     <string name="clipboard_history">Clipboard history</string>
+    <string name="clipboard_history_search">Search clipboard</string>
+    <string name="clipboard_history_add">Add a clip</string>
+    <string name="clipboard_history_edit">Edit</string>
+    <string name="clipboard_history_to_top">To top</string>
+    <string name="clipboard_history_no_results">No clips found</string>
+    <string name="clipboard_history_save">Save</string>
     <string name="clipboard_history_summary">Keep recently copied text for an hour, and pinned items until you remove them</string>
     <string name="clipboard_history_clear">Clear</string>
     <string name="clipboard_history_empty">Text you copy appears here</string>

@@ -11,6 +11,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.GridLayout
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.graphics.ColorUtils
@@ -22,6 +23,12 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
         fun onClipboardHistoryPaste(text: String)
 
         fun onClipboardHistoryClose()
+
+        fun onClipboardHistorySearch()
+
+        fun onClipboardHistoryAdd()
+
+        fun onClipboardHistoryEdit(text: String)
     }
 
     private lateinit var manager: ClipboardHistoryManager
@@ -36,6 +43,10 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
     private lateinit var pin: TextView
     private lateinit var delete: TextView
     private lateinit var cancel: TextView
+    private lateinit var edit: TextView
+    private lateinit var toTop: TextView
+    private lateinit var search: ImageButton
+    private lateinit var add: ImageButton
     private var selected: ClipboardHistory.Item? = null
 
     override fun onFinishInflate() {
@@ -49,6 +60,21 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
         pin = findViewById(R.id.clipboard_history_pin)
         delete = findViewById(R.id.clipboard_history_delete)
         cancel = findViewById(R.id.clipboard_history_cancel)
+        edit = findViewById(R.id.clipboard_history_edit)
+        toTop = findViewById(R.id.clipboard_history_to_top)
+        search = findViewById(R.id.clipboard_history_search)
+        add = findViewById(R.id.clipboard_history_add)
+        search.setOnClickListener { listener.onClipboardHistorySearch() }
+        add.setOnClickListener { listener.onClipboardHistoryAdd() }
+        edit.setOnClickListener {
+            val text = selected?.text
+            select(null)
+            text?.let(listener::onClipboardHistoryEdit)
+        }
+        toTop.setOnClickListener {
+            selected?.let { manager.moveToTop(it.text) }
+            select(null)
+        }
         back.setOnClickListener { listener.onClipboardHistoryClose() }
         clear.setOnClickListener {
             manager.clearUnpinned()
@@ -73,7 +99,9 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
     fun show(backLabel: CharSequence?, tint: ColorStateList) {
         this.tint = tint
         back.text = backLabel
-        listOf(back, title, clear, empty, pin, delete, cancel).forEach { it.setTextColor(tint) }
+        listOf(back, title, clear, empty, pin, edit, toTop, delete, cancel).forEach { it.setTextColor(tint) }
+        search.imageTintList = tint
+        add.imageTintList = tint
         select(null)
     }
 

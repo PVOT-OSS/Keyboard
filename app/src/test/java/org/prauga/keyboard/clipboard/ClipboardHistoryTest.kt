@@ -116,6 +116,40 @@ class ClipboardHistoryTest {
         assertEquals(2, history.getItems(NOW).size)
     }
 
+    @Test
+    fun moveToTopKeepsThePin() {
+        val history = ClipboardHistory()
+        history.add("a", NOW - 2, false, NOW)
+        history.add("b", NOW - 1, false, NOW)
+        history.setPinned("a", true)
+        history.moveToTop("a", NOW)
+        val items = history.getItems(NOW)
+        assertEquals(listOf("a", "b"), items.map { it.text })
+        assertTrue(items[0].pinned)
+    }
+
+    @Test
+    fun editingReplacesTheClipAndKeepsThePin() {
+        val history = ClipboardHistory()
+        history.add("helo", NOW - 1, false, NOW)
+        history.setPinned("helo", true)
+        assertTrue(history.replace("helo", "hello", NOW))
+        val items = history.getItems(NOW)
+        assertEquals(listOf("hello"), items.map { it.text })
+        assertTrue(items[0].pinned)
+        assertFalse(history.replace("hello", "  ", NOW))
+    }
+
+    @Test
+    fun manualClipsGoOnTopWithoutDuplicates() {
+        val history = ClipboardHistory()
+        history.add("a", NOW - 1, false, NOW)
+        assertTrue(history.addManual("b", NOW))
+        assertTrue(history.addManual("a", NOW))
+        assertEquals(listOf("a", "b"), history.getItems(NOW).map { it.text })
+        assertFalse(history.addManual(" ", NOW))
+    }
+
     private companion object {
         const val NOW = 10_000_000L
     }

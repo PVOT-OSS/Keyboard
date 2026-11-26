@@ -39,6 +39,24 @@
             android:text="@string/clipboard_history"
             android:textSize="@dimen/clipboard_history_title_size" />
 
+        <ImageButton
+            android:id="@+id/clipboard_history_search"
+            android:layout_width="@dimen/clipboard_history_header_height"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/clipboard_history_search"
+            android:scaleType="center"
+            android:src="@drawable/ic_clipboard_search" />
+
+        <ImageButton
+            android:id="@+id/clipboard_history_add"
+            android:layout_width="@dimen/clipboard_history_header_height"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/clipboard_history_add"
+            android:scaleType="center"
+            android:src="@drawable/ic_clipboard_add" />
+
         <TextView
             android:id="@+id/clipboard_history_clear"
             android:layout_width="wrap_content"
@@ -67,6 +85,26 @@
             android:layout_weight="1"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center"
+            android:textSize="@dimen/clipboard_history_title_size" />
+
+        <TextView
+            android:id="@+id/clipboard_history_edit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@string/clipboard_history_edit"
+            android:textSize="@dimen/clipboard_history_title_size" />
+
+        <TextView
+            android:id="@+id/clipboard_history_to_top"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@string/clipboard_history_to_top"
             android:textSize="@dimen/clipboard_history_title_size" />
 
         <TextView

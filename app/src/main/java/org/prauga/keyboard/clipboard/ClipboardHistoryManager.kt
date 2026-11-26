@@ -45,6 +45,23 @@ class ClipboardHistoryManager private constructor(context: Context) {
         savePins()
     }
 
+    fun moveToTop(text: String) {
+        history.moveToTop(text, System.currentTimeMillis())
+        savePins()
+    }
+
+    fun replace(oldText: String, newText: String) {
+        if (history.replace(oldText, newText, System.currentTimeMillis())) {
+            savePins()
+        }
+    }
+
+    fun addClip(text: String) {
+        if (history.addManual(text, System.currentTimeMillis())) {
+            savePins()
+        }
+    }
+
     fun clearUnpinned() {
         history.clearUnpinned()
     }
