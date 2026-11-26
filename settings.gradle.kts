@@ -35,4 +35,5 @@ includeBuild("PvotLib") {
 }
 
 include(":app")
+
 include(":tools:make-keyboard-text")

@@ -9,9 +9,9 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import org.prauga.keyboard.utils.ExecutorUtils
 import java.io.File
 import java.io.IOException
+import org.prauga.keyboard.utils.ExecutorUtils
 
 class ClipboardHistoryManager private constructor(private val context: Context) {
     private val history = ClipboardHistory()
@@ -75,8 +75,7 @@ class ClipboardHistoryManager private constructor(private val context: Context) 
         savePins()
     }
 
-    @Synchronized
-    fun findShortcutText(word: String): String? = history.findByShortcut(word)
+    @Synchronized fun findShortcutText(word: String): String? = history.findByShortcut(word)
 
     @Synchronized
     fun moveToTop(text: String) {
@@ -146,17 +145,19 @@ class ClipboardHistoryManager private constructor(private val context: Context) 
         private const val TAG = "ClipboardHistoryManager"
         private const val PINS_FILE_NAME = "clipboard_pins"
 
-        @Volatile
-        private var instance: ClipboardHistoryManager? = null
+        @Volatile private var instance: ClipboardHistoryManager? = null
 
         @JvmStatic
         fun findShortcutTextIfLoaded(word: String): String? = instance?.findShortcutText(word)
 
         @JvmStatic
         fun getInstance(context: Context): ClipboardHistoryManager =
-            instance ?: synchronized(this) {
-                instance ?: ClipboardHistoryManager(context.applicationContext)
-                    .also { instance = it }
-            }
+            instance
+                ?: synchronized(this) {
+                    instance
+                        ?: ClipboardHistoryManager(context.applicationContext).also {
+                            instance = it
+                        }
+                }
     }
 }

@@ -80,29 +80,35 @@ class StripTextField(context: Context, attrs: AttributeSet?) : LinearLayout(cont
         }
         val found = client.results(text.toString())
         if (found.isEmpty()) {
-            results.addView(TextView(context).apply {
-                setText(client.noResults)
-                setTextColor(tint)
-                gravity = Gravity.CENTER_VERTICAL
-            }, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT))
+            results.addView(
+                TextView(context).apply {
+                    setText(client.noResults)
+                    setTextColor(tint)
+                    gravity = Gravity.CENTER_VERTICAL
+                },
+                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT),
+            )
             return
         }
         val padding = resources.getDimensionPixelSize(R.dimen.emoji_search_result_padding)
         val textSize = resources.getDimension(R.dimen.emoji_search_result_text_size)
         for (result in found) {
-            results.addView(TextView(context, null, R.attr.suggestionWordStyle).apply {
-                setText(result.label)
-                contentDescription = result.description
-                gravity = Gravity.CENTER
-                isSingleLine = true
-                setPadding(padding, 0, padding, 0)
-                if (client.largeResults) {
-                    setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-                } else {
-                    setTextColor(tint)
-                }
-                setOnClickListener { result.onPick() }
-            }, LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            results.addView(
+                TextView(context, null, R.attr.suggestionWordStyle).apply {
+                    setText(result.label)
+                    contentDescription = result.description
+                    gravity = Gravity.CENTER
+                    isSingleLine = true
+                    setPadding(padding, 0, padding, 0)
+                    if (client.largeResults) {
+                        setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+                    } else {
+                        setTextColor(tint)
+                    }
+                    setOnClickListener { result.onPick() }
+                },
+                LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT),
+            )
         }
     }
 

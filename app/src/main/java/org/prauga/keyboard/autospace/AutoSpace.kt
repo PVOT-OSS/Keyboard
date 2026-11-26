@@ -13,7 +13,9 @@ object AutoSpace {
     fun shouldInsertSpace(textBeforeCursor: CharSequence?): Boolean {
         val text = textBeforeCursor ?: return false
         val n = text.length
-        return n >= 3 && text[n - 1] in PUNCTUATION &&
-            Character.isLetter(text[n - 2]) && Character.isLetter(text[n - 3])
+        return n >= 3 &&
+            text[n - 1] in PUNCTUATION &&
+            Character.isLetter(text[n - 2]) &&
+            Character.isLetter(text[n - 3])
     }
 }

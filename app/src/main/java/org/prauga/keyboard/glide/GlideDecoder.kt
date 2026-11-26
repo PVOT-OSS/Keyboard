@@ -56,8 +56,9 @@ class GlideDecoder(private val layout: GlideKeyLayout, private val wordList: Gli
                     if (!accept(word, wordList.offensive[id])) {
                         continue
                     }
-                    val score = score(word, wordList.frequencies[id], input, normalizedInput, inputLength)
-                        ?: continue
+                    val score =
+                        score(word, wordList.frequencies[id], input, normalizedInput, inputLength)
+                            ?: continue
                     val worst = best.peek()
                     if (best.size < maxResults) {
                         best.add(Candidate(word, score))
@@ -86,8 +87,9 @@ class GlideDecoder(private val layout: GlideKeyLayout, private val wordList: Gli
         val rawY = FloatArray(keys.size) { layout.y(keys[it]) }
         val idealLength = pathLength(rawX, rawY)
         val longest = max(idealLength, inputLength)
-        if (longest > layout.keyWidth * 2 &&
-            min(idealLength, inputLength) / longest < MIN_LENGTH_RATIO
+        if (
+            longest > layout.keyWidth * 2 &&
+                min(idealLength, inputLength) / longest < MIN_LENGTH_RATIO
         ) {
             return null
         }
@@ -95,9 +97,10 @@ class GlideDecoder(private val layout: GlideKeyLayout, private val wordList: Gli
         val shape = meanDistance(normalizedInput, normalize(ideal))
         val location = meanDistance(input, ideal) / layout.keyWidth
         val last = SAMPLES - 1
-        val ends = (distance(input.x[0], input.y[0], ideal.x[0], ideal.y[0]) +
-            distance(input.x[last], input.y[last], ideal.x[last], ideal.y[last])) /
-            (2 * layout.keyWidth)
+        val ends =
+            (distance(input.x[0], input.y[0], ideal.x[0], ideal.y[0]) +
+                distance(input.x[last], input.y[last], ideal.x[last], ideal.y[last])) /
+                (2 * layout.keyWidth)
         val shapeTerm = shape / SHAPE_SIGMA
         val locationTerm = location / LOCATION_SIGMA
         val endsTerm = ends / ENDS_SIGMA

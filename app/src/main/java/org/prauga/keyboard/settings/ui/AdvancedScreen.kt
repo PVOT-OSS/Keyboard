@@ -78,13 +78,16 @@ internal fun AdvancedScreen(
                                     onSave = {
                                         onEvent(
                                             SettingsEvent.SetInt(
-                                                Settings.PREF_VIBRATION_DURATION_SETTINGS, it
+                                                Settings.PREF_VIBRATION_DURATION_SETTINGS,
+                                                it,
                                             )
                                         )
                                     },
                                     onDefault = {
                                         onEvent(
-                                            SettingsEvent.Reset(Settings.PREF_VIBRATION_DURATION_SETTINGS)
+                                            SettingsEvent.Reset(
+                                                Settings.PREF_VIBRATION_DURATION_SETTINGS
+                                            )
                                         )
                                     },
                                 )
@@ -107,10 +110,17 @@ internal fun AdvancedScreen(
                                 format = { it.toString() },
                                 onPreview = { onEvent(SettingsEvent.PreviewSound(it)) },
                                 onSave = {
-                                    onEvent(SettingsEvent.SetPercent(Settings.PREF_KEYPRESS_SOUND_VOLUME, it))
+                                    onEvent(
+                                        SettingsEvent.SetPercent(
+                                            Settings.PREF_KEYPRESS_SOUND_VOLUME,
+                                            it,
+                                        )
+                                    )
                                 },
                                 onDefault = {
-                                    onEvent(SettingsEvent.Reset(Settings.PREF_KEYPRESS_SOUND_VOLUME))
+                                    onEvent(
+                                        SettingsEvent.Reset(Settings.PREF_KEYPRESS_SOUND_VOLUME)
+                                    )
                                 },
                             )
                     },
@@ -128,10 +138,17 @@ internal fun AdvancedScreen(
                                 format = { milliseconds(res, it) },
                                 onPreview = {},
                                 onSave = {
-                                    onEvent(SettingsEvent.SetInt(Settings.PREF_KEY_LONGPRESS_TIMEOUT, it))
+                                    onEvent(
+                                        SettingsEvent.SetInt(
+                                            Settings.PREF_KEY_LONGPRESS_TIMEOUT,
+                                            it,
+                                        )
+                                    )
                                 },
                                 onDefault = {
-                                    onEvent(SettingsEvent.Reset(Settings.PREF_KEY_LONGPRESS_TIMEOUT))
+                                    onEvent(
+                                        SettingsEvent.Reset(Settings.PREF_KEY_LONGPRESS_TIMEOUT)
+                                    )
                                 },
                             )
                     },
@@ -153,29 +170,65 @@ internal fun AdvancedScreen(
                                 format = { "$it%" },
                                 onPreview = {},
                                 onSave = {
-                                    onEvent(SettingsEvent.SetPercent(Settings.PREF_KEYBOARD_HEIGHT_SCALE, it))
+                                    onEvent(
+                                        SettingsEvent.SetPercent(
+                                            Settings.PREF_KEYBOARD_HEIGHT_SCALE,
+                                            it,
+                                        )
+                                    )
                                 },
                                 onDefault = {
-                                    onEvent(SettingsEvent.Reset(Settings.PREF_KEYBOARD_HEIGHT_SCALE))
+                                    onEvent(
+                                        SettingsEvent.Reset(Settings.PREF_KEYBOARD_HEIGHT_SCALE)
+                                    )
                                 },
                             )
                     },
                 )
-                prefSwitch(snapshot, Settings.PREF_SPACE_TRACKPAD, true, R.string.space_trackpad,
-                    onEvent, R.string.space_trackpad_summary)
-                prefSwitch(snapshot, Settings.PREF_BACKSPACE_TRACKPAD, true,
-                    R.string.backspace_trackpad, onEvent, R.string.backspace_trackpad_summary)
-                prefSwitch(snapshot, Settings.PREF_SWIPE_DOWN_FOR_DIGITS, false,
-                    R.string.swipe_down_for_digits, onEvent, R.string.swipe_down_for_digits_summary)
-                prefSwitch(snapshot, Settings.PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY, true,
-                    R.string.prefs_enable_emoji_alt_physical_key, onEvent,
-                    R.string.prefs_enable_emoji_alt_physical_key_summary)
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_SPACE_TRACKPAD,
+                    true,
+                    R.string.space_trackpad,
+                    onEvent,
+                    R.string.space_trackpad_summary,
+                )
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_BACKSPACE_TRACKPAD,
+                    true,
+                    R.string.backspace_trackpad,
+                    onEvent,
+                    R.string.backspace_trackpad_summary,
+                )
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_SWIPE_DOWN_FOR_DIGITS,
+                    false,
+                    R.string.swipe_down_for_digits,
+                    onEvent,
+                    R.string.swipe_down_for_digits_summary,
+                )
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY,
+                    true,
+                    R.string.prefs_enable_emoji_alt_physical_key,
+                    onEvent,
+                    R.string.prefs_enable_emoji_alt_physical_key_summary,
+                )
             }
         }
         item {
             PvotListGroup(title = stringResource(R.string.settings_group_other)) {
-                prefSwitch(snapshot, Settings.PREF_SHOW_SETUP_WIZARD_ICON, false,
-                    R.string.show_setup_wizard_icon, onEvent, R.string.show_setup_wizard_icon_summary)
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_SHOW_SETUP_WIZARD_ICON,
+                    false,
+                    R.string.show_setup_wizard_icon,
+                    onEvent,
+                    R.string.show_setup_wizard_icon_summary,
+                )
             }
         }
     }

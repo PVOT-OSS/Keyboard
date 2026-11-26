@@ -26,11 +26,11 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.prauga.pvot.designsystem.R as PvotR
 import com.prauga.pvot.designsystem.components.PvotCard
 import com.prauga.pvot.designsystem.components.PvotSubScreen
 import com.prauga.pvot.designsystem.theme.PvotShapes
 import com.prauga.pvot.designsystem.theme.PvotSpacing
-import com.prauga.pvot.designsystem.R as PvotR
 import org.prauga.keyboard.R
 import org.prauga.keyboard.preview.KeyboardPreview
 import org.prauga.keyboard.settings.data.SettingsSnapshot
@@ -69,7 +69,9 @@ private fun ThemeCard(
 ) {
     PvotCard(
         onClick = onClick,
-        border = if (selected) BorderStroke(SELECTED_BORDER, MaterialTheme.colorScheme.primary) else null,
+        border =
+            if (selected) BorderStroke(SELECTED_BORDER, MaterialTheme.colorScheme.primary)
+            else null,
         modifier =
             Modifier.fillMaxWidth().semantics {
                 role = Role.RadioButton

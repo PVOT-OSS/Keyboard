@@ -14,22 +14,28 @@ import org.prauga.keyboard.R
 import org.prauga.keyboard.utils.ExecutorUtils
 
 class KeyboardPhotoActivity : ComponentActivity() {
-    private val picker = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri == null) {
-            finish()
-            return@registerForActivityResult
-        }
-        val appContext = applicationContext
-        ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
-            val saved = KeyboardPhoto.save(appContext, uri)
-            runOnUiThread {
-                if (!saved) {
-                    Toast.makeText(appContext, R.string.keyboard_photo_failed, Toast.LENGTH_SHORT).show()
-                }
+    private val picker =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri == null) {
                 finish()
+                return@registerForActivityResult
+            }
+            val appContext = applicationContext
+            ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
+                val saved = KeyboardPhoto.save(appContext, uri)
+                runOnUiThread {
+                    if (!saved) {
+                        Toast.makeText(
+                                appContext,
+                                R.string.keyboard_photo_failed,
+                                Toast.LENGTH_SHORT,
+                            )
+                            .show()
+                    }
+                    finish()
+                }
             }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

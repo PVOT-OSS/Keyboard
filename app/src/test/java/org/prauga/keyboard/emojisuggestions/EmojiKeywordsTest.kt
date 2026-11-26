@@ -5,25 +5,26 @@
 
 package org.prauga.keyboard.emojisuggestions
 
+import java.io.StringReader
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.StringReader
 
 class EmojiKeywordsTest {
-    private val index = EmojiKeywords.Index(
-        EmojiKeywords.parse(
-            StringReader(
-                "# header\n" +
-                    "cat\t$CAT $CAT_FACE\n" +
-                    "catch\t$BALL\n" +
-                    "face\t$GRIN $CAT_FACE\n" +
-                    "pizza\t$PIZZA\n" +
-                    "broken\n" +
-                    "empty\t\n"
+    private val index =
+        EmojiKeywords.Index(
+            EmojiKeywords.parse(
+                StringReader(
+                    "# header\n" +
+                        "cat\t$CAT $CAT_FACE\n" +
+                        "catch\t$BALL\n" +
+                        "face\t$GRIN $CAT_FACE\n" +
+                        "pizza\t$PIZZA\n" +
+                        "broken\n" +
+                        "empty\t\n"
+                )
             )
         )
-    )
 
     @Test
     fun parseKeepsEmojiInOrderAndSkipsBadLines() {

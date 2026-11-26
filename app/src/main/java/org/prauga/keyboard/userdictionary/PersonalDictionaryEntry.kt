@@ -38,11 +38,12 @@ data class PersonalDictionaryEntry(
                 return null
             }
             val frequencyField = fields.getOrNull(1)?.trim().orEmpty()
-            val frequency = if (frequencyField.isEmpty()) {
-                DEFAULT_FREQUENCY
-            } else {
-                frequencyField.toIntOrNull() ?: return null
-            }
+            val frequency =
+                if (frequencyField.isEmpty()) {
+                    DEFAULT_FREQUENCY
+                } else {
+                    frequencyField.toIntOrNull() ?: return null
+                }
             val locale = fields.getOrNull(2)?.trim().orEmpty()
             val shortcut = fields.getOrNull(3)?.trim().orEmpty()
             if (shortcut.length > MAX_LENGTH) {

@@ -92,9 +92,11 @@ internal fun ToolbarKeysScreen(
                         PvotListRow(
                             title = stringResource(toolbarKeyTitle(entry.id)),
                             onClick = {
-                                update(entries.toMutableList().also {
-                                    it[index] = entry.copy(shown = !entry.shown)
-                                })
+                                update(
+                                    entries.toMutableList().also {
+                                        it[index] = entry.copy(shown = !entry.shown)
+                                    }
+                                )
                             },
                             trailing = {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -103,9 +105,11 @@ internal fun ToolbarKeysScreen(
                                         contentDescription = upLabel,
                                         enabled = index > 0,
                                         onClick = {
-                                            update(entries.toMutableList().also {
-                                                it.add(index - 1, it.removeAt(index))
-                                            })
+                                            update(
+                                                entries.toMutableList().also {
+                                                    it.add(index - 1, it.removeAt(index))
+                                                }
+                                            )
                                         },
                                     )
                                     PvotIconButton(
@@ -113,17 +117,21 @@ internal fun ToolbarKeysScreen(
                                         contentDescription = downLabel,
                                         enabled = index < entries.size - 1,
                                         onClick = {
-                                            update(entries.toMutableList().also {
-                                                it.add(index + 1, it.removeAt(index))
-                                            })
+                                            update(
+                                                entries.toMutableList().also {
+                                                    it.add(index + 1, it.removeAt(index))
+                                                }
+                                            )
                                         },
                                     )
                                     PvotSwitch(
                                         checked = entry.shown,
                                         onCheckedChange = {
-                                            update(entries.toMutableList().also { list ->
-                                                list[index] = entry.copy(shown = it)
-                                            })
+                                            update(
+                                                entries.toMutableList().also { list ->
+                                                    list[index] = entry.copy(shown = it)
+                                                }
+                                            )
                                         },
                                     )
                                 }

@@ -5,29 +5,47 @@
 
 package org.prauga.keyboard.glide
 
+import java.util.Locale
+import kotlin.random.Random
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.util.Locale
-import kotlin.random.Random
 
 class GlideDecoderTest {
     private val layout = qwerty()
-    private val words = listOf(
-        "hello" to 200, "help" to 190, "hell" to 150, "jello" to 60, "hollow" to 90,
-        "holy" to 120, "hole" to 130, "world" to 200, "word" to 190, "would" to 210,
-        "the" to 255, "they" to 220, "then" to 215, "them" to 210, "there" to 215,
-        "quick" to 140, "quiz" to 100, "keyboard" to 120, "keyword" to 90, "I'm" to 200,
-    )
-    private val decoder = GlideDecoder(
-        layout,
-        GlideWordList(
-            Locale.ENGLISH,
-            words.map { it.first }.toTypedArray(),
-            words.map { it.second }.toIntArray(),
-            BooleanArray(words.size),
-        ),
-    )
+    private val words =
+        listOf(
+            "hello" to 200,
+            "help" to 190,
+            "hell" to 150,
+            "jello" to 60,
+            "hollow" to 90,
+            "holy" to 120,
+            "hole" to 130,
+            "world" to 200,
+            "word" to 190,
+            "would" to 210,
+            "the" to 255,
+            "they" to 220,
+            "then" to 215,
+            "them" to 210,
+            "there" to 215,
+            "quick" to 140,
+            "quiz" to 100,
+            "keyboard" to 120,
+            "keyword" to 90,
+            "I'm" to 200,
+        )
+    private val decoder =
+        GlideDecoder(
+            layout,
+            GlideWordList(
+                Locale.ENGLISH,
+                words.map { it.first }.toTypedArray(),
+                words.map { it.second }.toIntArray(),
+                BooleanArray(words.size),
+            ),
+        )
 
     @Test
     fun cleanSwipesFindTheirWord() {
@@ -54,7 +72,8 @@ class GlideDecoderTest {
     @Test
     fun rejectedWordsAreSkipped() {
         val path = swipe("hello", noise = 0f, seed = 1)
-        val results = decoder.decode(path.first, path.second, path.first.size, 5) { w, _ -> w != "hello" }
+        val results =
+            decoder.decode(path.first, path.second, path.first.size, 5) { w, _ -> w != "hello" }
         assertTrue(results.none { it.word == "hello" })
     }
 
@@ -64,15 +83,20 @@ class GlideDecoderTest {
     }
 
     private fun top(path: Pair<IntArray, IntArray>): String? =
-        decoder.decode(path.first, path.second, path.first.size, 5) { _, _ -> true }
-            .firstOrNull()?.word
+        decoder
+            .decode(path.first, path.second, path.first.size, 5) { _, _ -> true }
+            .firstOrNull()
+            ?.word
 
     private fun swipe(word: String, noise: Float, seed: Int): Pair<IntArray, IntArray> {
         val random = Random(seed)
         val xs = ArrayList<Int>()
         val ys = ArrayList<Int>()
-        val keys = word.lowercase(Locale.ROOT).filter { layout.keyIndexOf(it.code) >= 0 }
-            .map { layout.keyIndexOf(it.code) }
+        val keys =
+            word
+                .lowercase(Locale.ROOT)
+                .filter { layout.keyIndexOf(it.code) >= 0 }
+                .map { layout.keyIndexOf(it.code) }
         for (k in keys.indices) {
             val x1 = layout.x(keys[k])
             val y1 = layout.y(keys[k])

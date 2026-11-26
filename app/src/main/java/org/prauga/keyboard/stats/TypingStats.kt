@@ -30,13 +30,20 @@ object TypingStats {
 
     @JvmStatic
     @Synchronized
-    fun record(context: Context, typedWord: String, chosenWord: String, commitType: Int, glided: Boolean) {
+    fun record(
+        context: Context,
+        typedWord: String,
+        chosenWord: String,
+        commitType: Int,
+        glided: Boolean,
+    ) {
         load(context)
-        val commit = when (commitType) {
-            LastComposedWord.COMMIT_TYPE_MANUAL_PICK -> TypingStatsCounter.Commit.PICKED
-            LastComposedWord.COMMIT_TYPE_DECIDED_WORD -> TypingStatsCounter.Commit.DECIDED
-            else -> TypingStatsCounter.Commit.TYPED
-        }
+        val commit =
+            when (commitType) {
+                LastComposedWord.COMMIT_TYPE_MANUAL_PICK -> TypingStatsCounter.Commit.PICKED
+                LastComposedWord.COMMIT_TYPE_DECIDED_WORD -> TypingStatsCounter.Commit.DECIDED
+                else -> TypingStatsCounter.Commit.TYPED
+            }
         counter = counter.record(typedWord, chosenWord, commit, glided)
         if (++unsaved >= FLUSH_EVERY) {
             flush()
@@ -51,7 +58,8 @@ object TypingStats {
             return
         }
         unsaved = 0
-        store.edit()
+        store
+            .edit()
             .putLong(KEY_WORDS, counter.words)
             .putLong(KEY_GLIDED, counter.glidedWords)
             .putLong(KEY_AUTOCORRECTIONS, counter.autocorrections)
@@ -74,11 +82,12 @@ object TypingStats {
         }
         val store = context.applicationContext.getSharedPreferences(FILE, Context.MODE_PRIVATE)
         prefs = store
-        counter = TypingStatsCounter(
-            store.getLong(KEY_WORDS, 0),
-            store.getLong(KEY_GLIDED, 0),
-            store.getLong(KEY_AUTOCORRECTIONS, 0),
-            store.getLong(KEY_SAVED, 0),
-        )
+        counter =
+            TypingStatsCounter(
+                store.getLong(KEY_WORDS, 0),
+                store.getLong(KEY_GLIDED, 0),
+                store.getLong(KEY_AUTOCORRECTIONS, 0),
+                store.getLong(KEY_SAVED, 0),
+            )
     }
 }

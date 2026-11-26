@@ -11,17 +11,27 @@ data class TypingStatsCounter(
     val autocorrections: Long = 0,
     val keystrokesSaved: Long = 0,
 ) {
-    enum class Commit { TYPED, PICKED, DECIDED }
+    enum class Commit {
+        TYPED,
+        PICKED,
+        DECIDED,
+    }
 
-    fun record(typedWord: String, chosenWord: String, commit: Commit, glided: Boolean): TypingStatsCounter {
+    fun record(
+        typedWord: String,
+        chosenWord: String,
+        commit: Commit,
+        glided: Boolean,
+    ): TypingStatsCounter {
         if (chosenWord.isEmpty()) {
             return this
         }
-        val saved = when {
-            glided -> chosenWord.length
-            commit == Commit.PICKED -> (chosenWord.length - typedWord.length).coerceAtLeast(0)
-            else -> 0
-        }
+        val saved =
+            when {
+                glided -> chosenWord.length
+                commit == Commit.PICKED -> (chosenWord.length - typedWord.length).coerceAtLeast(0)
+                else -> 0
+            }
         val corrected = !glided && commit == Commit.DECIDED && chosenWord != typedWord
         return copy(
             words = words + 1,

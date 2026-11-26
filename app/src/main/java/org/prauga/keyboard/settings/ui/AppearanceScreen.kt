@@ -36,12 +36,21 @@ internal fun AppearanceScreen(
     val themeNames = stringArrayResource(R.array.keyboard_theme_names).toList()
     val themeIds = integerArrayResource(R.array.keyboard_theme_ids).toList()
     val textSize =
-        listSetting(KeyTextSize.PREF_KEY_TEXT_SIZE, R.string.key_text_size,
-            R.array.key_text_size_entries, R.array.key_text_size_values, DEFAULT_TEXT_SIZE)
+        listSetting(
+            KeyTextSize.PREF_KEY_TEXT_SIZE,
+            R.string.key_text_size,
+            R.array.key_text_size_entries,
+            R.array.key_text_size_values,
+            DEFAULT_TEXT_SIZE,
+        )
     val darkness =
-        listSetting(KeyboardPhoto.PREF_PHOTO_DARKNESS, R.string.keyboard_photo_darkness,
-            R.array.keyboard_photo_darkness_entries, R.array.keyboard_photo_darkness_values,
-            DEFAULT_DARKNESS)
+        listSetting(
+            KeyboardPhoto.PREF_PHOTO_DARKNESS,
+            R.string.keyboard_photo_darkness,
+            R.array.keyboard_photo_darkness_entries,
+            R.array.keyboard_photo_darkness_values,
+            DEFAULT_DARKNESS,
+        )
     val split = snapshot.boolean(Settings.PREF_ENABLE_SPLIT_KEYBOARD, false)
     PvotSubScreen(screenTitle(SettingsRoute.APPEARANCE), onBack) {
         item {
@@ -52,8 +61,14 @@ internal fun AppearanceScreen(
                     value = themeNames.getOrNull(themeIndex),
                     onClick = { onOpen(SettingsRoute.THEME) },
                 )
-                prefSwitch(snapshot, BorderlessKeyBackground.PREF_KEY_BORDERS, true,
-                    R.string.key_borders, onEvent, R.string.key_borders_summary)
+                prefSwitch(
+                    snapshot,
+                    BorderlessKeyBackground.PREF_KEY_BORDERS,
+                    true,
+                    R.string.key_borders,
+                    onEvent,
+                    R.string.key_borders_summary,
+                )
                 listRow(textSize, snapshot, dialogs, onEvent)
             }
         }
@@ -85,11 +100,22 @@ internal fun AppearanceScreen(
                     summary = snapshot.customStyles.joinToString(", ") { it.name }.ifEmpty { null },
                     onClick = { onOpen(SettingsRoute.CUSTOM_STYLES) },
                 )
-                prefSwitch(snapshot, Settings.PREF_ENABLE_SPLIT_KEYBOARD, false,
-                    R.string.enable_split_keyboard, onEvent)
-                prefSwitch(snapshot, Settings.PREF_SPLIT_KEYBOARD_DUPLICATE_KEYS, true,
-                    R.string.split_keyboard_duplicate_keys, onEvent,
-                    R.string.split_keyboard_duplicate_keys_summary, enabled = split)
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_ENABLE_SPLIT_KEYBOARD,
+                    false,
+                    R.string.enable_split_keyboard,
+                    onEvent,
+                )
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_SPLIT_KEYBOARD_DUPLICATE_KEYS,
+                    true,
+                    R.string.split_keyboard_duplicate_keys,
+                    onEvent,
+                    R.string.split_keyboard_duplicate_keys_summary,
+                    enabled = split,
+                )
             }
         }
     }

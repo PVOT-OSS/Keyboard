@@ -5,9 +5,9 @@
 
 package org.prauga.keyboard.multilingual
 
+import java.util.Locale
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.util.Locale
 
 class MultilingualLocalesTest {
     private val scripts = mapOf("en" to 1, "nl" to 1, "de" to 1, "fr" to 1, "es" to 1, "ru" to 2)
@@ -16,13 +16,19 @@ class MultilingualLocalesTest {
     @Test
     fun keepsOtherLanguagesWithTheSameScript() {
         val enabled = listOf(Locale("en", "IN"), Locale("ru"), Locale("nl"))
-        assertEquals(listOf(Locale("nl")), MultilingualLocales.secondaryLocales(Locale("en", "IN"), enabled, scriptOf))
+        assertEquals(
+            listOf(Locale("nl")),
+            MultilingualLocales.secondaryLocales(Locale("en", "IN"), enabled, scriptOf),
+        )
     }
 
     @Test
     fun skipsOtherVariantsOfThePrimaryLanguageAndDuplicates() {
         val enabled = listOf(Locale("en", "US"), Locale("de"), Locale("de", "CH"))
-        assertEquals(listOf(Locale("de")), MultilingualLocales.secondaryLocales(Locale("en", "IN"), enabled, scriptOf))
+        assertEquals(
+            listOf(Locale("de")),
+            MultilingualLocales.secondaryLocales(Locale("en", "IN"), enabled, scriptOf),
+        )
     }
 
     @Test

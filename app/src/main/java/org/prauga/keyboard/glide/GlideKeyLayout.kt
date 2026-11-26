@@ -9,7 +9,8 @@ class GlideKeyLayout(centers: Map<Int, Pair<Float, Float>>, val keyWidth: Float)
     private val codes = centers.keys.toIntArray()
     private val xs = FloatArray(codes.size) { centers.getValue(codes[it]).first }
     private val ys = FloatArray(codes.size) { centers.getValue(codes[it]).second }
-    private val indexByCode = HashMap<Int, Int>().apply { codes.forEachIndexed { i, c -> put(c, i) } }
+    private val indexByCode =
+        HashMap<Int, Int>().apply { codes.forEachIndexed { i, c -> put(c, i) } }
 
     val keyCount: Int
         get() = codes.size

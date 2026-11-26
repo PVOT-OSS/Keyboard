@@ -10,7 +10,11 @@ import kotlin.math.abs
 object KeyboardGestures {
     const val PREF_KEYBOARD_GESTURES = "pref_keyboard_gestures"
 
-    enum class Gesture { NONE, DELETE_WORD, HIDE_KEYBOARD }
+    enum class Gesture {
+        NONE,
+        DELETE_WORD,
+        HIDE_KEYBOARD,
+    }
 
     private const val MIN_TRAVEL_IN_KEYS = 1.5f
     private const val MAX_DRIFT_IN_KEYS = 1.0f

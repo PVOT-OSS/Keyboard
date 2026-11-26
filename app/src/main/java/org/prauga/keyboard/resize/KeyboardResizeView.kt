@@ -17,10 +17,10 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import org.prauga.keyboard.R
-import org.prauga.keyboard.suggestions.InlineSuggestionsStrip
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import org.prauga.keyboard.R
+import org.prauga.keyboard.suggestions.InlineSuggestionsStrip
 
 class KeyboardResizeView(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
     interface Listener {
@@ -58,9 +58,8 @@ class KeyboardResizeView(context: Context, attrs: AttributeSet?) : LinearLayout(
         this.scale = scale
         showing = true
         background = keyboardView?.background?.constantState?.newDrawable()
-        val chipColor = ColorStateList.valueOf(
-            InlineSuggestionsStrip.getChipBackgroundColor(tint.defaultColor)
-        )
+        val chipColor =
+            ColorStateList.valueOf(InlineSuggestionsStrip.getChipBackgroundColor(tint.defaultColor))
         findViewById<TextView>(R.id.keyboard_resize_hint).setTextColor(tint)
         for (id in intArrayOf(R.id.keyboard_resize_reset, R.id.keyboard_resize_done)) {
             findViewById<TextView>(id).apply {
@@ -116,8 +115,11 @@ class KeyboardResizeView(context: Context, attrs: AttributeSet?) : LinearLayout(
         keyboardRect.set(0, 0, keyboard.width, keyboard.height)
         (parent as ViewGroup).offsetDescendantRectToMyCoords(keyboard, keyboardRect)
         val params = layoutParams as FrameLayout.LayoutParams
-        if (params.width != keyboardRect.width() || params.height != keyboardRect.height() ||
-            params.leftMargin != keyboardRect.left || params.topMargin != keyboardRect.top
+        if (
+            params.width != keyboardRect.width() ||
+                params.height != keyboardRect.height() ||
+                params.leftMargin != keyboardRect.left ||
+                params.topMargin != keyboardRect.top
         ) {
             params.width = keyboardRect.width()
             params.height = keyboardRect.height()

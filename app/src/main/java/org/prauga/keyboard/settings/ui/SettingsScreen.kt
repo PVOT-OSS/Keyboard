@@ -67,14 +67,19 @@ internal class SettingsNavigator(initial: List<SettingsRoute>) {
 }
 
 @Composable
-internal fun SettingsScreen(onExit: () -> Unit, viewModel: SettingsViewModel = settingsViewModel()) {
+internal fun SettingsScreen(
+    onExit: () -> Unit,
+    viewModel: SettingsViewModel = settingsViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navigator =
         rememberSaveable(
             saver =
                 listSaver(
                     save = { nav -> nav.stack.map { it.name } },
-                    restore = { names -> SettingsNavigator(names.map { SettingsRoute.valueOf(it) }) },
+                    restore = { names ->
+                        SettingsNavigator(names.map { SettingsRoute.valueOf(it) })
+                    },
                 )
         ) {
             SettingsNavigator(listOf(SettingsRoute.ROOT))

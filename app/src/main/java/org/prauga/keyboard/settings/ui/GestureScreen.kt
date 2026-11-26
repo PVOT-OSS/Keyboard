@@ -14,24 +14,52 @@ import org.prauga.keyboard.settings.Settings
 import org.prauga.keyboard.settings.data.SettingsSnapshot
 
 @Composable
-internal fun GestureScreen(snapshot: SettingsSnapshot, onEvent: (SettingsEvent) -> Unit, onBack: () -> Unit) {
+internal fun GestureScreen(
+    snapshot: SettingsSnapshot,
+    onEvent: (SettingsEvent) -> Unit,
+    onBack: () -> Unit,
+) {
     val glide = snapshot.boolean(Settings.PREF_GESTURE_INPUT, true)
     PvotSubScreen(screenTitle(SettingsRoute.GESTURE), onBack) {
         item {
             PvotListGroup {
-                prefSwitch(snapshot, Settings.PREF_GESTURE_INPUT, true, R.string.gesture_input,
-                    onEvent, R.string.gesture_input_summary)
-                prefSwitch(snapshot, Settings.PREF_GESTURE_FLOATING_PREVIEW_TEXT, true,
-                    R.string.gesture_floating_preview_text, onEvent,
-                    R.string.gesture_floating_preview_text_summary, enabled = glide)
-                prefSwitch(snapshot, Settings.PREF_GESTURE_PREVIEW_TRAIL, true,
-                    R.string.gesture_preview_trail, onEvent, enabled = glide)
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_GESTURE_INPUT,
+                    true,
+                    R.string.gesture_input,
+                    onEvent,
+                    R.string.gesture_input_summary,
+                )
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_GESTURE_FLOATING_PREVIEW_TEXT,
+                    true,
+                    R.string.gesture_floating_preview_text,
+                    onEvent,
+                    R.string.gesture_floating_preview_text_summary,
+                    enabled = glide,
+                )
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_GESTURE_PREVIEW_TRAIL,
+                    true,
+                    R.string.gesture_preview_trail,
+                    onEvent,
+                    enabled = glide,
+                )
             }
         }
         item {
             PvotListGroup {
-                prefSwitch(snapshot, KeyboardGestures.PREF_KEYBOARD_GESTURES, false, R.string.keyboard_gestures,
-                    onEvent, R.string.keyboard_gestures_summary)
+                prefSwitch(
+                    snapshot,
+                    KeyboardGestures.PREF_KEYBOARD_GESTURES,
+                    false,
+                    R.string.keyboard_gestures,
+                    onEvent,
+                    R.string.keyboard_gestures_summary,
+                )
             }
         }
     }

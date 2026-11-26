@@ -45,7 +45,12 @@ class ClipImageProvider : ContentProvider() {
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? = null
 
-    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?) = 0
+    override fun update(
+        uri: Uri,
+        values: ContentValues?,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+    ) = 0
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?) = 0
 

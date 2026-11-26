@@ -30,8 +30,11 @@ class ClipboardHistory {
         now: Long,
         mimeType: String? = null,
     ): Boolean {
-        if (clipText == null || isSensitive || now - timestamp > UNPINNED_LIFETIME_MS ||
-            timestamp <= forgottenTimestamp
+        if (
+            clipText == null ||
+                isSensitive ||
+                now - timestamp > UNPINNED_LIFETIME_MS ||
+                timestamp <= forgottenTimestamp
         ) {
             return false
         }
@@ -63,12 +66,13 @@ class ClipboardHistory {
                 items.add(item.copy(pinned = true))
             } else {
                 val existing = items[index]
-                items[index] = existing.copy(
-                    timestamp = maxOf(existing.timestamp, item.timestamp),
-                    pinned = true,
-                    shortcut = item.shortcut ?: existing.shortcut,
-                    mimeType = item.mimeType ?: existing.mimeType,
-                )
+                items[index] =
+                    existing.copy(
+                        timestamp = maxOf(existing.timestamp, item.timestamp),
+                        pinned = true,
+                        shortcut = item.shortcut ?: existing.shortcut,
+                        mimeType = item.mimeType ?: existing.mimeType,
+                    )
             }
         }
         items.sortByDescending { it.timestamp }
@@ -129,7 +133,13 @@ class ClipboardHistory {
         val existing = if (index >= 0) items.removeAt(index) else null
         items.add(
             0,
-            Item(text, now, pinned || existing?.pinned == true, existing?.shortcut, existing?.mimeType)
+            Item(
+                text,
+                now,
+                pinned || existing?.pinned == true,
+                existing?.shortcut,
+                existing?.mimeType,
+            ),
         )
         trimToMaxItems()
         return true

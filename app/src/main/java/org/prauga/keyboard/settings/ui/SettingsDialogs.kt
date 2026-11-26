@@ -7,9 +7,9 @@ package org.prauga.keyboard.settings.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -189,7 +189,10 @@ private fun SliderDialog(state: SettingsDialogState) {
                 value = value,
                 onValueChange = { value = it },
                 valueRange = request.range.first.toFloat()..request.range.last.toFloat(),
-                steps = ((request.range.last - request.range.first) / request.step - 1).coerceAtLeast(0),
+                steps =
+                    ((request.range.last - request.range.first) / request.step - 1).coerceAtLeast(
+                        0
+                    ),
                 onValueChangeFinished = { request.onPreview(value.roundToInt()) },
                 modifier = Modifier.fillMaxWidth(),
             )

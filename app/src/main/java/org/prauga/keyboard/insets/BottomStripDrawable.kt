@@ -34,6 +34,5 @@ class BottomStripDrawable(color: Int, private val height: Int) : Drawable() {
         paint.colorFilter = colorFilter
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
+    @Deprecated("Deprecated in Java") override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 }

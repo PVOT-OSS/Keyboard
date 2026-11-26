@@ -5,9 +5,9 @@
 
 package org.prauga.keyboard.emojisuggestions
 
+import java.util.function.Consumer
 import org.prauga.keyboard.R
 import org.prauga.keyboard.textfield.StripTextFieldClient
-import java.util.function.Consumer
 
 class EmojiSearchClient(
     private val onPick: Consumer<String>,

@@ -20,7 +20,9 @@ object MultilingualLocales {
         val script = scriptOf(primary)
         val result = ArrayList<Locale>()
         for (locale in enabled) {
-            if (locale.language == primary.language || result.any { it.language == locale.language }) {
+            if (
+                locale.language == primary.language || result.any { it.language == locale.language }
+            ) {
                 continue
             }
             if (scriptOf(locale) == script) {

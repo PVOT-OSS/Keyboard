@@ -5,21 +5,22 @@
 
 package org.prauga.keyboard.clipboard
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Test
 
 class ClipboardHistoryStoreTest {
     @Test
     fun roundTripKeepsTextAndTimestamps() {
         val file = File(Files.createTempDirectory("pins").toFile(), "pins")
-        val pinned = listOf(
-            ClipboardHistory.Item("line one\nline\ttwo", 42, true),
-            ClipboardHistory.Item("emoji 😀", 7, true),
-        )
+        val pinned =
+            listOf(
+                ClipboardHistory.Item("line one\nline\ttwo", 42, true),
+                ClipboardHistory.Item("emoji 😀", 7, true),
+            )
         ClipboardHistoryStore.write(file, pinned)
         assertEquals(pinned, ClipboardHistoryStore.read(file))
     }
@@ -54,7 +55,10 @@ class ClipboardHistoryStoreTest {
     fun versionOneFilesStillLoad() {
         val file = Files.createTempFile("pins", null).toFile()
         file.writeText("pvot-clipboard-pins 1\n42\taGVsbG8=\n")
-        assertEquals(listOf(ClipboardHistory.Item("hello", 42, true)), ClipboardHistoryStore.read(file))
+        assertEquals(
+            listOf(ClipboardHistory.Item("hello", 42, true)),
+            ClipboardHistoryStore.read(file),
+        )
     }
 
     @Test

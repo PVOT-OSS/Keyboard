@@ -75,18 +75,19 @@ class SetupWizardActivity : PvotBaseActivity() {
     }
 
     private fun openImeSettings() {
-        startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS).addCategory(Intent.CATEGORY_DEFAULT))
+        startActivity(
+            Intent(Settings.ACTION_INPUT_METHOD_SETTINGS).addCategory(Intent.CATEGORY_DEFAULT)
+        )
         polling?.cancel()
-        polling =
-            lifecycleScope.launch {
-                repeat(MAX_POLLS) {
-                    delay(POLL_INTERVAL_MS)
-                    if (status.current() != SetupStep.ENABLE) {
-                        returnToWizard()
-                        return@launch
-                    }
+        polling = lifecycleScope.launch {
+            repeat(MAX_POLLS) {
+                delay(POLL_INTERVAL_MS)
+                if (status.current() != SetupStep.ENABLE) {
+                    returnToWizard()
+                    return@launch
                 }
             }
+        }
     }
 
     private fun returnToWizard() {
@@ -118,8 +119,13 @@ class SetupWizardActivity : PvotBaseActivity() {
     private fun openSettings() {
         startActivity(
             Intent(this, SettingsActivity::class.java)
-                .setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                .putExtra(SettingsActivity.EXTRA_ENTRY_KEY, SettingsActivity.EXTRA_ENTRY_VALUE_APP_ICON)
+                .setFlags(
+                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                )
+                .putExtra(
+                    SettingsActivity.EXTRA_ENTRY_KEY,
+                    SettingsActivity.EXTRA_ENTRY_VALUE_APP_ICON,
+                )
         )
         finish()
     }

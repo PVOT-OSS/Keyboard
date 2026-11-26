@@ -21,34 +21,40 @@ object ClipboardHistoryStore {
             return emptyList()
         }
         val lines = file.readLines(Charsets.UTF_8)
-        val fieldCount = when (lines.firstOrNull()) {
-            HEADER -> 4
-            HEADER_V2 -> 3
-            HEADER_V1 -> 2
-            else -> throw IOException("Unknown clipboard pins format")
-        }
-        return lines.drop(1).filter { it.isNotEmpty() }.map { line ->
-            val fields = line.split(SEPARATOR)
-            if (fields.size != fieldCount) {
-                throw IOException("Malformed clipboard pin")
+        val fieldCount =
+            when (lines.firstOrNull()) {
+                HEADER -> 4
+                HEADER_V2 -> 3
+                HEADER_V1 -> 2
+                else -> throw IOException("Unknown clipboard pins format")
             }
-            try {
-                ClipboardHistory.Item(
-                    decode(fields[1]),
-                    fields[0].toLong(),
-                    true,
-                    fields.getOrNull(2)?.let(::decode)?.takeIf { it.isNotEmpty() },
-                    fields.getOrNull(3)?.let(::decode)?.takeIf { it.isNotEmpty() },
-                )
-            } catch (e: IllegalArgumentException) {
-                throw IOException("Malformed clipboard pin", e)
+        return lines
+            .drop(1)
+            .filter { it.isNotEmpty() }
+            .map { line ->
+                val fields = line.split(SEPARATOR)
+                if (fields.size != fieldCount) {
+                    throw IOException("Malformed clipboard pin")
+                }
+                try {
+                    ClipboardHistory.Item(
+                        decode(fields[1]),
+                        fields[0].toLong(),
+                        true,
+                        fields.getOrNull(2)?.let(::decode)?.takeIf { it.isNotEmpty() },
+                        fields.getOrNull(3)?.let(::decode)?.takeIf { it.isNotEmpty() },
+                    )
+                } catch (e: IllegalArgumentException) {
+                    throw IOException("Malformed clipboard pin", e)
+                }
             }
-        }
     }
 
-    private fun encode(text: String): String = Base64.getEncoder().encodeToString(text.toByteArray())
+    private fun encode(text: String): String =
+        Base64.getEncoder().encodeToString(text.toByteArray())
 
-    private fun decode(field: String): String = String(Base64.getDecoder().decode(field), Charsets.UTF_8)
+    private fun decode(field: String): String =
+        String(Base64.getDecoder().decode(field), Charsets.UTF_8)
 
     @Throws(IOException::class)
     fun write(file: File, pinnedItems: List<ClipboardHistory.Item>) {

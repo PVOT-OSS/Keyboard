@@ -61,7 +61,9 @@ internal fun SetupWizardScreen(state: SetupUiState, appName: String, actions: Se
 
 @Composable
 private fun WelcomeScreen(appName: String, onStart: () -> Unit) {
-    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding()) {
+    Box(
+        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding()
+    ) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -81,8 +83,7 @@ private fun WelcomeScreen(appName: String, onStart: () -> Unit) {
             )
             KeyboardPreview(
                 themeId = KeyboardTheme.THEME_ID_PVOT,
-                modifier =
-                    Modifier.padding(vertical = PvotSpacing.L * 2).clip(PvotShapes.Card),
+                modifier = Modifier.padding(vertical = PvotSpacing.L * 2).clip(PvotShapes.Card),
             )
             PvotButton(
                 text = stringResource(R.string.setup_start_action),
@@ -174,7 +175,9 @@ private fun StepCard(
                     modifier =
                         Modifier.size(BADGE_SIZE)
                             .clip(CircleShape)
-                            .background(if (current || done) colors.primary else colors.surfaceVariant),
+                            .background(
+                                if (current || done) colors.primary else colors.surfaceVariant
+                            ),
                 ) {
                     if (done) {
                         Icon(

@@ -22,12 +22,13 @@ class ArrowKeyRow(context: Context, attrs: AttributeSet?) : LinearLayout(context
     }
 
     private val handler = Handler(Looper.getMainLooper())
-    private val keys = listOf(
-        R.id.arrow_key_left to KeyEvent.KEYCODE_DPAD_LEFT,
-        R.id.arrow_key_up to KeyEvent.KEYCODE_DPAD_UP,
-        R.id.arrow_key_down to KeyEvent.KEYCODE_DPAD_DOWN,
-        R.id.arrow_key_right to KeyEvent.KEYCODE_DPAD_RIGHT,
-    )
+    private val keys =
+        listOf(
+            R.id.arrow_key_left to KeyEvent.KEYCODE_DPAD_LEFT,
+            R.id.arrow_key_up to KeyEvent.KEYCODE_DPAD_UP,
+            R.id.arrow_key_down to KeyEvent.KEYCODE_DPAD_DOWN,
+            R.id.arrow_key_right to KeyEvent.KEYCODE_DPAD_RIGHT,
+        )
 
     fun bind(listener: Listener) {
         for ((id, keyCode) in keys) {

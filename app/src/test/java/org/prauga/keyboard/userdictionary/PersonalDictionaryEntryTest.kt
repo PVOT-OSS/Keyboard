@@ -12,9 +12,10 @@ import org.junit.Test
 class PersonalDictionaryEntryTest {
     @Test
     fun roundTripKeepsAllFields() {
-        val parsed = PersonalDictionaryEntry.fromLine(
-            PersonalDictionaryEntry("Pvot", 200, "en_US", "pv").toLine()
-        )
+        val parsed =
+            PersonalDictionaryEntry.fromLine(
+                PersonalDictionaryEntry("Pvot", 200, "en_US", "pv").toLine()
+            )
         assertEquals("Pvot", parsed?.word)
         assertEquals(200, parsed?.frequency)
         assertEquals("en_US", parsed?.locale)

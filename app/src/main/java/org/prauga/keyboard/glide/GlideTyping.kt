@@ -5,6 +5,7 @@
 
 package org.prauga.keyboard.glide
 
+import java.util.Locale
 import org.prauga.keyboard.Dictionary
 import org.prauga.keyboard.DictionaryCollection
 import org.prauga.keyboard.DictionaryFacilitator
@@ -17,7 +18,6 @@ import org.prauga.keyboard.common.InputPointers
 import org.prauga.keyboard.keyboard.Keyboard
 import org.prauga.keyboard.settings.SettingsValuesForSuggestion
 import org.prauga.keyboard.utils.ExecutorUtils
-import java.util.Locale
 
 object GlideTyping {
     private const val MAX_RESULTS = 18
@@ -26,15 +26,17 @@ object GlideTyping {
     private const val MAX_PROBABILITY = 255f
     private const val PERSONAL_FREQUENCY = 200
 
-    @Volatile
-    private var wordList: GlideWordList? = null
+    @Volatile private var wordList: GlideWordList? = null
     private var loadedSource: Source? = null
     private var loadingSource: Source? = null
 
-    @Volatile
-    private var cache: CachedDecoder? = null
+    @Volatile private var cache: CachedDecoder? = null
 
-    private class CachedDecoder(val keyboard: Keyboard, val words: GlideWordList, val decoder: GlideDecoder)
+    private class CachedDecoder(
+        val keyboard: Keyboard,
+        val words: GlideWordList,
+        val decoder: GlideDecoder,
+    )
 
     private data class Source(val locale: Locale, val dictionaries: List<Dictionary>)
 
@@ -42,10 +44,11 @@ object GlideTyping {
     fun prepare(facilitator: DictionaryFacilitator) {
         val locale = facilitator.locale ?: return
         val main = facilitator.mainDictionary ?: return
-        val personal = listOfNotNull(
-            facilitator.getSubDictionary(Dictionary.TYPE_USER),
-            facilitator.getSubDictionary(Dictionary.TYPE_CONTACTS),
-        )
+        val personal =
+            listOfNotNull(
+                facilitator.getSubDictionary(Dictionary.TYPE_USER),
+                facilitator.getSubDictionary(Dictionary.TYPE_CONTACTS),
+            )
         val source = Source(locale, listOf(main) + facilitator.secondaryMainDictionaries)
         synchronized(this) {
             if (source == loadedSource || source == loadingSource) {
@@ -77,26 +80,36 @@ object GlideTyping {
     ): ArrayList<SuggestedWordInfo>? {
         val words = wordList?.takeIf { it.locale == facilitator.locale } ?: return null
         prepare(facilitator)
-        val decoded = decoderFor(keyboard, words).decode(
-            pointers.xCoordinates, pointers.yCoordinates, pointers.pointerSize, MAX_RESULTS
-        ) { word, offensive ->
-            !(offensive && settings.mBlockPotentiallyOffensive) &&
-                !BlockedWords.isBlocked(settings.mBlockedWords, word)
-        }
+        val decoded =
+            decoderFor(keyboard, words).decode(
+                pointers.xCoordinates,
+                pointers.yCoordinates,
+                pointers.pointerSize,
+                MAX_RESULTS,
+            ) { word, offensive ->
+                !(offensive && settings.mBlockPotentiallyOffensive) &&
+                    !BlockedWords.isBlocked(settings.mBlockedWords, word)
+            }
         val main = facilitator.mainDictionary
-        val results = if (main == null || !ngramContext.isValid) {
-            decoded
-        } else {
-            decoded.map { it.copy(score = it.score + contextBonus(main, ngramContext, it.word)) }
-                .sortedByDescending { it.score }
-        }
+        val results =
+            if (main == null || !ngramContext.isValid) {
+                decoded
+            } else {
+                decoded
+                    .map { it.copy(score = it.score + contextBonus(main, ngramContext, it.word)) }
+                    .sortedByDescending { it.score }
+            }
         val suggestions = ArrayList<SuggestedWordInfo>(results.size)
         results.forEachIndexed { rank, candidate ->
             suggestions.add(
                 SuggestedWordInfo(
-                    candidate.word, "", (results.size - rank) * SCORE_STEP,
-                    SuggestedWordInfo.KIND_CORRECTION, Dictionary.DICTIONARY_HARDCODED,
-                    SuggestedWordInfo.NOT_AN_INDEX, SuggestedWordInfo.NOT_A_CONFIDENCE
+                    candidate.word,
+                    "",
+                    (results.size - rank) * SCORE_STEP,
+                    SuggestedWordInfo.KIND_CORRECTION,
+                    Dictionary.DICTIONARY_HARDCODED,
+                    SuggestedWordInfo.NOT_AN_INDEX,
+                    SuggestedWordInfo.NOT_A_CONFIDENCE,
                 )
             )
         }
@@ -111,7 +124,8 @@ object GlideTyping {
                 best = maxOf(best, dictionary.getNgramProbability(ngramContext, word))
             }
         }
-        return if (best == Dictionary.NOT_A_PROBABILITY) 0f else CONTEXT_WEIGHT * best / MAX_PROBABILITY
+        return if (best == Dictionary.NOT_A_PROBABILITY) 0f
+        else CONTEXT_WEIGHT * best / MAX_PROBABILITY
     }
 
     private fun decoderFor(keyboard: Keyboard, words: GlideWordList): GlideDecoder {
@@ -128,7 +142,8 @@ object GlideTyping {
                     (key.x + key.width / 2f) to (key.y + key.height / 2f)
             }
         }
-        val decoder = GlideDecoder(GlideKeyLayout(centers, keyboard.mMostCommonKeyWidth.toFloat()), words)
+        val decoder =
+            GlideDecoder(GlideKeyLayout(centers, keyboard.mMostCommonKeyWidth.toFloat()), words)
         cache = CachedDecoder(keyboard, words, decoder)
         return decoder
     }
@@ -138,7 +153,9 @@ object GlideTyping {
         personal: List<ExpandableBinaryDictionary>,
         locale: Locale,
     ): GlideWordList {
-        val dictionaries = sources.flatMap { (it as? DictionaryCollection)?.dictionaries ?: listOf(it) }
+        val dictionaries = sources.flatMap {
+            (it as? DictionaryCollection)?.dictionaries ?: listOf(it)
+        }
         val frequencies = HashMap<String, Int>()
         val offensive = HashSet<String>()
         for (dictionary in dictionaries) {

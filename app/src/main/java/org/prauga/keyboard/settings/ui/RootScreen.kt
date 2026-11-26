@@ -7,11 +7,11 @@ package org.prauga.keyboard.settings.ui
 
 import android.content.Intent
 import android.provider.Settings
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.prauga.pvot.designsystem.components.PvotSubScreen
-import androidx.compose.material3.Text
 import com.prauga.pvot.designsystem.components.list.PvotListGroup
 import com.prauga.pvot.designsystem.components.list.PvotListRow
 import org.prauga.keyboard.BuildConfig

@@ -26,13 +26,14 @@ class KeyboardToolbar(context: Context, attrs: AttributeSet?) : LinearLayout(con
         tint: ColorStateList,
         @StringRes contentDescriptionResId: Int,
         action: Runnable,
-    ): ImageButton = ImageButton(context, null, R.attr.suggestionWordStyle).apply {
-        setImageResource(iconResId)
-        scaleType = ImageView.ScaleType.CENTER
-        imageTintList = tint
-        contentDescription = resources.getString(contentDescriptionResId)
-        setOnClickListener { action.run() }
-    }
+    ): ImageButton =
+        ImageButton(context, null, R.attr.suggestionWordStyle).apply {
+            setImageResource(iconResId)
+            scaleType = ImageView.ScaleType.CENTER
+            imageTintList = tint
+            contentDescription = resources.getString(contentDescriptionResId)
+            setOnClickListener { action.run() }
+        }
 
     fun setKeys(keys: List<View>) {
         removeAllViews()

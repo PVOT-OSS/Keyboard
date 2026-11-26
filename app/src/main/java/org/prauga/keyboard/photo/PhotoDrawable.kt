@@ -23,10 +23,11 @@ class PhotoDrawable(private val bitmap: Bitmap, private val dimAlpha: Int) : Dra
         if (target.isEmpty) {
             return
         }
-        val scale = maxOf(
-            target.width().toFloat() / bitmap.width,
-            target.height().toFloat() / bitmap.height,
-        )
+        val scale =
+            maxOf(
+                target.width().toFloat() / bitmap.width,
+                target.height().toFloat() / bitmap.height,
+            )
         val width = (target.width() / scale).toInt()
         val height = (target.height() / scale).toInt()
         val left = (bitmap.width - width) / 2
@@ -44,8 +45,7 @@ class PhotoDrawable(private val bitmap: Bitmap, private val dimAlpha: Int) : Dra
         paint.colorFilter = colorFilter
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun getOpacity(): Int = PixelFormat.OPAQUE
+    @Deprecated("Deprecated in Java") override fun getOpacity(): Int = PixelFormat.OPAQUE
 
     override fun getConstantState(): ConstantState = State(bitmap, dimAlpha)
 

@@ -42,17 +42,16 @@ import org.prauga.keyboard.utils.SubtypeLocaleUtils
 internal class SettingsRepository(context: Context) {
 
     private val context: Context = context.applicationContext
-    private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.context)
+    private val prefs: SharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(this.context)
 
-    val changes: Flow<Unit> =
-        callbackFlow {
-                val listener =
-                    SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> trySend(Unit) }
-                prefs.registerOnSharedPreferenceChangeListener(listener)
-                trySend(Unit)
-                awaitClose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
-            }
-            .conflate()
+    val changes: Flow<Unit> = callbackFlow {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> trySend(Unit) }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        trySend(Unit)
+        awaitClose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
+    }
+        .conflate()
 
     suspend fun load(): SettingsSnapshot =
         withContext(Dispatchers.IO) {
@@ -173,7 +172,9 @@ internal class SettingsRepository(context: Context) {
     }
 
     suspend fun clearLearnedWords() =
-        withContext(Dispatchers.IO) { PersonalizationHelper.removeAllUserHistoryDictionaries(context) }
+        withContext(Dispatchers.IO) {
+            PersonalizationHelper.removeAllUserHistoryDictionaries(context)
+        }
 
     suspend fun resetStats() = withContext(Dispatchers.IO) { TypingStats.reset(context) }
 
@@ -226,7 +227,10 @@ internal class SettingsRepository(context: Context) {
 
     private fun writeStyles(styles: List<InputMethodSubtype>) {
         val array = styles.toTypedArray()
-        Settings.writePrefAdditionalSubtypes(prefs, AdditionalSubtypeUtils.createPrefSubtypes(array))
+        Settings.writePrefAdditionalSubtypes(
+            prefs,
+            AdditionalSubtypeUtils.createPrefSubtypes(array),
+        )
         RichInputMethodManager.getInstance().setAdditionalInputMethodSubtypes(array)
         backup()
     }
@@ -241,7 +245,8 @@ internal class SettingsRepository(context: Context) {
 
     private fun enabledLanguages(): Languages? {
         val imm = context.getSystemService(InputMethodManager::class.java) ?: return null
-        val imi = imm.inputMethodList.firstOrNull { it.packageName == context.packageName } ?: return null
+        val imi =
+            imm.inputMethodList.firstOrNull { it.packageName == context.packageName } ?: return null
         val names =
             imm.getEnabledInputMethodSubtypeList(imi, true).map {
                 it.getDisplayName(context, imi.packageName, imi.serviceInfo.applicationInfo)

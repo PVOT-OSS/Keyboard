@@ -26,11 +26,12 @@ object OneHandedMode {
 
     @JvmStatic
     fun toggle(prefs: SharedPreferences) {
-        val mode = if (read(prefs) == OFF) {
-            sideOrDefault(fromValue(prefs.getString(PREF_ONE_HANDED_SIDE, VALUE_RIGHT)))
-        } else {
-            OFF
-        }
+        val mode =
+            if (read(prefs) == OFF) {
+                sideOrDefault(fromValue(prefs.getString(PREF_ONE_HANDED_SIDE, VALUE_RIGHT)))
+            } else {
+                OFF
+            }
         write(prefs, mode)
     }
 
@@ -56,17 +57,19 @@ object OneHandedMode {
         editor.apply()
     }
 
-    internal fun fromValue(value: String?): Int = when (value) {
-        VALUE_LEFT -> LEFT
-        VALUE_RIGHT -> RIGHT
-        else -> OFF
-    }
+    internal fun fromValue(value: String?): Int =
+        when (value) {
+            VALUE_LEFT -> LEFT
+            VALUE_RIGHT -> RIGHT
+            else -> OFF
+        }
 
-    internal fun toValue(mode: Int): String = when (mode) {
-        LEFT -> VALUE_LEFT
-        RIGHT -> VALUE_RIGHT
-        else -> VALUE_OFF
-    }
+    internal fun toValue(mode: Int): String =
+        when (mode) {
+            LEFT -> VALUE_LEFT
+            RIGHT -> VALUE_RIGHT
+            else -> VALUE_OFF
+        }
 
     internal fun otherSide(mode: Int): Int = if (mode == LEFT) RIGHT else LEFT
 

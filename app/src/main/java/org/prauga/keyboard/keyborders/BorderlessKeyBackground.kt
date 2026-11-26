@@ -21,11 +21,12 @@ class BorderlessKeyBackground(original: Drawable) : DrawableWrapper(original) {
     companion object {
         const val PREF_KEY_BORDERS = "pref_key_borders"
 
-        private val HIGHLIGHT_STATES = intArrayOf(
-            android.R.attr.state_pressed,
-            android.R.attr.state_checked,
-            android.R.attr.state_active,
-        )
+        private val HIGHLIGHT_STATES =
+            intArrayOf(
+                android.R.attr.state_pressed,
+                android.R.attr.state_checked,
+                android.R.attr.state_active,
+            )
 
         internal fun isHighlighted(state: IntArray): Boolean = state.any { it in HIGHLIGHT_STATES }
     }

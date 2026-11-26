@@ -27,8 +27,7 @@ object KeyboardPhoto {
     private var cachedVersion = 0L
     private var cachedBitmap: Bitmap? = null
 
-    @JvmStatic
-    fun version(prefs: SharedPreferences): Long = prefs.getLong(PREF_PHOTO_VERSION, 0)
+    @JvmStatic fun version(prefs: SharedPreferences): Long = prefs.getLong(PREF_PHOTO_VERSION, 0)
 
     @JvmStatic
     fun isSet(context: Context): Boolean =
@@ -51,23 +50,28 @@ object KeyboardPhoto {
     }
 
     fun save(context: Context, source: Uri): Boolean {
-        val bitmap = try {
-            decodeScaled(context, source)
-        } catch (e: IOException) {
-            Log.w(TAG, "Cannot read the photo", e)
-            null
-        } catch (e: SecurityException) {
-            Log.w(TAG, "Cannot read the photo", e)
-            null
-        } ?: return false
+        val bitmap =
+            try {
+                decodeScaled(context, source)
+            } catch (e: IOException) {
+                Log.w(TAG, "Cannot read the photo", e)
+                null
+            } catch (e: SecurityException) {
+                Log.w(TAG, "Cannot read the photo", e)
+                null
+            } ?: return false
         try {
-            file(context).outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, it) }
+            file(context).outputStream().use {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, it)
+            }
         } catch (e: IOException) {
             Log.w(TAG, "Cannot save the photo", e)
             return false
         }
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-            .putLong(PREF_PHOTO_VERSION, System.currentTimeMillis()).apply()
+        PreferenceManager.getDefaultSharedPreferences(context)
+            .edit()
+            .putLong(PREF_PHOTO_VERSION, System.currentTimeMillis())
+            .apply()
         return true
     }
 
@@ -75,15 +79,18 @@ object KeyboardPhoto {
         if (!file(context).delete()) {
             Log.w(TAG, "Cannot delete the photo")
         }
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-            .remove(PREF_PHOTO_VERSION).apply()
+        PreferenceManager.getDefaultSharedPreferences(context)
+            .edit()
+            .remove(PREF_PHOTO_VERSION)
+            .apply()
     }
 
-    internal fun dimAlpha(darkness: String?): Int = when (darkness) {
-        "light" -> 0x40
-        "dark" -> 0xA0
-        else -> 0x70
-    }
+    internal fun dimAlpha(darkness: String?): Int =
+        when (darkness) {
+            "light" -> 0x40
+            "dark" -> 0xA0
+            else -> 0x70
+        }
 
     internal fun sampleSize(width: Int, height: Int, maxEdge: Int): Int {
         var sample = 1
@@ -96,11 +103,15 @@ object KeyboardPhoto {
     private fun decodeScaled(context: Context, source: Uri): Bitmap? {
         val resolver = context.contentResolver
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        resolver.openInputStream(source)?.use { BitmapFactory.decodeStream(it, null, bounds) } ?: return null
-        val options = BitmapFactory.Options().apply {
-            inSampleSize = sampleSize(bounds.outWidth, bounds.outHeight, MAX_EDGE)
+        resolver.openInputStream(source)?.use { BitmapFactory.decodeStream(it, null, bounds) }
+            ?: return null
+        val options =
+            BitmapFactory.Options().apply {
+                inSampleSize = sampleSize(bounds.outWidth, bounds.outHeight, MAX_EDGE)
+            }
+        return resolver.openInputStream(source)?.use {
+            BitmapFactory.decodeStream(it, null, options)
         }
-        return resolver.openInputStream(source)?.use { BitmapFactory.decodeStream(it, null, options) }
     }
 
     private fun file(context: Context) = File(context.noBackupFilesDir, FILE_NAME)

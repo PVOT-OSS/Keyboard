@@ -46,8 +46,12 @@ android {
         }
         release {
             isMinifyEnabled = true
-            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig =
+                signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 
@@ -70,7 +74,6 @@ android {
     androidResources {
         noCompress += "dict"
     }
-
 }
 
 dependencies {
@@ -97,10 +100,12 @@ dependencies {
 
 val injectedSigning = providers.gradleProperty("android.injected.signing.store.file").isPresent
 
-tasks.matching { it.name == "bundleRelease" }.configureEach {
-    doFirst {
-        check(releaseKeystore.exists() || injectedSigning) {
-            "No upload key: sign from Android Studio or add keystore.properties"
+tasks
+    .matching { it.name == "bundleRelease" }
+    .configureEach {
+        doFirst {
+            check(releaseKeystore.exists() || injectedSigning) {
+                "No upload key: sign from Android Studio or add keystore.properties"
+            }
         }
     }
-}

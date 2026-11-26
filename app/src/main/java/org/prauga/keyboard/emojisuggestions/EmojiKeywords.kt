@@ -7,10 +7,10 @@ package org.prauga.keyboard.emojisuggestions
 
 import android.content.Context
 import android.util.Log
-import org.prauga.keyboard.utils.ExecutorUtils
 import java.io.IOException
 import java.io.Reader
 import java.util.Locale
+import org.prauga.keyboard.utils.ExecutorUtils
 
 object EmojiKeywords {
     private const val TAG = "EmojiKeywords"
@@ -18,8 +18,7 @@ object EmojiKeywords {
     private const val ENGLISH = "en"
     private const val MAX_SEARCH_RESULTS = 40
 
-    @Volatile
-    private var english = Index(emptyMap())
+    @Volatile private var english = Index(emptyMap())
     private var loading = false
 
     @JvmStatic
@@ -32,9 +31,8 @@ object EmojiKeywords {
         val appContext = context.applicationContext
         ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
             try {
-                english = Index(
-                    appContext.assets.open(ENGLISH_ASSET).reader(Charsets.UTF_8).use(::parse)
-                )
+                english =
+                    Index(appContext.assets.open(ENGLISH_ASSET).reader(Charsets.UTF_8).use(::parse))
             } catch (e: IOException) {
                 Log.w(TAG, "Cannot read emoji keywords", e)
             }
@@ -49,19 +47,21 @@ object EmojiKeywords {
         return english.keywords[word.lowercase(Locale.ROOT)]?.firstOrNull()
     }
 
-    @JvmStatic
-    fun search(query: String): List<String> = english.search(query)
+    @JvmStatic fun search(query: String): List<String> = english.search(query)
 
     internal fun parse(reader: Reader): Map<String, List<String>> =
-        reader.buffered().lineSequence()
+        reader
+            .buffered()
+            .lineSequence()
             .filter { it.isNotEmpty() && !it.startsWith("#") }
             .mapNotNull { line ->
                 val tab = line.indexOf('\t')
-                val emojis = if (tab > 0) {
-                    line.substring(tab + 1).split(' ').filter { it.isNotEmpty() }
-                } else {
-                    emptyList()
-                }
+                val emojis =
+                    if (tab > 0) {
+                        line.substring(tab + 1).split(' ').filter { it.isNotEmpty() }
+                    } else {
+                        emptyList()
+                    }
                 if (emojis.isEmpty()) null else line.substring(0, tab) to emojis
             }
             .toMap()

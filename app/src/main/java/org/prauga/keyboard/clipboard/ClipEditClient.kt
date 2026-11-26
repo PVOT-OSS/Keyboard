@@ -6,8 +6,8 @@
 package org.prauga.keyboard.clipboard
 
 import androidx.annotation.StringRes
-import org.prauga.keyboard.textfield.StripTextFieldClient
 import java.util.function.Consumer
+import org.prauga.keyboard.textfield.StripTextFieldClient
 
 class ClipEditClient(
     override val initialText: String,

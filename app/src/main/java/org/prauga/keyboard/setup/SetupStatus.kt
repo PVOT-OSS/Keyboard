@@ -20,9 +20,10 @@ internal enum class SetupStep {
 internal class SetupStatus(context: Context) {
 
     private val context: Context = context.applicationContext
-    private val imm: InputMethodManager = requireNotNull(
-        this.context.getSystemService(InputMethodManager::class.java)
-    ) { "No InputMethodManager" }
+    private val imm: InputMethodManager =
+        requireNotNull(this.context.getSystemService(InputMethodManager::class.java)) {
+            "No InputMethodManager"
+        }
 
     suspend fun imeId(): String? =
         withContext(Dispatchers.IO) {

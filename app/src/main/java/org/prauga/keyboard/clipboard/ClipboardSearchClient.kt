@@ -5,9 +5,9 @@
 
 package org.prauga.keyboard.clipboard
 
+import java.util.function.Consumer
 import org.prauga.keyboard.R
 import org.prauga.keyboard.textfield.StripTextFieldClient
-import java.util.function.Consumer
 
 class ClipboardSearchClient(
     private val manager: ClipboardHistoryManager,
@@ -18,10 +18,13 @@ class ClipboardSearchClient(
     override val noResults = R.string.clipboard_history_no_results
 
     override fun results(text: String) =
-        manager.getItems()
+        manager
+            .getItems()
             .filter { !it.isImage && it.text.contains(text.trim(), ignoreCase = true) }
             .map { item ->
-                StripTextFieldClient.Result(label(item.text), item.text) { onPaste.accept(item.text) }
+                StripTextFieldClient.Result(label(item.text), item.text) {
+                    onPaste.accept(item.text)
+                }
             }
 
     override fun onBack() = onBackToPanel.run()

@@ -33,12 +33,17 @@ internal fun CorrectionScreen(
     val context = LocalContext.current
     val offensiveDefault = booleanResource(R.bool.config_block_potentially_offensive)
     val strength =
-        listSetting(Settings.PREF_AUTO_CORRECTION_STRENGTH, R.string.auto_correction_strength,
-            R.array.auto_correction_strength_entries, R.array.auto_correction_strength_values,
-            stringResource(R.string.auto_correction_threshold_mode_index_modest))
+        listSetting(
+            Settings.PREF_AUTO_CORRECTION_STRENGTH,
+            R.string.auto_correction_strength,
+            R.array.auto_correction_strength_entries,
+            R.array.auto_correction_strength_values,
+            stringResource(R.string.auto_correction_threshold_mode_index_modest),
+        )
     val contactsPermission =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) onEvent(SettingsEvent.SetBoolean(Settings.PREF_KEY_USE_CONTACTS_DICT, true))
+            if (granted)
+                onEvent(SettingsEvent.SetBoolean(Settings.PREF_KEY_USE_CONTACTS_DICT, true))
         }
     val clearClipboard =
         ConfirmRequest(
@@ -69,7 +74,11 @@ internal fun CorrectionScreen(
                 if (snapshot.personalDictionaryAvailable) {
                     linkRow(
                         title = R.string.edit_personal_dictionary,
-                        onClick = { context.startActivity(Intent(android.provider.Settings.ACTION_USER_DICTIONARY_SETTINGS)) },
+                        onClick = {
+                            context.startActivity(
+                                Intent(android.provider.Settings.ACTION_USER_DICTIONARY_SETTINGS)
+                            )
+                        },
                     )
                 }
                 linkRow(
@@ -87,39 +96,97 @@ internal fun CorrectionScreen(
                     summaryRes = R.string.blocked_words_summary,
                     onClick = { onOpen(SettingsRoute.BLOCKED_WORDS) },
                 )
-                prefSwitch(snapshot, Settings.PREF_BLOCK_POTENTIALLY_OFFENSIVE, offensiveDefault,
-                    R.string.prefs_block_potentially_offensive_title, onEvent,
-                    R.string.prefs_block_potentially_offensive_summary)
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_BLOCK_POTENTIALLY_OFFENSIVE,
+                    offensiveDefault,
+                    R.string.prefs_block_potentially_offensive_title,
+                    onEvent,
+                    R.string.prefs_block_potentially_offensive_summary,
+                )
             }
         }
         item {
             PvotListGroup(title = stringResource(R.string.settings_group_corrections)) {
-                prefSwitch(snapshot, Settings.PREF_AUTO_CORRECTION, true, R.string.auto_correction,
-                    onEvent, R.string.auto_correction_summary)
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_AUTO_CORRECTION,
+                    true,
+                    R.string.auto_correction,
+                    onEvent,
+                    R.string.auto_correction_summary,
+                )
                 listRow(strength, snapshot, dialogs, onEvent, enabled = autoCorrection)
-                prefSwitch(snapshot, Settings.PREF_UNDO_AUTO_CORRECTION_ON_BACKSPACE, true,
-                    R.string.undo_auto_correction_on_backspace, onEvent,
-                    R.string.undo_auto_correction_on_backspace_summary, enabled = autoCorrection)
-                prefSwitch(snapshot, AutoSpace.PREF_AUTO_SPACE_AFTER_PUNCTUATION, false,
-                    R.string.auto_space_after_punctuation, onEvent,
-                    R.string.auto_space_after_punctuation_summary)
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_UNDO_AUTO_CORRECTION_ON_BACKSPACE,
+                    true,
+                    R.string.undo_auto_correction_on_backspace,
+                    onEvent,
+                    R.string.undo_auto_correction_on_backspace_summary,
+                    enabled = autoCorrection,
+                )
+                prefSwitch(
+                    snapshot,
+                    AutoSpace.PREF_AUTO_SPACE_AFTER_PUNCTUATION,
+                    false,
+                    R.string.auto_space_after_punctuation,
+                    onEvent,
+                    R.string.auto_space_after_punctuation_summary,
+                )
             }
         }
         item {
             PvotListGroup(title = stringResource(R.string.settings_group_suggestions)) {
-                prefSwitch(snapshot, Settings.PREF_SHOW_SUGGESTIONS, true,
-                    R.string.prefs_show_suggestions, onEvent, R.string.prefs_show_suggestions_summary)
-                prefSwitch(snapshot, Settings.PREF_BIGRAM_PREDICTIONS, true,
-                    R.string.bigram_prediction, onEvent, R.string.bigram_prediction_summary)
-                prefSwitch(snapshot, Settings.PREF_SPACE_INSERTS_PREDICTION, false,
-                    R.string.space_inserts_prediction, onEvent,
-                    R.string.space_inserts_prediction_summary, enabled = prediction)
-                prefSwitch(snapshot, Settings.PREF_EMOJI_SUGGESTIONS, true,
-                    R.string.emoji_suggestions, onEvent, R.string.emoji_suggestions_summary)
-                prefSwitch(snapshot, MultilingualLocales.PREF_MULTILINGUAL_TYPING, true,
-                    R.string.multilingual_typing, onEvent, R.string.multilingual_typing_summary)
-                prefSwitch(snapshot, Settings.PREF_KEY_USE_PERSONALIZED_DICTS, true,
-                    R.string.use_personalized_dicts, onEvent, R.string.use_personalized_dicts_summary)
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_SHOW_SUGGESTIONS,
+                    true,
+                    R.string.prefs_show_suggestions,
+                    onEvent,
+                    R.string.prefs_show_suggestions_summary,
+                )
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_BIGRAM_PREDICTIONS,
+                    true,
+                    R.string.bigram_prediction,
+                    onEvent,
+                    R.string.bigram_prediction_summary,
+                )
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_SPACE_INSERTS_PREDICTION,
+                    false,
+                    R.string.space_inserts_prediction,
+                    onEvent,
+                    R.string.space_inserts_prediction_summary,
+                    enabled = prediction,
+                )
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_EMOJI_SUGGESTIONS,
+                    true,
+                    R.string.emoji_suggestions,
+                    onEvent,
+                    R.string.emoji_suggestions_summary,
+                )
+                prefSwitch(
+                    snapshot,
+                    MultilingualLocales.PREF_MULTILINGUAL_TYPING,
+                    true,
+                    R.string.multilingual_typing,
+                    onEvent,
+                    R.string.multilingual_typing_summary,
+                )
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_KEY_USE_PERSONALIZED_DICTS,
+                    true,
+                    R.string.use_personalized_dicts,
+                    onEvent,
+                    R.string.use_personalized_dicts_summary,
+                )
                 switchRow(
                     title = R.string.use_contacts_dict,
                     summary = R.string.use_contacts_dict_summary,
@@ -130,7 +197,9 @@ internal fun CorrectionScreen(
                         if (on && !snapshot.contactsGranted) {
                             contactsPermission.launch(Manifest.permission.READ_CONTACTS)
                         } else {
-                            onEvent(SettingsEvent.SetBoolean(Settings.PREF_KEY_USE_CONTACTS_DICT, on))
+                            onEvent(
+                                SettingsEvent.SetBoolean(Settings.PREF_KEY_USE_CONTACTS_DICT, on)
+                            )
                         }
                     },
                 )
@@ -144,11 +213,22 @@ internal fun CorrectionScreen(
         }
         item {
             PvotListGroup(title = stringResource(R.string.settings_group_clipboard)) {
-                prefSwitch(snapshot, Settings.PREF_CLIPBOARD_HISTORY, true,
-                    R.string.clipboard_history, onEvent, R.string.clipboard_history_summary)
-                prefSwitch(snapshot, Settings.PREF_SHOW_CLIPBOARD_SUGGESTIONS, true,
-                    R.string.show_clipboard_suggestions, onEvent,
-                    R.string.show_clipboard_suggestions_summary)
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_CLIPBOARD_HISTORY,
+                    true,
+                    R.string.clipboard_history,
+                    onEvent,
+                    R.string.clipboard_history_summary,
+                )
+                prefSwitch(
+                    snapshot,
+                    Settings.PREF_SHOW_CLIPBOARD_SUGGESTIONS,
+                    true,
+                    R.string.show_clipboard_suggestions,
+                    onEvent,
+                    R.string.show_clipboard_suggestions_summary,
+                )
                 linkRow(
                     title = R.string.clear_clipboard_history,
                     summaryRes = R.string.clear_clipboard_history_summary,

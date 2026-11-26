@@ -10,11 +10,9 @@ import androidx.annotation.StringRes
 interface StripTextFieldClient {
     class Result(val label: String, val description: String, val onPick: () -> Unit)
 
-    @get:StringRes
-    val hint: Int
+    @get:StringRes val hint: Int
 
-    @get:StringRes
-    val noResults: Int
+    @get:StringRes val noResults: Int
 
     val initialText: String
         get() = ""

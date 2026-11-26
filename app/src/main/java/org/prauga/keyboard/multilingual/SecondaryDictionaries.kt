@@ -6,15 +6,14 @@
 package org.prauga.keyboard.multilingual
 
 import android.content.Context
+import java.util.Locale
 import org.prauga.keyboard.Dictionary
 import org.prauga.keyboard.DictionaryCollection
 import org.prauga.keyboard.DictionaryFactory
 import org.prauga.keyboard.utils.ExecutorUtils
-import java.util.Locale
 
 class SecondaryDictionaries {
-    @Volatile
-    private var loaded: List<DictionaryCollection> = emptyList()
+    @Volatile private var loaded: List<DictionaryCollection> = emptyList()
     private var requested: List<Locale> = emptyList()
     private val weights = LanguageWeights()
 
@@ -27,11 +26,12 @@ class SecondaryDictionaries {
 
     @Synchronized
     fun recordCommittedWord(word: String, primaryKnowsIt: Boolean) {
-        val knownBy = if (primaryKnowsIt) {
-            emptyList()
-        } else {
-            loaded.filter { it.isValidWord(word) }.mapNotNull { it.mLocale }
-        }
+        val knownBy =
+            if (primaryKnowsIt) {
+                emptyList()
+            } else {
+                loaded.filter { it.isValidWord(word) }.mapNotNull { it.mLocale }
+            }
         weights.record(knownBy)
     }
 
@@ -43,15 +43,18 @@ class SecondaryDictionaries {
         requested = locales
         val appContext = context.applicationContext
         ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
-            val dictionaries = locales.map { DictionaryFactory.createMainDictionaryFromManager(appContext, it) }
-                .filter { it.isInitialized }
-            val old = synchronized(this) {
-                if (requested != locales) {
-                    dictionaries.forEach { it.close() }
-                    return@execute
+            val dictionaries =
+                locales
+                    .map { DictionaryFactory.createMainDictionaryFromManager(appContext, it) }
+                    .filter { it.isInitialized }
+            val old =
+                synchronized(this) {
+                    if (requested != locales) {
+                        dictionaries.forEach { it.close() }
+                        return@execute
+                    }
+                    loaded.also { loaded = dictionaries }
                 }
-                loaded.also { loaded = dictionaries }
-            }
             old.forEach { it.close() }
         }
     }

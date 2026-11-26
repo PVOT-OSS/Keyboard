@@ -14,7 +14,14 @@ class ToolbarKeysTest {
         val entries = ToolbarKeys.parse(null)
         assertEquals(
             listOf(
-                "clipboard", "editing", "modes", "one_handed", "resize", "float", "emoji", "settings",
+                "clipboard",
+                "editing",
+                "modes",
+                "one_handed",
+                "resize",
+                "float",
+                "emoji",
+                "settings",
                 "incognito",
             ),
             entries.map { it.id },

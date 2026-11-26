@@ -39,6 +39,5 @@ object BlockedWords {
     fun isBlocked(blockedWords: Set<String>, word: String): Boolean =
         blockedWords.isNotEmpty() && normalize(word) in blockedWords
 
-    @JvmStatic
-    fun normalize(word: String): String = word.trim().lowercase(Locale.ROOT)
+    @JvmStatic fun normalize(word: String): String = word.trim().lowercase(Locale.ROOT)
 }

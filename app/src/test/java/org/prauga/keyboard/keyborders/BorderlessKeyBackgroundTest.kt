@@ -13,7 +13,9 @@ class BorderlessKeyBackgroundTest {
     @Test
     fun idleKeysAreNotDrawn() {
         assertFalse(BorderlessKeyBackground.isHighlighted(intArrayOf()))
-        assertFalse(BorderlessKeyBackground.isHighlighted(intArrayOf(android.R.attr.state_checkable)))
+        assertFalse(
+            BorderlessKeyBackground.isHighlighted(intArrayOf(android.R.attr.state_checkable))
+        )
     }
 
     @Test

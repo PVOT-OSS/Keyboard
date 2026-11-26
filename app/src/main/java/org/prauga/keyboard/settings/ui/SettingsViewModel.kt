@@ -53,7 +53,8 @@ internal class SettingsViewModel(private val repository: SettingsRepository) : V
             is SettingsEvent.BlockWord -> repository.blockWord(event.word)
             is SettingsEvent.UnblockWord -> repository.unblockWord(event.word)
             is SettingsEvent.AddStyle -> addStyle(event.locale, event.layout)
-            is SettingsEvent.RemoveStyle -> refreshAfter { repository.removeStyle(event.prefSubtype) }
+            is SettingsEvent.RemoveStyle ->
+                refreshAfter { repository.removeStyle(event.prefSubtype) }
             is SettingsEvent.PreviewVibration -> repository.vibrate(event.milliseconds)
             is SettingsEvent.PreviewSound -> repository.playKeySound(event.percent)
             SettingsEvent.RemovePhoto -> viewModelScope.launch { repository.removePhoto() }
@@ -83,10 +84,14 @@ internal class SettingsViewModel(private val repository: SettingsRepository) : V
     private fun addStyle(locale: String, layout: String) {
         viewModelScope.launch {
             when (val result = repository.addStyle(locale, layout)) {
-                is AddStyleResult.Added -> effectChannel.send(SettingsEffect.OfferEnableStyle(result.imeId))
+                is AddStyleResult.Added ->
+                    effectChannel.send(SettingsEffect.OfferEnableStyle(result.imeId))
                 is AddStyleResult.Exists ->
                     effectChannel.send(
-                        SettingsEffect.Message(R.string.custom_input_style_already_exists, result.name)
+                        SettingsEffect.Message(
+                            R.string.custom_input_style_already_exists,
+                            result.name,
+                        )
                     )
             }
             refreshes.value++

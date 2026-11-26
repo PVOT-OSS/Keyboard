@@ -60,8 +60,12 @@ class TextEditingView(context: Context, attrs: AttributeSet?) : LinearLayout(con
         setUpAction(R.id.text_editing_copy, android.R.id.copy, endsSelection = true)
         setUpAction(R.id.text_editing_cut, android.R.id.cut, endsSelection = true)
         setUpAction(R.id.text_editing_paste, android.R.id.paste, endsSelection = true)
-        findViewById<View>(R.id.text_editing_undo).setOnClickListener { listener.onEditingUndo(false) }
-        findViewById<View>(R.id.text_editing_redo).setOnClickListener { listener.onEditingUndo(true) }
+        findViewById<View>(R.id.text_editing_undo).setOnClickListener {
+            listener.onEditingUndo(false)
+        }
+        findViewById<View>(R.id.text_editing_redo).setOnClickListener {
+            listener.onEditingUndo(true)
+        }
     }
 
     fun setListener(listener: Listener) {
@@ -89,9 +93,10 @@ class TextEditingView(context: Context, attrs: AttributeSet?) : LinearLayout(con
         val chipColor = InlineSuggestionsStrip.getChipBackgroundColor(tint.defaultColor)
         val selectedColor = ColorUtils.setAlphaComponent(tint.defaultColor, SELECTED_ALPHA)
         for (key in keys.children) {
-            key.backgroundTintList = ColorStateList.valueOf(
-                if (key === select && selecting) selectedColor else chipColor
-            )
+            key.backgroundTintList =
+                ColorStateList.valueOf(
+                    if (key === select && selecting) selectedColor else chipColor
+                )
         }
         select.isActivated = selecting
     }
