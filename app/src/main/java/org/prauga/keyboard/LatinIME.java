@@ -97,7 +97,7 @@ import org.prauga.keyboard.blockedwords.BlockedWords;
 import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.editing.TextEditingView;
 import org.prauga.keyboard.emojisuggestions.EmojiKeywords;
-import org.prauga.keyboard.emojisuggestions.EmojiSearchBar;
+import org.prauga.keyboard.emojisuggestions.EmojiSearchClient;
 import org.prauga.keyboard.gestures.KeyboardGestures;
 import org.prauga.keyboard.glide.GlideTyping;
 import org.prauga.keyboard.onehanded.OneHandedMode;
@@ -115,6 +115,8 @@ import org.prauga.keyboard.settings.Settings;
 import org.prauga.keyboard.settings.SettingsActivity;
 import org.prauga.keyboard.settings.SettingsValues;
 import org.prauga.keyboard.suggestions.SuggestionStripView;
+import org.prauga.keyboard.textfield.StripTextField;
+import org.prauga.keyboard.textfield.StripTextFieldClient;
 import org.prauga.keyboard.suggestions.SuggestionStripViewAccessor;
 import org.prauga.keyboard.touchinputconsumer.GestureConsumer;
 import org.prauga.keyboard.utils.ApplicationUtils;
@@ -149,11 +151,13 @@ import javax.annotation.Nullable;
 public class LatinIME extends InputMethodService implements KeyboardActionListener,
         SuggestionStripView.Listener, SuggestionStripViewAccessor,
         ClipboardSuggestionMonitor.Listener, ClipboardHistoryView.Listener,
-        TextEditingView.Listener, OneHandedSideView.Listener, EmojiSearchBar.Listener,
+        TextEditingView.Listener, OneHandedSideView.Listener, StripTextField.CloseListener,
         KeyboardResizeView.Listener,
         DictionaryFacilitator.DictionaryInitializationListener,
         PermissionsManager.PermissionsResultCallback {
     private static final int MAX_WORD_DELETE_LOOKBACK = 64;
+    @Nullable
+    private StripTextFieldClient mTextFieldClient;
 
     static final String TAG = LatinIME.class.getSimpleName();
     private static final boolean TRACE = false;
@@ -911,7 +915,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         mSuggestionStripView = (SuggestionStripView)view.findViewById(R.id.suggestion_strip_view);
         if (hasSuggestionStripView()) {
             mSuggestionStripView.setListener(this, view);
-            mSuggestionStripView.setEmojiSearchListener(this);
+            mSuggestionStripView.setTextFieldCloseListener(this);
         }
     }
 
@@ -1000,7 +1004,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
             mKeyboardSwitcher.hidePanels();
             mKeyboardSwitcher.hideKeyboardResize();
             if (hasSuggestionStripView()) {
-                mSuggestionStripView.hideEmojiSearch();
+                hideTextField();
             }
         }
 
@@ -1872,7 +1876,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
             startEmojiSearch();
             return;
         }
-        if (isEmojiSearchShown() && handleEmojiSearchEvent(event)) {
+        if (isTextFieldShown() && handleTextFieldEvent(event)) {
             return;
         }
         if (event.mCodePoint == Constants.CODE_SPACE && insertPredictionOnSpace()) {
@@ -1910,8 +1914,8 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     // Called from PointerTracker through the KeyboardActionListener interface
     @Override
     public void onTextInput(final String rawText) {
-        if (isEmojiSearchShown()) {
-            mSuggestionStripView.typeIntoEmojiSearch(rawText);
+        if (isTextFieldShown()) {
+            mSuggestionStripView.typeIntoTextField(rawText);
             return;
         }
         commitTextInput(rawText);
@@ -2285,10 +2289,12 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
                 && isShowingPanelOrEmoji()) {
             if (mKeyboardSwitcher.isShowingKeyboardResize()) {
                 mKeyboardSwitcher.hideKeyboardResize();
-            } else if (isEmojiSearchShown()) {
-                mSuggestionStripView.hideEmojiSearch();
-                onCodeInput(Constants.CODE_EMOJI, Constants.NOT_A_COORDINATE,
-                        Constants.NOT_A_COORDINATE, false);
+            } else if (isTextFieldShown()) {
+                final StripTextFieldClient client = mTextFieldClient;
+                hideTextField();
+                if (client != null) {
+                    client.onBack();
+                }
             } else if (mKeyboardSwitcher.isShowingPanel()) {
                 mKeyboardSwitcher.hidePanels();
             } else {
@@ -2314,7 +2320,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     private boolean isShowingPanelOrEmoji() {
         return mKeyboardSwitcher.isShowingPanel() || mKeyboardSwitcher.isShowingEmojiPalettes()
-                || isEmojiSearchShown() || mKeyboardSwitcher.isShowingKeyboardResize();
+                || isTextFieldShown() || mKeyboardSwitcher.isShowingKeyboardResize();
     }
 
     private boolean insertPredictionOnSpace() {
@@ -2329,29 +2335,46 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         return true;
     }
 
-    private boolean isEmojiSearchShown() {
-        return hasSuggestionStripView() && mSuggestionStripView.isEmojiSearchShown();
+    private boolean isTextFieldShown() {
+        return hasSuggestionStripView() && mSuggestionStripView.isTextFieldShown();
     }
 
-    private void startEmojiSearch() {
+    private void showTextField(@Nonnull final StripTextFieldClient client) {
         if (!hasSuggestionStripView()) {
             return;
         }
         mInputLogic.finishInput();
-        onCodeInput(Constants.CODE_ALPHA_FROM_EMOJI, Constants.NOT_A_COORDINATE,
-                Constants.NOT_A_COORDINATE, false);
-        mSuggestionStripView.showEmojiSearch();
+        mKeyboardSwitcher.hidePanels();
+        if (mKeyboardSwitcher.isShowingEmojiPalettes()) {
+            onCodeInput(Constants.CODE_ALPHA_FROM_EMOJI, Constants.NOT_A_COORDINATE,
+                    Constants.NOT_A_COORDINATE, false);
+        }
+        mTextFieldClient = client;
+        mSuggestionStripView.showTextField(client);
     }
 
-    private boolean handleEmojiSearchEvent(@Nonnull final Event event) {
+    private void hideTextField() {
+        mTextFieldClient = null;
+        if (hasSuggestionStripView()) {
+            mSuggestionStripView.hideTextField();
+        }
+    }
+
+    private void startEmojiSearch() {
+        showTextField(new EmojiSearchClient(this::commitTextInput,
+                () -> onCodeInput(Constants.CODE_EMOJI, Constants.NOT_A_COORDINATE,
+                        Constants.NOT_A_COORDINATE, false)));
+    }
+
+    private boolean handleTextFieldEvent(@Nonnull final Event event) {
         if (event.mKeyCode == Constants.CODE_EMOJI) {
-            mSuggestionStripView.hideEmojiSearch();
+            hideTextField();
             return false;
         }
         if (event.mKeyCode == Constants.CODE_DELETE) {
-            mSuggestionStripView.deleteFromEmojiSearch();
+            mSuggestionStripView.deleteFromTextField();
         } else if (event.mCodePoint > 0 && event.mCodePoint != Constants.CODE_ENTER) {
-            mSuggestionStripView.typeIntoEmojiSearch(new String(Character.toChars(event.mCodePoint)));
+            mSuggestionStripView.typeIntoTextField(new String(Character.toChars(event.mCodePoint)));
         } else if (event.mCodePoint != Constants.CODE_ENTER) {
             return false;
         }
@@ -2361,13 +2384,8 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     }
 
     @Override
-    public void onEmojiSearchResult(@Nonnull final String emoji) {
-        commitTextInput(emoji);
-    }
-
-    @Override
-    public void onEmojiSearchClose() {
-        mSuggestionStripView.hideEmojiSearch();
+    public void onTextFieldClose() {
+        hideTextField();
     }
 
     // onKeyDown and onKeyUp are the main events we are interested in. There are two more events

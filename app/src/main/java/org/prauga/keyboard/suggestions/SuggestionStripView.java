@@ -57,7 +57,8 @@ import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.define.DebugFlags;
 import org.prauga.keyboard.settings.Settings;
 import org.prauga.keyboard.settings.SettingsValues;
-import org.prauga.keyboard.emojisuggestions.EmojiSearchBar;
+import org.prauga.keyboard.textfield.StripTextField;
+import org.prauga.keyboard.textfield.StripTextFieldClient;
 import org.prauga.keyboard.toolbar.KeyboardToolbar;
 import org.prauga.keyboard.toolbar.ToolbarKeys;
 import org.prauga.keyboard.suggestions.MoreSuggestionsView.MoreSuggestionsListener;
@@ -110,7 +111,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     @Nullable
     private ClipboardSuggestion mClipboardSuggestion;
     private final KeyboardToolbar mToolbar;
-    private final EmojiSearchBar mEmojiSearchBar;
+    private final StripTextField mTextField;
     private final View mToolbarClipboardKey;
     private final View mToolbarEditingKey;
     private final ImageButton mToolbarFloatKey;
@@ -152,21 +153,21 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         private final InlineSuggestionsStrip mInlineSuggestionsStrip;
         private final View mClipboardSuggestionStrip;
         private final View mToolbar;
-        private final View mEmojiSearchBar;
-        private boolean mShowsEmojiSearch;
+        private final View mTextField;
+        private boolean mShowsTextField;
 
         public StripVisibilityGroup(final View suggestionStripView,
                 final ViewGroup suggestionsStrip, final View importantNoticeStrip,
                 final InlineSuggestionsStrip inlineSuggestionsStrip,
                 final View clipboardSuggestionStrip, final View toolbar,
-                final View emojiSearchBar) {
+                final View textField) {
             mSuggestionStripView = suggestionStripView;
             mSuggestionsStrip = suggestionsStrip;
             mImportantNoticeStrip = importantNoticeStrip;
             mInlineSuggestionsStrip = inlineSuggestionsStrip;
             mClipboardSuggestionStrip = clipboardSuggestionStrip;
             mToolbar = toolbar;
-            mEmojiSearchBar = emojiSearchBar;
+            mTextField = textField;
             showSuggestionsStrip(false /* showsClipboardSuggestion */, false /* showsToolbar */);
         }
 
@@ -180,8 +181,8 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
 
         public void showSuggestionsStrip(final boolean showsClipboardSuggestion,
                 final boolean showsToolbar) {
-            mEmojiSearchBar.setVisibility(mShowsEmojiSearch ? VISIBLE : INVISIBLE);
-            if (mShowsEmojiSearch) {
+            mTextField.setVisibility(mShowsTextField ? VISIBLE : INVISIBLE);
+            if (mShowsTextField) {
                 mSuggestionsStrip.setVisibility(INVISIBLE);
                 mImportantNoticeStrip.setVisibility(INVISIBLE);
                 mInlineSuggestionsStrip.setVisibility(INVISIBLE);
@@ -240,10 +241,10 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         mInlineSuggestionsStrip = findViewById(R.id.inline_suggestions_strip);
         mClipboardSuggestionStrip = findViewById(R.id.clipboard_suggestion_strip);
         mToolbar = findViewById(R.id.keyboard_toolbar);
-        mEmojiSearchBar = findViewById(R.id.emoji_search_bar);
+        mTextField = findViewById(R.id.strip_text_field);
         mStripVisibilityGroup = new StripVisibilityGroup(this, mSuggestionsStrip,
                 mImportantNoticeStrip, mInlineSuggestionsStrip, mClipboardSuggestionStrip,
-                mToolbar, mEmojiSearchBar);
+                mToolbar, mTextField);
 
         for (int pos = 0; pos < SuggestedWords.MAX_SUGGESTIONS; pos++) {
             final TextView word = new TextView(context, null, R.attr.suggestionWordStyle);
@@ -345,7 +346,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         mShouldBeVisible = shouldBeVisible;
         mIsFullscreenMode = isFullscreenMode;
         final boolean isVisible = shouldBeVisible || mInlineSuggestionsStrip.hasSuggestions()
-                || isEmojiSearchShown();
+                || isTextFieldShown();
         final int visibility = isVisible ? VISIBLE : (isFullscreenMode ? GONE : INVISIBLE);
         setVisibility(visibility);
         final SettingsValues currentSettingsValues = Settings.getInstance().getCurrent();
@@ -383,7 +384,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
                 shouldShowToolbar());
         updateSplitKey();
         updateFloatKey();
-        if (isEmojiSearchShown()) {
+        if (isTextFieldShown()) {
             hideEdgeKeys();
         }
     }
@@ -408,36 +409,36 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         updateVisibility(mShouldBeVisible, mIsFullscreenMode);
     }
 
-    public void setEmojiSearchListener(@Nonnull final EmojiSearchBar.Listener listener) {
-        mEmojiSearchBar.setListener(listener);
+    public void setTextFieldCloseListener(@Nonnull final StripTextField.CloseListener listener) {
+        mTextField.setCloseListener(listener);
     }
 
-    public boolean isEmojiSearchShown() {
-        return mStripVisibilityGroup.mShowsEmojiSearch;
+    public boolean isTextFieldShown() {
+        return mStripVisibilityGroup.mShowsTextField;
     }
 
-    public void showEmojiSearch() {
-        mStripVisibilityGroup.mShowsEmojiSearch = true;
-        mEmojiSearchBar.start(mPanelTint);
+    public void showTextField(@Nonnull final StripTextFieldClient client) {
+        mStripVisibilityGroup.mShowsTextField = true;
+        mTextField.start(client, mPanelTint);
         setVisibility(VISIBLE);
         hideEdgeKeys();
         mStripVisibilityGroup.showSuggestionsStrip(false, false);
     }
 
-    public void hideEmojiSearch() {
-        if (!isEmojiSearchShown()) {
+    public void hideTextField() {
+        if (!isTextFieldShown()) {
             return;
         }
-        mStripVisibilityGroup.mShowsEmojiSearch = false;
+        mStripVisibilityGroup.mShowsTextField = false;
         refresh();
     }
 
-    public void typeIntoEmojiSearch(@Nonnull final String text) {
-        mEmojiSearchBar.type(text);
+    public void typeIntoTextField(@Nonnull final String text) {
+        mTextField.type(text);
     }
 
-    public void deleteFromEmojiSearch() {
-        mEmojiSearchBar.deleteLast();
+    public void deleteFromTextField() {
+        mTextField.deleteLast();
     }
 
     private void hideEdgeKeys() {
