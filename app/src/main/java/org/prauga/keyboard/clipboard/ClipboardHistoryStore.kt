@@ -14,6 +14,16 @@ object ClipboardHistoryStore {
     private const val HEADER_V2 = "pvot-clipboard-pins 2"
     private const val HEADER_V1 = "pvot-clipboard-pins 1"
     private const val SEPARATOR = "\t"
+    private const val FIELD_TIMESTAMP = 0
+    private const val FIELD_TEXT = 1
+    private const val FIELD_SHORTCUT = 2
+    private const val FIELD_MIME_TYPE = 3
+    private val FIELD_COUNTS =
+        mapOf(
+            HEADER to FIELD_MIME_TYPE + 1,
+            HEADER_V2 to FIELD_SHORTCUT + 1,
+            HEADER_V1 to FIELD_TEXT + 1,
+        )
 
     @Throws(IOException::class)
     fun read(file: File): List<ClipboardHistory.Item> {
@@ -22,32 +32,26 @@ object ClipboardHistoryStore {
         }
         val lines = file.readLines(Charsets.UTF_8)
         val fieldCount =
-            when (lines.firstOrNull()) {
-                HEADER -> 4
-                HEADER_V2 -> 3
-                HEADER_V1 -> 2
-                else -> throw IOException("Unknown clipboard pins format")
-            }
-        return lines
-            .drop(1)
-            .filter { it.isNotEmpty() }
-            .map { line ->
-                val fields = line.split(SEPARATOR)
-                if (fields.size != fieldCount) {
-                    throw IOException("Malformed clipboard pin")
-                }
-                try {
-                    ClipboardHistory.Item(
-                        decode(fields[1]),
-                        fields[0].toLong(),
-                        true,
-                        fields.getOrNull(2)?.let(::decode)?.takeIf { it.isNotEmpty() },
-                        fields.getOrNull(3)?.let(::decode)?.takeIf { it.isNotEmpty() },
-                    )
-                } catch (e: IllegalArgumentException) {
-                    throw IOException("Malformed clipboard pin", e)
-                }
-            }
+            FIELD_COUNTS[lines.firstOrNull()] ?: throw IOException("Unknown clipboard pins format")
+        return lines.drop(1).filter { it.isNotEmpty() }.map { parseLine(it, fieldCount) }
+    }
+
+    private fun parseLine(line: String, fieldCount: Int): ClipboardHistory.Item {
+        val fields = line.split(SEPARATOR)
+        if (fields.size != fieldCount) {
+            throw IOException("Malformed clipboard pin")
+        }
+        return try {
+            ClipboardHistory.Item(
+                decode(fields[FIELD_TEXT]),
+                fields[FIELD_TIMESTAMP].toLong(),
+                true,
+                fields.getOrNull(FIELD_SHORTCUT)?.let(::decode)?.takeIf { it.isNotEmpty() },
+                fields.getOrNull(FIELD_MIME_TYPE)?.let(::decode)?.takeIf { it.isNotEmpty() },
+            )
+        } catch (e: IllegalArgumentException) {
+            throw IOException("Malformed clipboard pin", e)
+        }
     }
 
     private fun encode(text: String): String =

@@ -183,10 +183,10 @@ class PersonalDictionaryBackupActivity : ComponentActivity() {
 
         private fun fromCursor(cursor: Cursor) =
             PersonalDictionaryEntry(
-                cursor.getString(0).orEmpty(),
-                cursor.getInt(1),
-                cursor.getString(2),
-                cursor.getString(3),
+                cursor.getString(cursor.getColumnIndexOrThrow(UserDictionary.Words.WORD)).orEmpty(),
+                cursor.getInt(cursor.getColumnIndexOrThrow(UserDictionary.Words.FREQUENCY)),
+                cursor.getString(cursor.getColumnIndexOrThrow(UserDictionary.Words.LOCALE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(UserDictionary.Words.SHORTCUT)),
             )
 
         private fun toValues(entry: PersonalDictionaryEntry) =

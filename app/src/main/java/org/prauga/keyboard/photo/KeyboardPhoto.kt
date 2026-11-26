@@ -85,11 +85,15 @@ object KeyboardPhoto {
             .apply()
     }
 
+    private const val DIM_LIGHT = 0x40
+    private const val DIM_MEDIUM = 0x70
+    private const val DIM_DARK = 0xA0
+
     internal fun dimAlpha(darkness: String?): Int =
         when (darkness) {
-            "light" -> 0x40
-            "dark" -> 0xA0
-            else -> 0x70
+            "light" -> DIM_LIGHT
+            "dark" -> DIM_DARK
+            else -> DIM_MEDIUM
         }
 
     internal fun sampleSize(width: Int, height: Int, maxEdge: Int): Int {

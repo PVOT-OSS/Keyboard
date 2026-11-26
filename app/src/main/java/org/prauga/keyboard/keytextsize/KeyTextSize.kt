@@ -13,11 +13,16 @@ object KeyTextSize {
     @JvmStatic
     fun read(prefs: SharedPreferences): Float = scaleOf(prefs.getString(PREF_KEY_TEXT_SIZE, null))
 
+    private const val SMALL = 0.85f
+    private const val DEFAULT = 1.0f
+    private const val LARGE = 1.15f
+    private const val LARGEST = 1.3f
+
     internal fun scaleOf(value: String?): Float =
         when (value) {
-            "small" -> 0.85f
-            "large" -> 1.15f
-            "largest" -> 1.3f
-            else -> 1.0f
+            "small" -> SMALL
+            "large" -> LARGE
+            "largest" -> LARGEST
+            else -> DEFAULT
         }
 }
