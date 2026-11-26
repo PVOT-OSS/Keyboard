@@ -8,41 +8,45 @@ package org.prauga.keyboard.settings.ui
 import org.prauga.keyboard.toolbar.ToolbarKeys
 
 internal sealed interface SettingsEvent {
-    data object Refresh : SettingsEvent
+    sealed interface Write : SettingsEvent
 
-    data class SetBoolean(val key: String, val value: Boolean) : SettingsEvent
+    sealed interface Action : SettingsEvent
 
-    data class SetString(val key: String, val value: String) : SettingsEvent
+    data object Refresh : Action
 
-    data class SetInt(val key: String, val value: Int) : SettingsEvent
+    data class SetBoolean(val key: String, val value: Boolean) : Write
 
-    data class SetPercent(val key: String, val percent: Int) : SettingsEvent
+    data class SetString(val key: String, val value: String) : Write
 
-    data class Reset(val key: String) : SettingsEvent
+    data class SetInt(val key: String, val value: Int) : Write
 
-    data class SetTheme(val themeId: Int) : SettingsEvent
+    data class SetPercent(val key: String, val percent: Int) : Write
 
-    data class SetToolbarKeys(val entries: List<ToolbarKeys.Entry>) : SettingsEvent
+    data class Reset(val key: String) : Write
 
-    data class BlockWord(val word: String) : SettingsEvent
+    data class SetTheme(val themeId: Int) : Write
 
-    data class UnblockWord(val word: String) : SettingsEvent
+    data class SetToolbarKeys(val entries: List<ToolbarKeys.Entry>) : Write
 
-    data class AddStyle(val locale: String, val layout: String) : SettingsEvent
+    data class BlockWord(val word: String) : Write
 
-    data class RemoveStyle(val prefSubtype: String) : SettingsEvent
+    data class UnblockWord(val word: String) : Write
 
-    data class PreviewVibration(val milliseconds: Int) : SettingsEvent
+    data class AddStyle(val locale: String, val layout: String) : Action
 
-    data class PreviewSound(val percent: Int) : SettingsEvent
+    data class RemoveStyle(val prefSubtype: String) : Action
 
-    data object RemovePhoto : SettingsEvent
+    data class PreviewVibration(val milliseconds: Int) : Action
 
-    data object ClearClipboard : SettingsEvent
+    data class PreviewSound(val percent: Int) : Action
 
-    data object ClearLearnedWords : SettingsEvent
+    data object RemovePhoto : Action
 
-    data object ResetStats : SettingsEvent
+    data object ClearClipboard : Action
 
-    data class ShowLicense(val title: String, val path: String) : SettingsEvent
+    data object ClearLearnedWords : Action
+
+    data object ResetStats : Action
+
+    data class ShowLicense(val title: String, val path: String) : Action
 }

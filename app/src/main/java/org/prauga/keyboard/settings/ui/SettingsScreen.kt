@@ -29,8 +29,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.prauga.pvot.coreui.UiState
 import org.prauga.keyboard.R
+import org.prauga.keyboard.settings.data.InputStylesRepository
+import org.prauga.keyboard.settings.data.SettingsActions
 import org.prauga.keyboard.settings.data.SettingsRepository
 import org.prauga.keyboard.settings.data.SettingsSnapshot
+import org.prauga.keyboard.settings.data.SettingsWriter
+import org.prauga.keyboard.settings.data.StyleChoices
 import org.prauga.keyboard.utils.IntentUtils
 
 internal enum class SettingsRoute {
@@ -72,6 +76,7 @@ internal fun SettingsScreen(
     viewModel: SettingsViewModel = settingsViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val choices by viewModel.styleChoices.collectAsStateWithLifecycle()
     val navigator =
         rememberSaveable(
             saver =
@@ -104,7 +109,16 @@ internal fun SettingsScreen(
         label = "settings",
     ) { route ->
         holder.SaveableStateProvider(route.name) {
-            SettingsRouteContent(route, snapshot, viewModel, navigator, dialogs, back)
+            SettingsRouteContent(
+                route,
+                snapshot,
+                choices,
+                viewModel::onEvent,
+                viewModel::loadStyleChoices,
+                navigator,
+                dialogs,
+                back,
+            )
         }
     }
     SettingsDialogs(dialogs)
@@ -114,12 +128,13 @@ internal fun SettingsScreen(
 private fun SettingsRouteContent(
     route: SettingsRoute,
     snapshot: SettingsSnapshot,
-    viewModel: SettingsViewModel,
+    choices: StyleChoices?,
+    onEvent: (SettingsEvent) -> Unit,
+    onLoadStyles: () -> Unit,
     navigator: SettingsNavigator,
     dialogs: SettingsDialogState,
     onBack: () -> Unit,
 ) {
-    val onEvent = viewModel::onEvent
     when (route) {
         SettingsRoute.ROOT -> RootScreen(snapshot, navigator::open, onBack)
         SettingsRoute.PREFERENCES -> PreferencesScreen(snapshot, onEvent, navigator::open, onBack)
@@ -135,8 +150,7 @@ private fun SettingsRouteContent(
         SettingsRoute.BLOCKED_WORDS -> BlockedWordsScreen(snapshot, onEvent, dialogs, onBack)
         SettingsRoute.LICENSES -> LicensesScreen(onEvent, onBack)
         SettingsRoute.CUSTOM_STYLES -> {
-            val choices by viewModel.styleChoices.collectAsStateWithLifecycle()
-            LaunchedEffect(Unit) { viewModel.loadStyleChoices() }
+            LaunchedEffect(Unit) { onLoadStyles() }
             CustomStylesScreen(snapshot, choices, onEvent, dialogs, onBack)
         }
     }
@@ -145,7 +159,15 @@ private fun SettingsRouteContent(
 @Composable
 internal fun settingsViewModel(): SettingsViewModel {
     val context = LocalContext.current.applicationContext
-    return viewModel { SettingsViewModel(SettingsRepository(context)) }
+    return viewModel {
+        val styles = InputStylesRepository(context)
+        SettingsViewModel(
+            SettingsRepository(context, styles),
+            SettingsWriter(context),
+            styles,
+            SettingsActions(context),
+        )
+    }
 }
 
 @Composable

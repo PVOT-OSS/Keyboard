@@ -6,14 +6,11 @@
 package org.prauga.keyboard.settings.data
 
 import android.Manifest
-import android.app.backup.BackupManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.media.AudioManager
 import android.view.inputmethod.InputMethodManager
-import android.view.inputmethod.InputMethodSubtype
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -24,22 +21,17 @@ import kotlinx.coroutines.withContext
 import org.prauga.keyboard.AudioAndHapticFeedbackManager
 import org.prauga.keyboard.R
 import org.prauga.keyboard.RichInputMethodManager
-import org.prauga.keyboard.SystemBroadcastReceiver
 import org.prauga.keyboard.blockedwords.BlockedWords
-import org.prauga.keyboard.clipboard.ClipboardHistoryManager
-import org.prauga.keyboard.compat.InputMethodSubtypeCompatUtils
 import org.prauga.keyboard.keyboard.KeyboardTheme
-import org.prauga.keyboard.personalization.PersonalizationHelper
 import org.prauga.keyboard.photo.KeyboardPhoto
 import org.prauga.keyboard.settings.Settings
 import org.prauga.keyboard.settings.SettingsValues
 import org.prauga.keyboard.stats.TypingStats
 import org.prauga.keyboard.toolbar.ToolbarKeys
-import org.prauga.keyboard.utils.AdditionalSubtypeUtils
 import org.prauga.keyboard.utils.SplitKeyboardUtils
 import org.prauga.keyboard.utils.SubtypeLocaleUtils
 
-internal class SettingsRepository(context: Context) {
+internal class SettingsRepository(context: Context, private val styles: InputStylesRepository) {
 
     private val context: Context = context.applicationContext
     private val prefs: SharedPreferences =
@@ -91,162 +83,15 @@ internal class SettingsRepository(context: Context) {
                 stats = TypingStats.snapshot(context),
                 toolbarKeys = ToolbarKeys.readEntries(prefs),
                 blockedWords = BlockedWords.read(prefs).sorted(),
-                customStyles = customStyles(),
-            )
-        }
-
-    suspend fun styleChoices(): StyleChoices =
-        withContext(Dispatchers.IO) {
-            RichInputMethodManager.init(context)
-            SubtypeLocaleUtils.init(context)
-            val imi = RichInputMethodManager.getInstance().inputMethodInfoOfThisIme
-            val locales =
-                (0 until imi.subtypeCount)
-                    .map { imi.getSubtypeAt(it) }
-                    .filter { InputMethodSubtypeCompatUtils.isAsciiCapable(it) }
-                    .map { localeOf(it) }
-                    .distinct()
-                    .sorted()
-                    .map {
-                        Choice(it, SubtypeLocaleUtils.getSubtypeLocaleDisplayNameInSystemLocale(it))
-                    }
-            val layouts =
-                context.resources.getStringArray(R.array.predefined_layouts).map {
-                    Choice(it, SubtypeLocaleUtils.getKeyboardLayoutSetDisplayName(it))
-                }
-            StyleChoices(locales, layouts)
-        }
-
-    fun putBoolean(key: String, value: Boolean) {
-        prefs.edit().putBoolean(key, value).apply()
-        if (key == Settings.PREF_SHOW_SETUP_WIZARD_ICON) {
-            SystemBroadcastReceiver.toggleAppIcon(context)
-        }
-        backup()
-    }
-
-    fun putString(key: String, value: String) {
-        prefs.edit().putString(key, value).apply()
-        backup()
-    }
-
-    fun putInt(key: String, value: Int) {
-        prefs.edit().putInt(key, value).apply()
-        backup()
-    }
-
-    fun putPercent(key: String, percent: Int) {
-        prefs.edit().putFloat(key, percent / PERCENT).apply()
-        backup()
-    }
-
-    fun reset(key: String) {
-        prefs.edit().remove(key).apply()
-        backup()
-    }
-
-    fun setTheme(themeId: Int) {
-        KeyboardTheme.saveKeyboardThemeId(themeId, prefs)
-        backup()
-    }
-
-    fun setToolbarKeys(entries: List<ToolbarKeys.Entry>) {
-        ToolbarKeys.write(prefs, entries)
-        backup()
-    }
-
-    fun blockWord(word: String) {
-        BlockedWords.add(prefs, word)
-        backup()
-    }
-
-    fun unblockWord(word: String) {
-        BlockedWords.remove(prefs, word)
-        backup()
-    }
-
-    suspend fun removePhoto() = withContext(Dispatchers.IO) { KeyboardPhoto.remove(context) }
-
-    fun clearClipboard() {
-        ClipboardHistoryManager.getInstance(context).clearAll()
-    }
-
-    suspend fun clearLearnedWords() =
-        withContext(Dispatchers.IO) {
-            PersonalizationHelper.removeAllUserHistoryDictionaries(context)
-        }
-
-    suspend fun resetStats() = withContext(Dispatchers.IO) { TypingStats.reset(context) }
-
-    suspend fun addStyle(locale: String, layout: String): AddStyleResult =
-        withContext(Dispatchers.IO) {
-            RichInputMethodManager.init(context)
-            val rich = RichInputMethodManager.getInstance()
-            val subtype =
-                AdditionalSubtypeUtils.createAsciiEmojiCapableAdditionalSubtype(locale, layout)
-            if (rich.findSubtypeByLocaleAndKeyboardLayoutSet(locale, layout) != null) {
-                return@withContext AddStyleResult.Exists(
-                    SubtypeLocaleUtils.getSubtypeDisplayNameInSystemLocale(subtype)
-                )
-            }
-            writeStyles(currentStyles() + subtype)
-            AddStyleResult.Added(rich.inputMethodIdOfThisIme)
-        }
-
-    suspend fun removeStyle(prefSubtype: String) =
-        withContext(Dispatchers.IO) {
-            RichInputMethodManager.init(context)
-            writeStyles(
-                currentStyles().filter { AdditionalSubtypeUtils.getPrefSubtype(it) != prefSubtype }
-            )
-        }
-
-    suspend fun readDocument(path: String): String =
-        withContext(Dispatchers.IO) {
-            val text = context.assets.open(path).bufferedReader().use { it.readText() }
-            text.trim().split(PARAGRAPH_BREAK).joinToString("\n\n") { paragraph ->
-                paragraph.lines().joinToString(" ") { it.trim() }
-            }
-        }
-
-    fun playKeySound(percent: Int) {
-        val audio = context.getSystemService(AudioManager::class.java) ?: return
-        audio.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, percent / PERCENT)
-    }
-
-    fun vibrate(milliseconds: Int) {
-        AudioAndHapticFeedbackManager.init(context)
-        AudioAndHapticFeedbackManager.getInstance().vibrate(milliseconds.toLong())
-    }
-
-    private fun currentStyles(): List<InputMethodSubtype> =
-        AdditionalSubtypeUtils.createAdditionalSubtypesArray(
-                Settings.readPrefAdditionalSubtypes(prefs, context.resources)
-            )
-            .toList()
-
-    private fun writeStyles(styles: List<InputMethodSubtype>) {
-        val array = styles.toTypedArray()
-        Settings.writePrefAdditionalSubtypes(
-            prefs,
-            AdditionalSubtypeUtils.createPrefSubtypes(array),
-        )
-        RichInputMethodManager.getInstance().setAdditionalInputMethodSubtypes(array)
-        backup()
-    }
-
-    private fun customStyles(): List<CustomStyle> =
-        currentStyles().map {
-            CustomStyle(
-                AdditionalSubtypeUtils.getPrefSubtype(it),
-                SubtypeLocaleUtils.getSubtypeDisplayNameInSystemLocale(it),
+                customStyles = styles.customStyles(),
             )
         }
 
     private fun enabledLanguages(): Languages? {
-        val imm = context.getSystemService(InputMethodManager::class.java) ?: return null
+        val imm = context.getSystemService(InputMethodManager::class.java)
         val imi =
-            imm.inputMethodList.firstOrNull { it.packageName == context.packageName } ?: return null
+            imm?.inputMethodList?.firstOrNull { it.packageName == context.packageName }
+                ?: return null
         val names =
             imm.getEnabledInputMethodSubtypeList(imi, true).map {
                 it.getDisplayName(context, imi.packageName, imi.serviceInfo.applicationInfo)
@@ -255,18 +100,5 @@ internal class SettingsRepository(context: Context) {
         return Languages(imi.id, names.joinToString(", "))
     }
 
-    // Additional subtypes are stored and matched by their legacy locale string, not a language tag.
-    @Suppress("DEPRECATION")
-    private fun localeOf(subtype: InputMethodSubtype): String = subtype.locale
-
-    private fun backup() {
-        BackupManager(context).dataChanged()
-    }
-
     private fun percent(value: Float): Int = Math.round(value * PERCENT)
-
-    private companion object {
-        const val PERCENT = 100f
-        val PARAGRAPH_BREAK = Regex("\\n\\s*\\n")
-    }
 }

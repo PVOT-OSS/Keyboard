@@ -20,11 +20,19 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.prauga.keyboard.R
 import org.prauga.keyboard.settings.data.AddStyleResult
+import org.prauga.keyboard.settings.data.InputStylesRepository
+import org.prauga.keyboard.settings.data.SettingsActions
 import org.prauga.keyboard.settings.data.SettingsRepository
 import org.prauga.keyboard.settings.data.SettingsSnapshot
+import org.prauga.keyboard.settings.data.SettingsWriter
 import org.prauga.keyboard.settings.data.StyleChoices
 
-internal class SettingsViewModel(private val repository: SettingsRepository) : ViewModel() {
+internal class SettingsViewModel(
+    private val repository: SettingsRepository,
+    private val writer: SettingsWriter,
+    private val styles: InputStylesRepository,
+    private val actions: SettingsActions,
+) : ViewModel() {
 
     private val refreshes = MutableStateFlow(0)
     private val effectChannel = Channel<SettingsEffect>(Channel.BUFFERED)
@@ -42,35 +50,46 @@ internal class SettingsViewModel(private val repository: SettingsRepository) : V
 
     fun onEvent(event: SettingsEvent) {
         when (event) {
+            is SettingsEvent.Write -> write(event)
+            is SettingsEvent.Action -> run(event)
+        }
+    }
+
+    private fun write(event: SettingsEvent.Write) {
+        when (event) {
+            is SettingsEvent.SetBoolean -> writer.putBoolean(event.key, event.value)
+            is SettingsEvent.SetString -> writer.putString(event.key, event.value)
+            is SettingsEvent.SetInt -> writer.putInt(event.key, event.value)
+            is SettingsEvent.SetPercent -> writer.putPercent(event.key, event.percent)
+            is SettingsEvent.Reset -> writer.reset(event.key)
+            is SettingsEvent.SetTheme -> writer.setTheme(event.themeId)
+            is SettingsEvent.SetToolbarKeys -> writer.setToolbarKeys(event.entries)
+            is SettingsEvent.BlockWord -> writer.blockWord(event.word)
+            is SettingsEvent.UnblockWord -> writer.unblockWord(event.word)
+        }
+    }
+
+    private fun run(event: SettingsEvent.Action) {
+        when (event) {
             SettingsEvent.Refresh -> refreshes.value++
-            is SettingsEvent.SetBoolean -> repository.putBoolean(event.key, event.value)
-            is SettingsEvent.SetString -> repository.putString(event.key, event.value)
-            is SettingsEvent.SetInt -> repository.putInt(event.key, event.value)
-            is SettingsEvent.SetPercent -> repository.putPercent(event.key, event.percent)
-            is SettingsEvent.Reset -> repository.reset(event.key)
-            is SettingsEvent.SetTheme -> repository.setTheme(event.themeId)
-            is SettingsEvent.SetToolbarKeys -> repository.setToolbarKeys(event.entries)
-            is SettingsEvent.BlockWord -> repository.blockWord(event.word)
-            is SettingsEvent.UnblockWord -> repository.unblockWord(event.word)
             is SettingsEvent.AddStyle -> addStyle(event.locale, event.layout)
-            is SettingsEvent.RemoveStyle ->
-                refreshAfter { repository.removeStyle(event.prefSubtype) }
-            is SettingsEvent.PreviewVibration -> repository.vibrate(event.milliseconds)
-            is SettingsEvent.PreviewSound -> repository.playKeySound(event.percent)
-            SettingsEvent.RemovePhoto -> viewModelScope.launch { repository.removePhoto() }
+            is SettingsEvent.RemoveStyle -> refreshAfter { styles.removeStyle(event.prefSubtype) }
+            is SettingsEvent.PreviewVibration -> actions.vibrate(event.milliseconds)
+            is SettingsEvent.PreviewSound -> actions.playKeySound(event.percent)
+            SettingsEvent.RemovePhoto -> viewModelScope.launch { actions.removePhoto() }
             SettingsEvent.ClearClipboard -> {
-                repository.clearClipboard()
+                actions.clearClipboard()
                 effectChannel.trySend(SettingsEffect.Message(R.string.clear_clipboard_history_done))
             }
             SettingsEvent.ClearLearnedWords ->
                 viewModelScope.launch {
-                    repository.clearLearnedWords()
+                    actions.clearLearnedWords()
                     effectChannel.send(SettingsEffect.Message(R.string.clear_learned_words_done))
                 }
-            SettingsEvent.ResetStats -> refreshAfter { repository.resetStats() }
+            SettingsEvent.ResetStats -> refreshAfter { actions.resetStats() }
             is SettingsEvent.ShowLicense ->
                 viewModelScope.launch {
-                    val text = repository.readDocument(event.path)
+                    val text = actions.readDocument(event.path)
                     effectChannel.send(SettingsEffect.ShowDocument(event.title, text))
                 }
         }
@@ -78,12 +97,12 @@ internal class SettingsViewModel(private val repository: SettingsRepository) : V
 
     fun loadStyleChoices() {
         if (choices.value != null) return
-        viewModelScope.launch { choices.value = repository.styleChoices() }
+        viewModelScope.launch { choices.value = styles.styleChoices() }
     }
 
     private fun addStyle(locale: String, layout: String) {
         viewModelScope.launch {
-            when (val result = repository.addStyle(locale, layout)) {
+            when (val result = styles.addStyle(locale, layout)) {
                 is AddStyleResult.Added ->
                     effectChannel.send(SettingsEffect.OfferEnableStyle(result.imeId))
                 is AddStyleResult.Exists ->
