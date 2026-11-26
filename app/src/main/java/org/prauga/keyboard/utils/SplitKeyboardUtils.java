@@ -26,7 +26,11 @@ public final class SplitKeyboardUtils {
 
     public static boolean isSplitKeyboardAvailable(@Nonnull final Resources res) {
         return ProductionFlags.IS_SPLIT_KEYBOARD_SUPPORTED
-                && !Constants.isPhone(Settings.readScreenMetrics(res))
+                && (Constants.isPhone(Settings.readScreenMetrics(res)) || isTabletLandscape(res));
+    }
+
+    public static boolean isTabletLandscape(@Nonnull final Resources res) {
+        return !Constants.isPhone(Settings.readScreenMetrics(res))
                 && res.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 

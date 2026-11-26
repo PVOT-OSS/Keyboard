@@ -58,7 +58,8 @@ public class SplitKeyboardTransformerTests {
     }
 
     private static List<Key> split(final boolean duplicate, final Key... keys) {
-        return new SplitKeyboardTransformer(LEFT, RIGHT, duplicate).transform(
+        return new SplitKeyboardTransformer(LEFT, RIGHT, duplicate,
+                SplitKeyboardTransformer.SPLIT_HALF_WIDTH_RATIO).transform(
                 Arrays.asList(keys));
     }
 

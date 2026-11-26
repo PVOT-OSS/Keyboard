@@ -178,7 +178,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
             keyboardWidth = oneHandedMode == OneHandedMode.OFF ? screenWidth
                     : OneHandedMode.keyboardWidth(screenWidth, res.getFraction(
                             R.fraction.config_one_handed_keyboard_width, 1, 1));
-            keyboardHeight = SplitKeyboardUtils.isSplitKeyboardAvailable(res)
+            keyboardHeight = SplitKeyboardUtils.isTabletLandscape(res)
                     ? SplitKeyboardUtils.getSplitKeyboardHeight(height) : height;
         }
         builder.setKeyboardGeometry(keyboardWidth, keyboardHeight);

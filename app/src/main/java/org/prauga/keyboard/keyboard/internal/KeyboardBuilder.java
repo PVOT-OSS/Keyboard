@@ -142,6 +142,8 @@ public class KeyboardBuilder<KP extends KeyboardParams> {
     @Nonnull
     protected final KP mParams;
     protected final Context mContext;
+    private static final float NARROW_KEYBOARD_WIDTH_DP = 600f;
+
     protected final Resources mResources;
 
     private int mCurrentY = 0;
@@ -876,7 +878,11 @@ public class KeyboardBuilder<KP extends KeyboardParams> {
 
     private void endKeyboard() {
         if (mParams.mId.mIsSplitLayout) {
-            mParams.applySplitLayout(mParams.mId.mIsSplitDuplicateKeys);
+            final float widthDp = mParams.mOccupiedWidth / mResources.getDisplayMetrics().density;
+            mParams.applySplitLayout(mParams.mId.mIsSplitDuplicateKeys,
+                    widthDp < NARROW_KEYBOARD_WIDTH_DP
+                            ? SplitKeyboardTransformer.NARROW_SPLIT_HALF_WIDTH_RATIO
+                            : SplitKeyboardTransformer.SPLIT_HALF_WIDTH_RATIO);
         }
         mParams.removeRedundantMoreKeys();
         // {@link #parseGridRows(XmlPullParser,boolean)} may populate keyboard rows higher than

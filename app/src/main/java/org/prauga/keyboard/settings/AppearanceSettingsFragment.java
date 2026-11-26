@@ -19,7 +19,6 @@ package org.prauga.keyboard.settings;
 import android.os.Bundle;
 
 import org.prauga.keyboard.R;
-import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.define.ProductionFlags;
 
 /**
@@ -30,8 +29,7 @@ public final class AppearanceSettingsFragment extends SubScreenFragment {
     public void onCreate(final Bundle icicle) {
         super.onCreate(icicle);
         addPreferencesFromResource(R.xml.prefs_screen_appearance);
-        if (!ProductionFlags.IS_SPLIT_KEYBOARD_SUPPORTED ||
-                Constants.isPhone(Settings.readScreenMetrics(getResources()))) {
+        if (!ProductionFlags.IS_SPLIT_KEYBOARD_SUPPORTED) {
             removePreference(Settings.PREF_ENABLE_SPLIT_KEYBOARD);
             removePreference(Settings.PREF_SPLIT_KEYBOARD_DUPLICATE_KEYS);
         }

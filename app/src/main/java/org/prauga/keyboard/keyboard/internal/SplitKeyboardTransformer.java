@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 
 public final class SplitKeyboardTransformer {
     public static final float SPLIT_HALF_WIDTH_RATIO = 0.26f;
+    public static final float NARROW_SPLIT_HALF_WIDTH_RATIO = 0.40f;
     public static final float SPLIT_OUTER_MARGIN_RATIO = 0.02f;
     private static final int MIN_KEYS_FOR_ROW_MIDDLE = 4;
 
@@ -39,11 +40,11 @@ public final class SplitKeyboardTransformer {
     private final boolean mDuplicateCenterKeys;
 
     public SplitKeyboardTransformer(final int left, final int right,
-            final boolean duplicateCenterKeys) {
+            final boolean duplicateCenterKeys, final float halfWidthRatio) {
         mLeft = left;
         mRight = right;
         mMid = (left + right) / 2.0f;
-        mHalfWidth = (right - left) * SPLIT_HALF_WIDTH_RATIO;
+        mHalfWidth = (right - left) * halfWidthRatio;
         final float margin = (right - left) * SPLIT_OUTER_MARGIN_RATIO;
         mOuterLeft = left + margin;
         mOuterRight = right - margin;

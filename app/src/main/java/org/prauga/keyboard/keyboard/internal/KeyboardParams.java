@@ -154,9 +154,9 @@ public class KeyboardParams {
         }
     }
 
-    public void applySplitLayout(final boolean duplicateCenterKeys) {
+    public void applySplitLayout(final boolean duplicateCenterKeys, final float halfWidthRatio) {
         final SplitKeyboardTransformer transformer = new SplitKeyboardTransformer(
-                mLeftPadding, mOccupiedWidth - mRightPadding, duplicateCenterKeys);
+                mLeftPadding, mOccupiedWidth - mRightPadding, duplicateCenterKeys, halfWidthRatio);
         final List<Key> splitKeys = transformer.transform(new ArrayList<>(mSortedKeys));
         clearKeys();
         mAltCodeKeysWhileTyping.clear();

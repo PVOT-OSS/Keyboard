@@ -391,7 +391,9 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
 
     private void showModes() {
         mShowingModes = true;
-        mModeSplitKey.setVisibility(mSplitKey.getVisibility() == VISIBLE ? VISIBLE : GONE);
+        final boolean splitAvailable = SplitKeyboardUtils.isSplitKeyboardAvailable(getResources())
+                && !Settings.getInstance().getCurrent().mIsFloatingKeyboardEnabled;
+        mModeSplitKey.setVisibility(splitAvailable ? VISIBLE : GONE);
         mToolbar.setKeys(mModeKeys);
     }
 
@@ -495,7 +497,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
             return;
         }
         final boolean isSplit = Settings.getInstance().getCurrent().mIsSplitKeyboardEnabled;
-        mSplitKey.setVisibility(VISIBLE);
+        mSplitKey.setVisibility(mShowsToolbar ? GONE : VISIBLE);
         mSplitKey.setActivated(isSplit);
         mSplitKey.setImageAlpha(isSplit ? TOOL_KEY_ALPHA_ON : TOOL_KEY_ALPHA_OFF);
         mSplitKey.setContentDescription(getResources().getString(isSplit
