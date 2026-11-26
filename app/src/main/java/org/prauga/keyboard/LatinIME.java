@@ -63,6 +63,8 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowInsets;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.inputmethod.CompletionInfo;
@@ -252,6 +254,9 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     final HideSoftInputReceiver mHideSoftInputReceiver = new HideSoftInputReceiver(this);
 
     private Dialog mOptionsDialog;
+    private int mNavigationBarInset;
+    private Object mPanelBackCallback;
+    private boolean mPanelBackCallbackRegistered;
 
     private final boolean mIsHardwareAcceleratedDrawingEnabled;
 
@@ -921,6 +926,11 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     @Override
     public void setInputView(final View view) {
         super.setInputView(view);
+        view.setOnApplyWindowInsetsListener((v, insets) -> {
+            mNavigationBarInset = insets.getInsets(WindowInsets.Type.navigationBars()).bottom;
+            updateNavigationBarColor();
+            return insets;
+        });
         mInputView = view;
         mInsetsUpdater = ViewOutlineProviderCompatUtils.setInsetsOutlineProvider(view);
         updateSoftInputWindowLayoutParameters();
@@ -1224,6 +1234,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         super.onFinishInputView(finishingInput);
         mClipboardSuggestionMonitor.stop();
         TypingStats.flush();
+        updatePanelBackCallback(false);
         cleanupInternalStateForFinishInput();
     }
 
@@ -1353,6 +1364,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         if (mInputView == null) {
             return;
         }
+        updatePanelBackCallback(isShowingPanelOrEmoji());
         final SettingsValues settingsValues = mSettings.getCurrent();
         final View visibleKeyboardView = mKeyboardSwitcher.getVisibleKeyboardView();
         if (visibleKeyboardView == null || !hasSuggestionStripView()) {
@@ -1387,8 +1399,8 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
         final int arrowKeysHeight = (!mKeyboardSwitcher.isShowingEmojiPalettes()
                 && !mKeyboardSwitcher.isShowingPanel())
                 ? mKeyboardSwitcher.getArrowKeyRowHeight() : 0;
-        final int visibleTopY = inputHeight - visibleKeyboardView.getHeight() - suggestionsHeight
-                - arrowKeysHeight;
+        final int visibleTopY = inputHeight - mInputView.getPaddingBottom()
+                - visibleKeyboardView.getHeight() - suggestionsHeight - arrowKeysHeight;
         mSuggestionStripView.setMoreSuggestionsHeight(visibleTopY);
         // Need to set expanded touchable region only if a keyboard view is being shown.
         if (visibleKeyboardView.isShown()) {
@@ -2392,20 +2404,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     public boolean onKeyUp(final int keyCode, final KeyEvent keyEvent) {
         if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.isTracking() && !keyEvent.isCanceled()
                 && isShowingPanelOrEmoji()) {
-            if (mKeyboardSwitcher.isShowingKeyboardResize()) {
-                mKeyboardSwitcher.hideKeyboardResize();
-            } else if (isTextFieldShown()) {
-                final StripTextFieldClient client = mTextFieldClient;
-                hideTextField();
-                if (client != null) {
-                    client.onBack();
-                }
-            } else if (mKeyboardSwitcher.isShowingPanel()) {
-                mKeyboardSwitcher.hidePanels();
-            } else {
-                onCodeInput(Constants.CODE_ALPHA_FROM_EMOJI, Constants.NOT_A_COORDINATE,
-                        Constants.NOT_A_COORDINATE, false);
-            }
+            closeTopPanel();
             return true;
         }
         if (mEmojiAltPhysicalKeyDetector == null) {
@@ -2421,6 +2420,44 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
             return true;
         }
         return super.onKeyUp(keyCode, keyEvent);
+    }
+
+    private void closeTopPanel() {
+        if (mKeyboardSwitcher.isShowingKeyboardResize()) {
+            mKeyboardSwitcher.hideKeyboardResize();
+        } else if (isTextFieldShown()) {
+            final StripTextFieldClient client = mTextFieldClient;
+            hideTextField();
+            if (client != null) {
+                client.onBack();
+            }
+        } else if (mKeyboardSwitcher.isShowingPanel()) {
+            mKeyboardSwitcher.hidePanels();
+        } else if (mKeyboardSwitcher.isShowingEmojiPalettes()) {
+            onCodeInput(Constants.CODE_ALPHA_FROM_EMOJI, Constants.NOT_A_COORDINATE,
+                    Constants.NOT_A_COORDINATE, false);
+        }
+    }
+
+    // With predictive back the system no longer sends KEYCODE_BACK to the IME, so a panel must
+    // claim the back gesture while it is open.
+    private void updatePanelBackCallback(final boolean wanted) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                || wanted == mPanelBackCallbackRegistered) {
+            return;
+        }
+        if (mPanelBackCallback == null) {
+            mPanelBackCallback = (OnBackInvokedCallback) this::closeTopPanel;
+        }
+        final OnBackInvokedCallback callback = (OnBackInvokedCallback) mPanelBackCallback;
+        final OnBackInvokedDispatcher dispatcher = getWindow().getOnBackInvokedDispatcher();
+        if (wanted) {
+            dispatcher.registerOnBackInvokedCallback(
+                    OnBackInvokedDispatcher.PRIORITY_OVERLAY, callback);
+        } else {
+            dispatcher.unregisterOnBackInvokedCallback(callback);
+        }
+        mPanelBackCallbackRegistered = wanted;
     }
 
     private boolean isShowingPanelOrEmoji() {
@@ -2705,6 +2742,11 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
             } else if (bg instanceof ColorDrawable) {
                 w.setNavigationBarColor(((ColorDrawable) bg).getColor());
             }
+            // Since Android 15 the keyboard draws behind the navigation bar and has to fill it.
+            mInputView.setPadding(mInputView.getPaddingLeft(), mInputView.getPaddingTop(),
+                    mInputView.getPaddingRight(), isFloating ? 0 : mNavigationBarInset);
+            mInputView.setBackgroundColor(!isFloating && bg instanceof ColorDrawable
+                    ? ((ColorDrawable) bg).getColor() : Color.TRANSPARENT);
             final WindowInsetsController insetsController = w.getInsetsController();
             if (insetsController != null) {
                 if (isFloating) {

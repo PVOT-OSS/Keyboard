@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId = "org.prauga.keyboard"
         minSdk = 30
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 30
         versionName = "1.0"
 
