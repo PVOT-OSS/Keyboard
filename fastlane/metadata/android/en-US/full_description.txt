@@ -1,0 +1,35 @@
+Pvot Keyboard is a light, private keyboard with glide typing, clipboard history and emoji search. It has no internet permission, so what you type never leaves your phone.
+
+Type the way you like
+• Glide typing, with suggestions and next-word predictions
+• Auto-correction you can tune, and undo with backspace
+• Dictionaries for 29 languages built in, with no download needed
+• Multilingual typing: write in several languages without switching
+• Optional number row, arrow keys, long-press hints and keyboard gestures
+
+Clipboard and editing
+• Clipboard history with pins, search, images and shortcuts that expand as you type
+• Smart chips for copied links, email addresses and phone numbers
+• A text editing panel to select, copy, cut, paste, undo and redo
+
+Emoji
+• Search emoji by name, offline
+• Emoji suggestions while you type
+
+Make it yours
+• Themes: Pvot, Material You, light, dark, OLED and high contrast, each with a live preview
+• Your own photo behind the keys
+• Choose and order the toolbar keys
+• One-handed, floating, split and resizable keyboard
+• Key borders and key text size
+
+Corrections that learn you
+• Block words you never want suggested
+• Import and export your personal dictionary
+• Incognito mode for typing that should not be learnt
+• Typing stats kept only on your phone
+
+Private and open
+• No ads, no accounts, no tracking
+• No internet permission: your words, clipboard and settings stay on your phone
+• Open source, based on the Android Open Source Project keyboard
