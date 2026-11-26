@@ -11,7 +11,7 @@ import java.util.function.Consumer
 
 class ClipEditClient(
     override val initialText: String,
-    @StringRes override val hint: Int,
+    @param:StringRes override val hint: Int,
     private val saveLabel: String,
     private val onSave: Consumer<String>,
     private val onBackToPanel: Runnable,
