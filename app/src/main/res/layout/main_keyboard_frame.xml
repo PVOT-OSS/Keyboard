@@ -35,6 +35,55 @@
         android:gravity="center_vertical"
         style="?attr/suggestionStripViewStyle" />
 
+    <org.prauga.keyboard.arrowkeys.ArrowKeyRow
+        android:id="@+id/arrow_key_row"
+        android:layoutDirection="ltr"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/arrow_key_row_height"
+        android:orientation="horizontal"
+        android:visibility="gone">
+        <ImageButton
+            android:id="@+id/arrow_key_left"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/text_editing_left"
+            android:hapticFeedbackEnabled="false"
+            android:scaleType="center"
+            android:src="@drawable/ic_editing_chevron_left" />
+        <ImageButton
+            android:id="@+id/arrow_key_up"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/text_editing_up"
+            android:hapticFeedbackEnabled="false"
+            android:scaleType="center"
+            android:src="@drawable/ic_editing_chevron_up" />
+        <ImageButton
+            android:id="@+id/arrow_key_down"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/text_editing_down"
+            android:hapticFeedbackEnabled="false"
+            android:scaleType="center"
+            android:src="@drawable/ic_editing_chevron_down" />
+        <ImageButton
+            android:id="@+id/arrow_key_right"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/text_editing_right"
+            android:hapticFeedbackEnabled="false"
+            android:scaleType="center"
+            android:src="@drawable/ic_editing_chevron_right" />
+    </org.prauga.keyboard.arrowkeys.ArrowKeyRow>
+
     <!-- To ensure that key preview popup is correctly placed when the current system locale is
          one of RTL locales, layoutDirection="ltr" is needed in the SDK version 17+. -->
     <org.prauga.keyboard.keyboard.MainKeyboardView

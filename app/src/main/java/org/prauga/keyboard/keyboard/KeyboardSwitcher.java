@@ -37,6 +37,7 @@ import org.prauga.keyboard.clipboard.ClipboardHistoryView;
 import org.prauga.keyboard.compat.InputMethodServiceCompatUtils;
 import org.prauga.keyboard.editing.TextEditingView;
 import org.prauga.keyboard.onehanded.OneHandedMode;
+import org.prauga.keyboard.arrowkeys.ArrowKeyRow;
 import org.prauga.keyboard.onehanded.OneHandedSideView;
 import org.prauga.keyboard.resize.KeyboardResizeView;
 import org.prauga.keyboard.event.Event;
@@ -74,6 +75,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
     private TextEditingView mTextEditingView;
     private OneHandedSideView mOneHandedSideView;
     private KeyboardResizeView mKeyboardResizeView;
+    private ArrowKeyRow mArrowKeyRow;
     private FloatingKeyboardController mFloatingKeyboardController;
     private boolean mIsFloating;
     private int mFloatingKeyboardWidth;
@@ -220,6 +222,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         final Keyboard newKeyboard = mKeyboardLayoutSet.getKeyboard(keyboardId);
         keyboardView.setKeyTextScale(currentSettingsValues.mKeyTextScale);
         keyboardView.setKeyBordersEnabled(currentSettingsValues.mKeyBordersEnabled);
+        updateArrowKeyRow(currentSettingsValues);
         keyboardView.setKeyboard(newKeyboard);
         mCurrentInputView.setKeyboardTopPadding(newKeyboard.mTopPadding);
         keyboardView.setKeyPreviewPopupEnabled(
@@ -421,6 +424,28 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
             return mTextEditingView;
         }
         return null;
+    }
+
+    private void updateArrowKeyRow(@Nonnull final SettingsValues settingsValues) {
+        if (mArrowKeyRow == null) {
+            return;
+        }
+        final boolean shown = settingsValues.mArrowKeyRowEnabled
+                && !settingsValues.mIsFloatingKeyboardEnabled;
+        mArrowKeyRow.setVisibility(shown ? View.VISIBLE : View.GONE);
+        final SuggestionStripView strip = mCurrentInputView.findViewById(R.id.suggestion_strip_view);
+        if (shown && strip != null) {
+            mArrowKeyRow.setTint(strip.getPanelTintList());
+            final Drawable background = mKeyboardView.getBackground();
+            if (background != null && background.getConstantState() != null) {
+                mArrowKeyRow.setBackground(background.getConstantState().newDrawable());
+            }
+        }
+    }
+
+    public int getArrowKeyRowHeight() {
+        return mArrowKeyRow != null && mArrowKeyRow.getVisibility() == View.VISIBLE
+                ? mArrowKeyRow.getHeight() : 0;
     }
 
     public void showKeyboardResize(final float scale, @Nonnull final ColorStateList tint) {
@@ -658,6 +683,8 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         mOneHandedSideView.bind(mKeyboardView, mLatinIME);
         mKeyboardResizeView = mCurrentInputView.findViewById(R.id.keyboard_resize_view);
         mKeyboardResizeView.bind(mKeyboardView, mLatinIME);
+        mArrowKeyRow = mCurrentInputView.findViewById(R.id.arrow_key_row);
+        mArrowKeyRow.bind(keyCode -> mLatinIME.onEditingKey(keyCode, false));
         mEmojiPalettesView.setKeyboardActionListener(mLatinIME);
 
         final View dragHandle = mCurrentInputView.findViewById(R.id.floating_drag_handle);

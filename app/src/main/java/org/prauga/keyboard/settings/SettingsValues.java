@@ -93,6 +93,7 @@ public class SettingsValues {
     public final boolean mKeyBordersEnabled;
     public final boolean mIncognitoModeEnabled;
     public final boolean mKeyboardGesturesEnabled;
+    public final boolean mArrowKeyRowEnabled;
     public final boolean mUseContactsDict;
     public final boolean mUsePersonalizedDicts;
     public final boolean mUseDoubleSpacePeriod;
@@ -230,6 +231,7 @@ public class SettingsValues {
                 autoCorrectionThresholdRawValue);
         mPlausibilityThreshold = Settings.readPlausibilityThreshold(res);
         mKeyboardGesturesEnabled = prefs.getBoolean(KeyboardGestures.PREF_KEYBOARD_GESTURES, false);
+        mArrowKeyRowEnabled = prefs.getBoolean(Settings.PREF_ARROW_KEY_ROW, false);
         mGestureInputEnabled = Settings.readGestureInputEnabled(prefs, res)
                 || mKeyboardGesturesEnabled;
         mGestureTrailEnabled = !mKeyboardGesturesEnabled

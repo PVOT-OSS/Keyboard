@@ -66,6 +66,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_CLIPBOARD_HISTORY = "pref_clipboard_history";
     public static final String PREF_EMOJI_SUGGESTIONS = "pref_emoji_suggestions";
     public static final String PREF_INCOGNITO_MODE = "pref_incognito_mode";
+    public static final String PREF_ARROW_KEY_ROW = "pref_arrow_key_row";
     public static final String PREF_UNDO_AUTO_CORRECTION_ON_BACKSPACE =
             "pref_undo_auto_correction_on_backspace";
     // PREF_SHOW_SUGGESTIONS_SETTING_OBSOLETE is obsolete. Use PREF_SHOW_SUGGESTIONS instead.
