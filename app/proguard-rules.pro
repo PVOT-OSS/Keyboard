@@ -47,6 +47,9 @@
 # TODO: remove once used in code.
 -keep class org.prauga.keyboard.keyboard.KeyboardLayout { *; }
 
--keep public class * extends androidx.fragment.app.Fragment {
-    public <init>();
+# Native code registers methods on these classes by name and reads these fields by name.
+-dontobfuscate
+-keepclassmembers class org.prauga.keyboard.utils.WordInputEventForPersonalization {
+    <fields>;
 }
+-printusage build/outputs/r8-usage.txt
