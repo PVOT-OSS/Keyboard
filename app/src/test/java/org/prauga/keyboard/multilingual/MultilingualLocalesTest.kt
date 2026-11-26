@@ -10,7 +10,7 @@ import org.junit.Test
 import java.util.Locale
 
 class MultilingualLocalesTest {
-    private val scripts = mapOf("en" to 1, "nl" to 1, "de" to 1, "fr" to 1, "ru" to 2)
+    private val scripts = mapOf("en" to 1, "nl" to 1, "de" to 1, "fr" to 1, "es" to 1, "ru" to 2)
     private val scriptOf = { locale: Locale -> scripts.getValue(locale.language) }
 
     @Test
@@ -26,8 +26,8 @@ class MultilingualLocalesTest {
     }
 
     @Test
-    fun usesAtMostTwoSecondaryLanguages() {
-        val enabled = listOf(Locale("nl"), Locale("de"), Locale("fr"))
-        assertEquals(2, MultilingualLocales.secondaryLocales(Locale("en"), enabled, scriptOf).size)
+    fun usesAtMostThreeSecondaryLanguages() {
+        val enabled = listOf(Locale("nl"), Locale("de"), Locale("fr"), Locale("es"))
+        assertEquals(3, MultilingualLocales.secondaryLocales(Locale("en"), enabled, scriptOf).size)
     }
 }

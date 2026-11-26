@@ -9,7 +9,7 @@ import java.util.Locale
 
 object MultilingualLocales {
     const val PREF_MULTILINGUAL_TYPING = "pref_multilingual_typing"
-    private const val MAX_SECONDARY = 2
+    private const val MAX_SECONDARY = 3
 
     @JvmStatic
     fun secondaryLocales(

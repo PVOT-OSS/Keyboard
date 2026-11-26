@@ -16,9 +16,24 @@ class SecondaryDictionaries {
     @Volatile
     private var loaded: List<DictionaryCollection> = emptyList()
     private var requested: List<Locale> = emptyList()
+    private val weights = LanguageWeights()
 
     val dictionaries: List<Dictionary>
         get() = loaded
+
+    @Synchronized
+    fun weightFor(dictionary: Dictionary): Float =
+        dictionary.mLocale?.let(weights::weight) ?: MIN_WEIGHT
+
+    @Synchronized
+    fun recordCommittedWord(word: String, primaryKnowsIt: Boolean) {
+        val knownBy = if (primaryKnowsIt) {
+            emptyList()
+        } else {
+            loaded.filter { it.isValidWord(word) }.mapNotNull { it.mLocale }
+        }
+        weights.record(knownBy)
+    }
 
     @Synchronized
     fun setLocales(context: Context, locales: List<Locale>) {
@@ -39,6 +54,10 @@ class SecondaryDictionaries {
             }
             old.forEach { it.close() }
         }
+    }
+
+    private companion object {
+        const val MIN_WEIGHT = 0.85f
     }
 
     @Synchronized

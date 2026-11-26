@@ -73,7 +73,6 @@ public class DictionaryFacilitatorImpl implements DictionaryFacilitator {
 
     private DictionaryGroup mDictionaryGroup = new DictionaryGroup();
     private final SecondaryDictionaries mSecondaryDictionaries = new SecondaryDictionaries();
-    private static final float WEIGHT_FOR_SECONDARY_LANGUAGE = 0.9f;
 
     @Override
     public void setSecondaryLocales(@Nonnull final Context context,
@@ -535,8 +534,11 @@ public class DictionaryFacilitatorImpl implements DictionaryFacilitator {
 
         final String[] words = suggestion.split(Constants.WORD_SEPARATOR);
         NgramContext ngramContextForCurrentWord = ngramContext;
+        final Dictionary mainDictionary = mDictionaryGroup.getDict(Dictionary.TYPE_MAIN);
         for (int i = 0; i < words.length; i++) {
             final String currentWord = words[i];
+            mSecondaryDictionaries.recordCommittedWord(currentWord,
+                    mainDictionary != null && mainDictionary.isValidWord(currentWord));
             final boolean wasCurrentWordAutoCapitalized = (i == 0) ? wasAutoCapitalized : false;
             addWordToUserHistory(mDictionaryGroup, ngramContextForCurrentWord, currentWord,
                     wasCurrentWordAutoCapitalized, (int) timeStampInSeconds,
@@ -670,7 +672,8 @@ public class DictionaryFacilitatorImpl implements DictionaryFacilitator {
             final ArrayList<SuggestedWordInfo> dictionarySuggestions =
                     dictionary.getSuggestions(composedData, ngramContext, proximityInfoHandle,
                             settingsValuesForSuggestion, sessionId,
-                            WEIGHT_FOR_SECONDARY_LANGUAGE, weightOfLangModelVsSpatialModel);
+                            mSecondaryDictionaries.weightFor(dictionary),
+                            weightOfLangModelVsSpatialModel);
             addSuggestions(suggestionResults, dictionarySuggestions,
                     settingsValuesForSuggestion.mBlockedWords);
         }
