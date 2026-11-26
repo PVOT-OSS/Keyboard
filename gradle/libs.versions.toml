@@ -1,10 +1,14 @@
 [versions]
+activityCompose = "1.12.2"
 agp = "9.5.0"
 annotation = "1.0.0"
 autofill = "1.1.0"
+composeBom = "2026.02.01"
 dexmaker = "1.2"
 jsr305 = "3.0.2"
 junit = "4.12"
+kotlin = "2.4.21"
+lifecycle = "2.11.0"
 material = "1.14.0-alpha09"
 mockito = "1.9.5"
 preference = "1.2.1"
@@ -14,6 +18,12 @@ uiautomator = "2.2.0"
 viewpager2 = "1.0.0"
 
 [libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
 androidx-autofill = { module = "androidx.autofill:autofill", version.ref = "autofill" }
 androidx-preference = { module = "androidx.preference:preference", version.ref = "preference" }
@@ -27,7 +37,11 @@ jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 junit = { module = "junit:junit", version.ref = "junit" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+pvot-core-ui = { module = "com.prauga.pvot:core-ui" }
+pvot-design-system = { module = "com.prauga.pvot:design-system" }
 pvot-design-system-views = { module = "com.prauga.pvot:design-system-views" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+pvot-android-compose = { id = "pvot.android.compose" }

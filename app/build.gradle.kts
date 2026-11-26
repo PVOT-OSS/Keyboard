@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.pvot.android.compose)
 }
 
 android {
@@ -72,7 +73,12 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.autofill)
+    implementation(libs.pvot.design.system)
     implementation(libs.pvot.design.system.views)
+    implementation(libs.pvot.core.ui)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.mockito.core)
