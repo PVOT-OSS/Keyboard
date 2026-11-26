@@ -10,7 +10,8 @@ import java.io.IOException
 import java.util.Base64
 
 object ClipboardHistoryStore {
-    private const val HEADER = "pvot-clipboard-pins 1"
+    private const val HEADER = "pvot-clipboard-pins 2"
+    private const val HEADER_V1 = "pvot-clipboard-pins 1"
     private const val SEPARATOR = "\t"
 
     @Throws(IOException::class)
@@ -19,24 +20,32 @@ object ClipboardHistoryStore {
             return emptyList()
         }
         val lines = file.readLines(Charsets.UTF_8)
-        if (lines.firstOrNull() != HEADER) {
-            throw IOException("Unknown clipboard pins format")
+        val fieldCount = when (lines.firstOrNull()) {
+            HEADER -> 3
+            HEADER_V1 -> 2
+            else -> throw IOException("Unknown clipboard pins format")
         }
         return lines.drop(1).filter { it.isNotEmpty() }.map { line ->
             val fields = line.split(SEPARATOR)
-            if (fields.size != 2) {
+            if (fields.size != fieldCount) {
                 throw IOException("Malformed clipboard pin")
             }
             try {
                 ClipboardHistory.Item(
-                    String(Base64.getDecoder().decode(fields[1]), Charsets.UTF_8),
-                    fields[0].toLong(), true
+                    decode(fields[1]),
+                    fields[0].toLong(),
+                    true,
+                    fields.getOrNull(2)?.let(::decode)?.takeIf { it.isNotEmpty() },
                 )
             } catch (e: IllegalArgumentException) {
                 throw IOException("Malformed clipboard pin", e)
             }
         }
     }
+
+    private fun encode(text: String): String = Base64.getEncoder().encodeToString(text.toByteArray())
+
+    private fun decode(field: String): String = String(Base64.getDecoder().decode(field), Charsets.UTF_8)
 
     @Throws(IOException::class)
     fun write(file: File, pinnedItems: List<ClipboardHistory.Item>) {
@@ -47,7 +56,9 @@ object ClipboardHistoryStore {
             for (item in pinnedItems) {
                 writer.write(item.timestamp.toString())
                 writer.write(SEPARATOR)
-                writer.write(Base64.getEncoder().encodeToString(item.text.toByteArray()))
+                writer.write(encode(item.text))
+                writer.write(SEPARATOR)
+                writer.write(encode(item.shortcut.orEmpty()))
                 writer.write("\n")
             }
         }

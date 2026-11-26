@@ -26,6 +26,7 @@ import org.prauga.keyboard.SuggestedWords.SuggestedWordInfo;
 import org.prauga.keyboard.common.Constants;
 import org.prauga.keyboard.common.StringUtils;
 import org.prauga.keyboard.define.DebugFlags;
+import org.prauga.keyboard.clipboard.ClipboardHistoryManager;
 import org.prauga.keyboard.emojisuggestions.EmojiKeywords;
 import org.prauga.keyboard.glide.GlideTyping;
 import org.prauga.keyboard.settings.SettingsValuesForSuggestion;
@@ -57,6 +58,7 @@ public final class Suggest {
 
     private static final boolean DBG = DebugFlags.DEBUG_ENABLED;
     private static final int EMOJI_SUGGESTION_INDEX = 3;
+    private static final int CLIP_SHORTCUT_SUGGESTION_INDEX = 2;
     private final DictionaryFacilitator mDictionaryFacilitator;
 
     private static final int MAXIMUM_AUTO_CORRECT_LENGTH_FOR_GERMAN = 12;
@@ -262,6 +264,9 @@ public final class Suggest {
             if (settingsValuesForSuggestion.mEmojiSuggestionsEnabled && !resultsArePredictions) {
                 addEmojiSuggestion(suggestionsContainer, typedWordString);
             }
+            if (!resultsArePredictions) {
+                addClipShortcutSuggestion(suggestionsContainer, typedWordString);
+            }
         }
 
         final ArrayList<SuggestedWordInfo> suggestionsList;
@@ -288,6 +293,21 @@ public final class Suggest {
                 isTypedWordValid,
                 hasAutoCorrection /* willAutoCorrect */,
                 false /* isObsoleteSuggestions */, inputStyle, sequenceNumber));
+    }
+
+    private static void addClipShortcutSuggestion(
+            @Nonnull final ArrayList<SuggestedWordInfo> suggestions,
+            @Nonnull final String typedWord) {
+        final String clip = ClipboardHistoryManager.findShortcutTextIfLoaded(typedWord);
+        if (clip == null) {
+            return;
+        }
+        suggestions.add(Math.min(CLIP_SHORTCUT_SUGGESTION_INDEX, suggestions.size()),
+                new SuggestedWordInfo(clip, "" /* prevWordsContext */,
+                        SuggestedWordInfo.MAX_SCORE, SuggestedWordInfo.KIND_COMPLETION,
+                        Dictionary.DICTIONARY_HARDCODED,
+                        SuggestedWordInfo.NOT_AN_INDEX /* indexOfTouchPointOfSecondWord */,
+                        SuggestedWordInfo.NOT_A_CONFIDENCE /* autoCommitFirstWordConfidence */));
     }
 
     private void addEmojiSuggestion(@Nonnull final ArrayList<SuggestedWordInfo> suggestions,

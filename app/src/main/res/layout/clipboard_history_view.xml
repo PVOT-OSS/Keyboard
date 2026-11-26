@@ -108,6 +108,16 @@
             android:textSize="@dimen/clipboard_history_title_size" />
 
         <TextView
+            android:id="@+id/clipboard_history_shortcut"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@string/clipboard_history_shortcut"
+            android:textSize="@dimen/clipboard_history_title_size" />
+
+        <TextView
             android:id="@+id/clipboard_history_delete"
             android:layout_width="0dp"
             android:layout_height="match_parent"

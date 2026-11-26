@@ -25,6 +25,21 @@ class ClipboardHistoryStoreTest {
     }
 
     @Test
+    fun shortcutsRoundTrip() {
+        val file = File(Files.createTempDirectory("pins").toFile(), "pins")
+        val pinned = listOf(ClipboardHistory.Item("address", 1, true, "addr"))
+        ClipboardHistoryStore.write(file, pinned)
+        assertEquals(pinned, ClipboardHistoryStore.read(file))
+    }
+
+    @Test
+    fun versionOneFilesStillLoad() {
+        val file = Files.createTempFile("pins", null).toFile()
+        file.writeText("pvot-clipboard-pins 1\n42\taGVsbG8=\n")
+        assertEquals(listOf(ClipboardHistory.Item("hello", 42, true)), ClipboardHistoryStore.read(file))
+    }
+
+    @Test
     fun missingFileReadsEmpty() {
         val dir = Files.createTempDirectory("pins").toFile()
         assertTrue(ClipboardHistoryStore.read(File(dir, "none")).isEmpty())

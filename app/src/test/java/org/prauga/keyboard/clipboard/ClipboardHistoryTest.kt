@@ -150,6 +150,30 @@ class ClipboardHistoryTest {
         assertFalse(history.addManual(" ", NOW))
     }
 
+    @Test
+    fun shortcutsFindPinnedClipsOnly() {
+        val history = ClipboardHistory()
+        history.add("221B Baker Street", NOW, false, NOW)
+        history.setShortcut("221B Baker Street", " Addr ")
+        assertEquals(null, history.findByShortcut("addr"))
+        history.setPinned("221B Baker Street", true)
+        assertEquals("221B Baker Street", history.findByShortcut("ADDR"))
+    }
+
+    @Test
+    fun aShortcutBelongsToOneClipAndSurvivesEdits() {
+        val history = ClipboardHistory()
+        history.addManual("one", NOW, pinned = true)
+        history.addManual("two", NOW, pinned = true)
+        history.setShortcut("one", "x")
+        history.setShortcut("two", "x")
+        assertEquals("two", history.findByShortcut("x"))
+        history.replace("two", "two!", NOW)
+        assertEquals("two!", history.findByShortcut("x"))
+        history.setShortcut("two!", "")
+        assertEquals(null, history.findByShortcut("x"))
+    }
+
     private companion object {
         const val NOW = 10_000_000L
     }

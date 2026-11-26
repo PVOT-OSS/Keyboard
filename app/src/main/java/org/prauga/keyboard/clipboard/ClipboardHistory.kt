@@ -5,10 +5,16 @@
 
 package org.prauga.keyboard.clipboard
 
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class ClipboardHistory {
-    data class Item(val text: String, val timestamp: Long, val pinned: Boolean)
+    data class Item(
+        val text: String,
+        val timestamp: Long,
+        val pinned: Boolean,
+        val shortcut: String? = null,
+    )
 
     private val items = ArrayList<Item>()
     private var forgottenTimestamp = Long.MIN_VALUE
@@ -24,6 +30,7 @@ class ClipboardHistory {
             return false
         }
         var pinned = false
+        var shortcut: String? = null
         val index = indexOf(text)
         if (index >= 0) {
             val existing = items[index]
@@ -31,9 +38,10 @@ class ClipboardHistory {
                 return false
             }
             pinned = existing.pinned
+            shortcut = existing.shortcut
             items.removeAt(index)
         }
-        items.add(0, Item(text, timestamp, pinned))
+        items.add(0, Item(text, timestamp, pinned, shortcut))
         trimToMaxItems()
         return true
     }
@@ -46,7 +54,9 @@ class ClipboardHistory {
             } else {
                 val existing = items[index]
                 items[index] = existing.copy(
-                    timestamp = maxOf(existing.timestamp, item.timestamp), pinned = true
+                    timestamp = maxOf(existing.timestamp, item.timestamp),
+                    pinned = true,
+                    shortcut = item.shortcut ?: existing.shortcut,
                 )
             }
         }
@@ -61,6 +71,23 @@ class ClipboardHistory {
 
     fun getPinnedItems(): List<Item> = items.filter { it.pinned }
 
+    fun setShortcut(text: String, shortcut: String?) {
+        val normalized = shortcut?.trim()?.lowercase(Locale.ROOT)?.takeIf { it.isNotEmpty() }
+        for (i in items.indices) {
+            val item = items[i]
+            if (item.text == text) {
+                items[i] = item.copy(shortcut = normalized)
+            } else if (normalized != null && item.shortcut == normalized) {
+                items[i] = item.copy(shortcut = null)
+            }
+        }
+    }
+
+    fun findByShortcut(word: String): String? {
+        val key = word.trim().lowercase(Locale.ROOT)
+        return items.firstOrNull { it.pinned && it.shortcut == key }?.text
+    }
+
     fun moveToTop(text: String, now: Long) {
         val index = indexOf(text)
         if (index >= 0) {
@@ -73,11 +100,11 @@ class ClipboardHistory {
             return false
         }
         val index = indexOf(oldText)
-        val pinned = index >= 0 && items[index].pinned
-        if (index >= 0) {
-            items.removeAt(index)
+        val old = if (index >= 0) items.removeAt(index) else null
+        addManual(newText, now, old?.pinned == true)
+        if (old?.shortcut != null) {
+            setShortcut(newText, old.shortcut)
         }
-        addManual(newText, now, pinned)
         return true
     }
 
@@ -86,11 +113,8 @@ class ClipboardHistory {
             return false
         }
         val index = indexOf(text)
-        val keepPin = pinned || (index >= 0 && items[index].pinned)
-        if (index >= 0) {
-            items.removeAt(index)
-        }
-        items.add(0, Item(text, now, keepPin))
+        val existing = if (index >= 0) items.removeAt(index) else null
+        items.add(0, Item(text, now, pinned || existing?.pinned == true, existing?.shortcut))
         trimToMaxItems()
         return true
     }

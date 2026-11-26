@@ -22,50 +22,68 @@ class ClipboardHistoryManager private constructor(context: Context) {
         ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
             try {
                 val pinned = ClipboardHistoryStore.read(pinsFile)
-                mainHandler.post { history.restorePinned(pinned) }
+                mainHandler.post { synchronized(this) { history.restorePinned(pinned) } }
             } catch (e: IOException) {
                 Log.w(TAG, "Cannot read pinned clips", e)
             }
         }
     }
 
+    @Synchronized
     fun add(text: CharSequence?, timestamp: Long, isSensitive: Boolean) {
         history.add(text, timestamp, isSensitive, System.currentTimeMillis())
     }
 
+    @Synchronized
     fun getItems(): List<ClipboardHistory.Item> = history.getItems(System.currentTimeMillis())
 
+    @Synchronized
     fun setPinned(text: String, pinned: Boolean) {
         history.setPinned(text, pinned)
         savePins()
     }
 
+    @Synchronized
     fun remove(text: String) {
         history.remove(text)
         savePins()
     }
 
+    @Synchronized
+    fun setShortcut(text: String, shortcut: String?) {
+        history.setShortcut(text, shortcut)
+        savePins()
+    }
+
+    @Synchronized
+    fun findShortcutText(word: String): String? = history.findByShortcut(word)
+
+    @Synchronized
     fun moveToTop(text: String) {
         history.moveToTop(text, System.currentTimeMillis())
         savePins()
     }
 
+    @Synchronized
     fun replace(oldText: String, newText: String) {
         if (history.replace(oldText, newText, System.currentTimeMillis())) {
             savePins()
         }
     }
 
+    @Synchronized
     fun addClip(text: String) {
         if (history.addManual(text, System.currentTimeMillis())) {
             savePins()
         }
     }
 
+    @Synchronized
     fun clearUnpinned() {
         history.clearUnpinned()
     }
 
+    @Synchronized
     fun clearAll() {
         history.clearAll()
         savePins()
@@ -94,6 +112,9 @@ class ClipboardHistoryManager private constructor(context: Context) {
 
         @Volatile
         private var instance: ClipboardHistoryManager? = null
+
+        @JvmStatic
+        fun findShortcutTextIfLoaded(word: String): String? = instance?.findShortcutText(word)
 
         @JvmStatic
         fun getInstance(context: Context): ClipboardHistoryManager =

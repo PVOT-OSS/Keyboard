@@ -29,6 +29,8 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
         fun onClipboardHistoryAdd()
 
         fun onClipboardHistoryEdit(text: String)
+
+        fun onClipboardHistoryShortcut(text: String, shortcut: String?)
     }
 
     private lateinit var manager: ClipboardHistoryManager
@@ -45,6 +47,7 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
     private lateinit var cancel: TextView
     private lateinit var edit: TextView
     private lateinit var toTop: TextView
+    private lateinit var shortcut: TextView
     private lateinit var search: ImageButton
     private lateinit var add: ImageButton
     private var selected: ClipboardHistory.Item? = null
@@ -62,6 +65,12 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
         cancel = findViewById(R.id.clipboard_history_cancel)
         edit = findViewById(R.id.clipboard_history_edit)
         toTop = findViewById(R.id.clipboard_history_to_top)
+        shortcut = findViewById(R.id.clipboard_history_shortcut)
+        shortcut.setOnClickListener {
+            val item = selected
+            select(null)
+            item?.let { listener.onClipboardHistoryShortcut(it.text, it.shortcut) }
+        }
         search = findViewById(R.id.clipboard_history_search)
         add = findViewById(R.id.clipboard_history_add)
         search.setOnClickListener { listener.onClipboardHistorySearch() }
@@ -99,7 +108,7 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
     fun show(backLabel: CharSequence?, tint: ColorStateList) {
         this.tint = tint
         back.text = backLabel
-        listOf(back, title, clear, empty, pin, edit, toTop, delete, cancel).forEach { it.setTextColor(tint) }
+        listOf(back, title, clear, empty, pin, edit, toTop, shortcut, delete, cancel).forEach { it.setTextColor(tint) }
         search.imageTintList = tint
         add.imageTintList = tint
         select(null)
@@ -108,6 +117,7 @@ class ClipboardHistoryView(context: Context, attrs: AttributeSet?) : LinearLayou
     private fun select(item: ClipboardHistory.Item?) {
         selected = item
         actions.visibility = if (item == null) GONE else VISIBLE
+        shortcut.visibility = if (item?.pinned == true) VISIBLE else GONE
         if (item != null) {
             pin.setText(
                 if (item.pinned) R.string.clipboard_history_unpin else R.string.clipboard_history_pin

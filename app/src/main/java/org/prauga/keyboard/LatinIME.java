@@ -1581,6 +1581,18 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     }
 
     @Override
+    public void onClipboardHistoryShortcut(@Nonnull final String text,
+            @Nullable final String shortcut) {
+        showTextField(new ClipEditClient(shortcut == null ? "" : shortcut,
+                R.string.clipboard_history_shortcut_hint,
+                getString(R.string.clipboard_history_save), value -> {
+                    ClipboardHistoryManager.getInstance(this).setShortcut(text, value);
+                    hideTextField();
+                    showClipboardHistory();
+                }, this::showClipboardHistory));
+    }
+
+    @Override
     public void onClipboardHistoryClose() {
         mKeyboardSwitcher.hidePanels();
     }
