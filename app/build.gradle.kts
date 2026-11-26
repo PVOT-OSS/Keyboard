@@ -110,10 +110,12 @@ dependencies {
     androidTestImplementation(libs.androidx.annotation)
 }
 
+val injectedSigning = providers.gradleProperty("android.injected.signing.store.file").isPresent
+
 tasks.matching { it.name == "bundleRelease" }.configureEach {
     doFirst {
-        check(releaseKeystore.exists()) {
-            "keystore.properties is missing: a Play bundle must be signed with the upload key"
+        check(releaseKeystore.exists() || injectedSigning) {
+            "No upload key: sign from Android Studio or add keystore.properties"
         }
     }
 }
