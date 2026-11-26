@@ -13,7 +13,10 @@ class ToolbarKeysTest {
     fun defaultShowsAShortToolbar() {
         val entries = ToolbarKeys.parse(null)
         assertEquals(
-            listOf("clipboard", "editing", "one_handed", "resize", "float", "emoji", "settings", "incognito"),
+            listOf(
+                "clipboard", "editing", "modes", "one_handed", "resize", "float", "emoji", "settings",
+                "incognito",
+            ),
             entries.map { it.id },
         )
         assertEquals(
@@ -34,7 +37,7 @@ class ToolbarKeysTest {
     fun unknownAndDuplicateKeysAreDroppedAndMissingOnesAppended() {
         val ids = ToolbarKeys.parse("emoji,gif,emoji").map { it.id }
         assertEquals("emoji", ids[0])
-        assertEquals(8, ids.size)
+        assertEquals(9, ids.size)
         assertEquals(ids.distinct(), ids)
     }
 }

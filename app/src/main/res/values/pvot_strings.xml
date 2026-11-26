@@ -37,6 +37,8 @@
     <string name="clear_clipboard_history_done">Clipboard history cleared</string>
     <string name="show_toolbar_key">Show toolbar</string>
     <string name="incognito_mode">Incognito mode</string>
+    <string name="keyboard_modes">Keyboard modes</string>
+    <string name="keyboard_modes_back">Back to the toolbar</string>
     <string name="show_toolbar_key_incognito">Incognito: the keyboard is not learning. Show toolbar</string>
     <string name="hide_toolbar_key">Hide toolbar</string>
     <string name="emoji_search_key">Search emoji</string>

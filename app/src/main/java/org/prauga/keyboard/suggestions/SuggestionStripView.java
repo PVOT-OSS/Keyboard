@@ -119,6 +119,9 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
     private final ImageButton mToolbarIncognitoKey;
     private final Map<String, View> mToolbarKeys = new HashMap<>();
     private List<String> mToolbarKeyOrder = Collections.emptyList();
+    private final List<View> mModeKeys = new ArrayList<>();
+    private final View mModeSplitKey;
+    private boolean mShowingModes;
     private final ColorStateList mPanelTint;
     private boolean mCanShowClipboardHistory;
     private boolean mShowsToolbar;
@@ -293,6 +296,21 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
                 getToolKeyTintList(), R.string.incognito_mode,
                 () -> mListener.toggleIncognitoMode());
         mToolbarKeys.put(ToolbarKeys.INCOGNITO, mToolbarIncognitoKey);
+        mToolbarKeys.put(ToolbarKeys.MODES, mToolbar.createKey(R.drawable.ic_toolbar_modes,
+                getToolKeyTintList(), R.string.keyboard_modes, this::showModes));
+        mModeKeys.add(mToolbar.createKey(R.drawable.ic_editing_chevron_left, getToolKeyTintList(),
+                R.string.keyboard_modes_back, this::hideModes));
+        mModeKeys.add(mToolbar.createKey(R.drawable.ic_toolbar_one_handed, getToolKeyTintList(),
+                R.string.one_handed_mode, () -> runModeAction(mListener::toggleOneHandedMode)));
+        mModeKeys.add(mToolbar.createKey(R.drawable.ic_floating_keyboard, getToolKeyTintList(),
+                R.string.spoken_description_float_keyboard,
+                () -> runModeAction(mListener::toggleFloatingKeyboard)));
+        mModeSplitKey = mToolbar.createKey(R.drawable.ic_split_keyboard, getToolKeyTintList(),
+                R.string.spoken_description_split_keyboard,
+                () -> runModeAction(mListener::toggleSplitKeyboard));
+        mModeKeys.add(mModeSplitKey);
+        mModeKeys.add(mToolbar.createKey(R.drawable.ic_toolbar_resize, getToolKeyTintList(),
+                R.string.keyboard_resize, () -> runModeAction(mListener::showKeyboardResize)));
         mToolbarKeys.put(ToolbarKeys.CLIPBOARD, mToolbarClipboardKey);
         mToolbarKeys.put(ToolbarKeys.EDITING, mToolbarEditingKey);
         mToolbarKeys.put(ToolbarKeys.ONE_HANDED, mToolbarOneHandedKey);
@@ -333,6 +351,7 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         final SettingsValues currentSettingsValues = Settings.getInstance().getCurrent();
         mVoiceKey.setVisibility(currentSettingsValues.mShowsVoiceInputKey ? VISIBLE : INVISIBLE);
         mShowsToolbar = currentSettingsValues.mShowsToolbar;
+        mShowingModes = false;
         if (!mToolbarKeyOrder.equals(currentSettingsValues.mToolbarKeys)) {
             mToolbarKeyOrder = currentSettingsValues.mToolbarKeys;
             final List<View> keys = new ArrayList<>();
@@ -367,6 +386,22 @@ public final class SuggestionStripView extends RelativeLayout implements OnClick
         if (isEmojiSearchShown()) {
             hideEdgeKeys();
         }
+    }
+
+    private void showModes() {
+        mShowingModes = true;
+        mModeSplitKey.setVisibility(mSplitKey.getVisibility() == VISIBLE ? VISIBLE : GONE);
+        mToolbar.setKeys(mModeKeys);
+    }
+
+    private void hideModes() {
+        mToolbarKeyOrder = Collections.emptyList();
+        refresh();
+    }
+
+    private void runModeAction(@Nonnull final Runnable action) {
+        hideModes();
+        action.run();
     }
 
     public void refresh() {

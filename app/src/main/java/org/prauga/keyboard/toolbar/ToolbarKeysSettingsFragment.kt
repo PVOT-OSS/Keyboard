@@ -51,6 +51,7 @@ class ToolbarKeysSettingsFragment : CustomPreferenceFragment() {
         ToolbarKeys.FLOAT -> R.string.spoken_description_float_keyboard
         ToolbarKeys.EMOJI -> R.string.spoken_description_emoji
         ToolbarKeys.INCOGNITO -> R.string.incognito_mode
+        ToolbarKeys.MODES -> R.string.keyboard_modes
         else -> R.string.spoken_description_settings
     }
 }
