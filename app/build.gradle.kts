@@ -1,7 +1,7 @@
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.pvot.android.application)
     alias(libs.plugins.pvot.android.compose)
 }
 
@@ -9,7 +9,6 @@ val releaseKeystore = rootProject.file("keystore.properties")
 
 android {
     namespace = "org.prauga.keyboard"
-    compileSdk { version = release(37) { minorApiLevel = 1 } }
     ndkVersion = "25.1.8937393"
 
     useLibrary("android.test.runner")
@@ -18,13 +17,10 @@ android {
 
     defaultConfig {
         applicationId = "org.prauga.keyboard"
-        minSdk = 30
-        targetSdk = 36
-        versionCode = rootProject.extra["computedVersionCode"] as Int
-        versionName = rootProject.extra["computedVersionName"] as String
+        versionCode = rootProject.extra["versionCode"] as Int
+        versionName = rootProject.extra["versionName"] as String
 
         testApplicationId = "org.prauga.keyboard.tests"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = false
     }
 
@@ -59,11 +55,6 @@ android {
         buildConfig = true
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
     externalNativeBuild {
         ndkBuild {
             path = file("src/main/jni/AndroidNdk.mk")
@@ -80,11 +71,6 @@ android {
         noCompress += "dict"
     }
 
-    lint {
-        checkReleaseBuilds = false
-        lintConfig = file("lint.xml")
-        baseline = file("lint-baseline.xml")
-    }
 }
 
 dependencies {
@@ -100,7 +86,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    testImplementation(libs.junit)
     androidTestImplementation(libs.mockito.core)
     androidTestImplementation(libs.dexmaker)
     androidTestImplementation(libs.dexmaker.mockito)

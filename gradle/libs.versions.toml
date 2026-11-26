@@ -4,14 +4,18 @@ agp = "9.5.0"
 annotation = "1.0.0"
 autofill = "1.1.0"
 composeBom = "2026.02.01"
+composeRules = "0.6.8"
+detekt = "2.0.0-alpha.6"
 dexmaker = "1.2"
 jsr305 = "3.0.2"
-junit = "4.12"
+junit = "4.13.2"
 kotlin = "2.4.21"
+ktfmt = "0.64"
 lifecycle = "2.11.0"
 material = "1.14.0-alpha09"
 mockito = "1.9.5"
 preference = "1.2.1"
+spotless = "8.11.0"
 testExtJunit = "1.1.1"
 testRules = "1.1.1"
 uiautomator = "2.2.0"
@@ -37,6 +41,12 @@ jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 junit = { module = "junit:junit", version.ref = "junit" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+compose-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+spotless-gradlePlugin = { group = "com.diffplug.spotless", name = "spotless-plugin-gradle", version.ref = "spotless" }
+detekt-gradlePlugin = { group = "dev.detekt", name = "detekt-gradle-plugin", version.ref = "detekt" }
+compose-rules-detekt = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "composeRules" }
 pvot-core-ui = { module = "com.prauga.pvot:core-ui" }
 pvot-design-system = { module = "com.prauga.pvot:design-system" }
 pvot-design-system-views = { module = "com.prauga.pvot:design-system-views" }
@@ -44,4 +54,9 @@ pvot-design-system-views = { module = "com.prauga.pvot:design-system-views" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
+pvot-android-application = { id = "pvot.android.application" }
 pvot-android-compose = { id = "pvot.android.compose" }
+pvot-quality-spotless = { id = "pvot.quality.spotless" }
+pvot-quality-detekt = { id = "pvot.quality.detekt" }
