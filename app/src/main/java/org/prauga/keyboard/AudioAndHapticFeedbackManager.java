@@ -18,6 +18,7 @@ package org.prauga.keyboard;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
@@ -33,6 +34,8 @@ import org.prauga.keyboard.settings.SettingsValues;
  */
 public final class AudioAndHapticFeedbackManager {
     private AudioManager mAudioManager;
+    private static final int LIGHT_VIBRATION_AMPLITUDE = 90;
+
     private Vibrator mVibrator;
 
     private SettingsValues mSettingsValues;
@@ -69,10 +72,12 @@ public final class AudioAndHapticFeedbackManager {
     }
 
     public void vibrate(final long milliseconds) {
-        if (mVibrator == null) {
+        if (mVibrator == null || milliseconds <= 0) {
             return;
         }
-        mVibrator.vibrate(milliseconds);
+        final int amplitude = mVibrator.hasAmplitudeControl()
+                ? LIGHT_VIBRATION_AMPLITUDE : VibrationEffect.DEFAULT_AMPLITUDE;
+        mVibrator.vibrate(VibrationEffect.createOneShot(milliseconds, amplitude));
     }
 
     private boolean reevaluateIfSoundIsOn() {
@@ -116,10 +121,10 @@ public final class AudioAndHapticFeedbackManager {
             vibrate(mSettingsValues.mKeypressVibrationDuration);
             return;
         }
-        // Go ahead with the system default
+        // CLOCK_TICK maps to the lightest predefined effect; KEYBOARD_TAP feels heavy on Pixels.
         if (viewToPerformHapticFeedbackOn != null) {
             viewToPerformHapticFeedbackOn.performHapticFeedback(
-                    HapticFeedbackConstants.KEYBOARD_TAP);
+                    HapticFeedbackConstants.CLOCK_TICK);
         }
     }
 
