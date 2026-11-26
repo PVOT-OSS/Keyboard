@@ -6,23 +6,17 @@
 package org.prauga.keyboard.settings.ui
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.prauga.pvot.designsystem.components.PvotSubScreen
-import com.prauga.pvot.designsystem.components.PvotSwitch
-import com.prauga.pvot.designsystem.components.button.PvotIconButton
 import com.prauga.pvot.designsystem.components.list.PvotListGroup
 import com.prauga.pvot.designsystem.components.list.PvotListGroupScope
 import com.prauga.pvot.designsystem.components.list.PvotListRow
 import java.text.NumberFormat
 import org.prauga.keyboard.R
 import org.prauga.keyboard.settings.data.SettingsSnapshot
-import org.prauga.keyboard.toolbar.ToolbarKeys
 
 @Composable
 internal fun TypingStatsScreen(
@@ -73,90 +67,6 @@ private fun PvotListGroupScope.statRow(@StringRes title: Int, value: Long) = ite
         },
     )
 }
-
-@Composable
-internal fun ToolbarKeysScreen(
-    snapshot: SettingsSnapshot,
-    onEvent: (SettingsEvent) -> Unit,
-    onBack: () -> Unit,
-) {
-    val entries = snapshot.toolbarKeys
-    val update = { list: List<ToolbarKeys.Entry> -> onEvent(SettingsEvent.SetToolbarKeys(list)) }
-    val upLabel = stringResource(R.string.toolbar_key_move_up)
-    val downLabel = stringResource(R.string.toolbar_key_move_down)
-    PvotSubScreen(screenTitle(SettingsRoute.TOOLBAR_KEYS), onBack) {
-        item {
-            PvotListGroup {
-                entries.forEachIndexed { index, entry ->
-                    item {
-                        PvotListRow(
-                            title = stringResource(toolbarKeyTitle(entry.id)),
-                            onClick = {
-                                update(
-                                    entries.toMutableList().also {
-                                        it[index] = entry.copy(shown = !entry.shown)
-                                    }
-                                )
-                            },
-                            trailing = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    PvotIconButton(
-                                        icon = painterResource(R.drawable.ic_editing_chevron_up),
-                                        contentDescription = upLabel,
-                                        enabled = index > 0,
-                                        onClick = {
-                                            update(
-                                                entries.toMutableList().also {
-                                                    it.add(index - 1, it.removeAt(index))
-                                                }
-                                            )
-                                        },
-                                    )
-                                    PvotIconButton(
-                                        icon = painterResource(R.drawable.ic_editing_chevron_down),
-                                        contentDescription = downLabel,
-                                        enabled = index < entries.size - 1,
-                                        onClick = {
-                                            update(
-                                                entries.toMutableList().also {
-                                                    it.add(index + 1, it.removeAt(index))
-                                                }
-                                            )
-                                        },
-                                    )
-                                    PvotSwitch(
-                                        checked = entry.shown,
-                                        onCheckedChange = {
-                                            update(
-                                                entries.toMutableList().also { list ->
-                                                    list[index] = entry.copy(shown = it)
-                                                }
-                                            )
-                                        },
-                                    )
-                                }
-                            },
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@StringRes
-private fun toolbarKeyTitle(id: String): Int =
-    when (id) {
-        ToolbarKeys.CLIPBOARD -> R.string.clipboard_history
-        ToolbarKeys.EDITING -> R.string.text_editing
-        ToolbarKeys.ONE_HANDED -> R.string.one_handed_mode
-        ToolbarKeys.RESIZE -> R.string.keyboard_resize
-        ToolbarKeys.FLOAT -> R.string.spoken_description_float_keyboard
-        ToolbarKeys.EMOJI -> R.string.spoken_description_emoji
-        ToolbarKeys.INCOGNITO -> R.string.incognito_mode
-        ToolbarKeys.MODES -> R.string.keyboard_modes
-        else -> R.string.spoken_description_settings
-    }
 
 @Composable
 internal fun BlockedWordsScreen(

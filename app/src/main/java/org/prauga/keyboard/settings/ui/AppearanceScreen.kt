@@ -32,7 +32,20 @@ internal fun AppearanceScreen(
     onOpen: (SettingsRoute) -> Unit,
     onBack: () -> Unit,
 ) {
-    val context = LocalContext.current
+    PvotSubScreen(screenTitle(SettingsRoute.APPEARANCE), onBack) {
+        item { LookGroup(snapshot, onEvent, dialogs, onOpen) }
+        item { PhotoGroup(snapshot, onEvent, dialogs) }
+        item { LayoutGroup(snapshot, onEvent, onOpen) }
+    }
+}
+
+@Composable
+private fun LookGroup(
+    snapshot: SettingsSnapshot,
+    onEvent: (SettingsEvent) -> Unit,
+    dialogs: SettingsDialogState,
+    onOpen: (SettingsRoute) -> Unit,
+) {
     val themeNames = stringArrayResource(R.array.keyboard_theme_names).toList()
     val themeIds = integerArrayResource(R.array.keyboard_theme_ids).toList()
     val textSize =
@@ -43,6 +56,31 @@ internal fun AppearanceScreen(
             R.array.key_text_size_values,
             DEFAULT_TEXT_SIZE,
         )
+    PvotListGroup(title = stringResource(R.string.settings_group_look)) {
+        linkRow(
+            title = R.string.settings_screen_theme,
+            value = themeNames.getOrNull(themeIds.indexOf(snapshot.themeId)),
+            onClick = { onOpen(SettingsRoute.THEME) },
+        )
+        prefSwitch(
+            snapshot,
+            BorderlessKeyBackground.PREF_KEY_BORDERS,
+            true,
+            R.string.key_borders,
+            onEvent,
+            R.string.key_borders_summary,
+        )
+        listRow(textSize, snapshot, dialogs, onEvent)
+    }
+}
+
+@Composable
+private fun PhotoGroup(
+    snapshot: SettingsSnapshot,
+    onEvent: (SettingsEvent) -> Unit,
+    dialogs: SettingsDialogState,
+) {
+    val context = LocalContext.current
     val darkness =
         listSetting(
             KeyboardPhoto.PREF_PHOTO_DARKNESS,
@@ -51,73 +89,56 @@ internal fun AppearanceScreen(
             R.array.keyboard_photo_darkness_values,
             DEFAULT_DARKNESS,
         )
+    PvotListGroup(title = stringResource(R.string.keyboard_photo)) {
+        linkRow(
+            title = R.string.keyboard_photo,
+            summaryRes =
+                if (snapshot.photoSet) R.string.keyboard_photo_set
+                else R.string.keyboard_photo_summary,
+            onClick = { context.startActivity(Intent(context, KeyboardPhotoActivity::class.java)) },
+        )
+        if (snapshot.photoSet) {
+            listRow(darkness, snapshot, dialogs, onEvent)
+            linkRow(
+                title = R.string.keyboard_photo_remove,
+                showChevron = false,
+                onClick = { onEvent(SettingsEvent.RemovePhoto) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun LayoutGroup(
+    snapshot: SettingsSnapshot,
+    onEvent: (SettingsEvent) -> Unit,
+    onOpen: (SettingsRoute) -> Unit,
+) {
     val split = snapshot.boolean(Settings.PREF_ENABLE_SPLIT_KEYBOARD, false)
-    PvotSubScreen(screenTitle(SettingsRoute.APPEARANCE), onBack) {
-        item {
-            PvotListGroup(title = stringResource(R.string.settings_group_look)) {
-                val themeIndex = themeIds.indexOf(snapshot.themeId)
-                linkRow(
-                    title = R.string.settings_screen_theme,
-                    value = themeNames.getOrNull(themeIndex),
-                    onClick = { onOpen(SettingsRoute.THEME) },
-                )
-                prefSwitch(
-                    snapshot,
-                    BorderlessKeyBackground.PREF_KEY_BORDERS,
-                    true,
-                    R.string.key_borders,
-                    onEvent,
-                    R.string.key_borders_summary,
-                )
-                listRow(textSize, snapshot, dialogs, onEvent)
-            }
-        }
-        item {
-            PvotListGroup(title = stringResource(R.string.keyboard_photo)) {
-                linkRow(
-                    title = R.string.keyboard_photo,
-                    summaryRes =
-                        if (snapshot.photoSet) R.string.keyboard_photo_set
-                        else R.string.keyboard_photo_summary,
-                    onClick = {
-                        context.startActivity(Intent(context, KeyboardPhotoActivity::class.java))
-                    },
-                )
-                if (snapshot.photoSet) {
-                    listRow(darkness, snapshot, dialogs, onEvent)
-                    linkRow(
-                        title = R.string.keyboard_photo_remove,
-                        showChevron = false,
-                        onClick = { onEvent(SettingsEvent.RemovePhoto) },
-                    )
-                }
-            }
-        }
-        item {
-            PvotListGroup(title = stringResource(R.string.settings_group_layout)) {
-                linkRow(
-                    title = R.string.custom_input_styles_title,
-                    summary = snapshot.customStyles.joinToString(", ") { it.name }.ifEmpty { null },
-                    onClick = { onOpen(SettingsRoute.CUSTOM_STYLES) },
-                )
-                prefSwitch(
-                    snapshot,
+    PvotListGroup(title = stringResource(R.string.settings_group_layout)) {
+        linkRow(
+            title = R.string.custom_input_styles_title,
+            summary = snapshot.customStyles.joinToString(", ") { it.name }.ifEmpty { null },
+            onClick = { onOpen(SettingsRoute.CUSTOM_STYLES) },
+        )
+        switches(
+            snapshot,
+            onEvent,
+            listOf(
+                SwitchSetting(
                     Settings.PREF_ENABLE_SPLIT_KEYBOARD,
                     false,
                     R.string.enable_split_keyboard,
-                    onEvent,
-                )
-                prefSwitch(
-                    snapshot,
+                ),
+                SwitchSetting(
                     Settings.PREF_SPLIT_KEYBOARD_DUPLICATE_KEYS,
                     true,
                     R.string.split_keyboard_duplicate_keys,
-                    onEvent,
                     R.string.split_keyboard_duplicate_keys_summary,
                     enabled = split,
-                )
-            }
-        }
+                ),
+            ),
+        )
     }
 }
 

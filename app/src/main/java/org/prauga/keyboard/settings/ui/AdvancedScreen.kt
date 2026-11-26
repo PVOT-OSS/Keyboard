@@ -12,6 +12,8 @@ import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
 import com.prauga.pvot.designsystem.components.PvotSubScreen
 import com.prauga.pvot.designsystem.components.list.PvotListGroup
+import com.prauga.pvot.designsystem.components.list.PvotListGroupScope
+import com.prauga.pvot.designsystem.components.list.PvotPreferenceRow
 import org.prauga.keyboard.R
 import org.prauga.keyboard.settings.Settings
 import org.prauga.keyboard.settings.data.SettingsSnapshot
@@ -23,202 +25,9 @@ internal fun AdvancedScreen(
     dialogs: SettingsDialogState,
     onBack: () -> Unit,
 ) {
-    val res = LocalContext.current.resources
-    val maxVibration = integerResource(R.integer.config_max_vibration_duration)
-    val minLongPress = integerResource(R.integer.config_min_longpress_timeout)
-    val maxLongPress = integerResource(R.integer.config_max_longpress_timeout)
-    val longPressStep = integerResource(R.integer.config_longpress_timeout_step)
-    val delayEntries =
-        listOf(
-            stringResource(R.string.key_preview_popup_dismiss_no_delay),
-            stringResource(R.string.key_preview_popup_dismiss_default_delay),
-        )
-    val delayValues = listOf(0, snapshot.popupDefaultDelay)
-    val delayTitle = stringResource(R.string.key_preview_popup_dismiss_delay)
-    val vibrationTitle = stringResource(R.string.prefs_keypress_vibration_duration_settings)
-    val soundTitle = stringResource(R.string.prefs_keypress_sound_volume_settings)
-    val longPressTitle = stringResource(R.string.prefs_key_longpress_timeout_settings)
-    val heightTitle = stringResource(R.string.prefs_keyboard_height_scale)
     PvotSubScreen(screenTitle(SettingsRoute.ADVANCED), onBack) {
-        item {
-            PvotListGroup(title = stringResource(R.string.settings_group_timing)) {
-                if (snapshot.showPopupOption) {
-                    val index = delayValues.indexOf(snapshot.popupDismissDelay)
-                    linkRow(
-                        title = R.string.key_preview_popup_dismiss_delay,
-                        value = delayEntries.getOrNull(index),
-                        enabled = snapshot.popupEnabled,
-                        onClick = {
-                            dialogs.choice =
-                                ChoiceRequest(delayTitle, delayEntries, index) {
-                                    onEvent(
-                                        SettingsEvent.SetString(
-                                            Settings.PREF_KEY_PREVIEW_POPUP_DISMISS_DELAY,
-                                            delayValues[it].toString(),
-                                        )
-                                    )
-                                }
-                        },
-                    )
-                }
-                if (snapshot.hasVibrator) {
-                    linkRow(
-                        title = R.string.prefs_keypress_vibration_duration_settings,
-                        value = milliseconds(res, snapshot.vibrationMs),
-                        enabled = snapshot.vibrationEnabled,
-                        onClick = {
-                            dialogs.slider =
-                                SliderRequest(
-                                    title = vibrationTitle,
-                                    value = snapshot.vibrationMs,
-                                    range = 0..maxVibration,
-                                    step = 1,
-                                    format = { milliseconds(res, it) },
-                                    onPreview = { onEvent(SettingsEvent.PreviewVibration(it)) },
-                                    onSave = {
-                                        onEvent(
-                                            SettingsEvent.SetInt(
-                                                Settings.PREF_VIBRATION_DURATION_SETTINGS,
-                                                it,
-                                            )
-                                        )
-                                    },
-                                    onDefault = {
-                                        onEvent(
-                                            SettingsEvent.Reset(
-                                                Settings.PREF_VIBRATION_DURATION_SETTINGS
-                                            )
-                                        )
-                                    },
-                                )
-                        },
-                    )
-                }
-                linkRow(
-                    title = R.string.prefs_keypress_sound_volume_settings,
-                    value = percentOrDefault(res, snapshot.soundPercent),
-                    enabled = snapshot.soundEnabled,
-                    onClick = {
-                        dialogs.slider =
-                            SliderRequest(
-                                title = soundTitle,
-                                value =
-                                    if (snapshot.soundPercent < 0) snapshot.soundDefaultPercent
-                                    else snapshot.soundPercent,
-                                range = 0..PERCENT_MAX,
-                                step = 1,
-                                format = { it.toString() },
-                                onPreview = { onEvent(SettingsEvent.PreviewSound(it)) },
-                                onSave = {
-                                    onEvent(
-                                        SettingsEvent.SetPercent(
-                                            Settings.PREF_KEYPRESS_SOUND_VOLUME,
-                                            it,
-                                        )
-                                    )
-                                },
-                                onDefault = {
-                                    onEvent(
-                                        SettingsEvent.Reset(Settings.PREF_KEYPRESS_SOUND_VOLUME)
-                                    )
-                                },
-                            )
-                    },
-                )
-                linkRow(
-                    title = R.string.prefs_key_longpress_timeout_settings,
-                    value = milliseconds(res, snapshot.longPressMs),
-                    onClick = {
-                        dialogs.slider =
-                            SliderRequest(
-                                title = longPressTitle,
-                                value = snapshot.longPressMs,
-                                range = minLongPress..maxLongPress,
-                                step = longPressStep,
-                                format = { milliseconds(res, it) },
-                                onPreview = {},
-                                onSave = {
-                                    onEvent(
-                                        SettingsEvent.SetInt(
-                                            Settings.PREF_KEY_LONGPRESS_TIMEOUT,
-                                            it,
-                                        )
-                                    )
-                                },
-                                onDefault = {
-                                    onEvent(
-                                        SettingsEvent.Reset(Settings.PREF_KEY_LONGPRESS_TIMEOUT)
-                                    )
-                                },
-                            )
-                    },
-                )
-            }
-        }
-        item {
-            PvotListGroup(title = stringResource(R.string.settings_group_keyboard)) {
-                linkRow(
-                    title = R.string.prefs_keyboard_height_scale,
-                    value = "${snapshot.heightPercent}%",
-                    onClick = {
-                        dialogs.slider =
-                            SliderRequest(
-                                title = heightTitle,
-                                value = snapshot.heightPercent,
-                                range = HEIGHT_MIN..HEIGHT_MAX,
-                                step = 1,
-                                format = { "$it%" },
-                                onPreview = {},
-                                onSave = {
-                                    onEvent(
-                                        SettingsEvent.SetPercent(
-                                            Settings.PREF_KEYBOARD_HEIGHT_SCALE,
-                                            it,
-                                        )
-                                    )
-                                },
-                                onDefault = {
-                                    onEvent(
-                                        SettingsEvent.Reset(Settings.PREF_KEYBOARD_HEIGHT_SCALE)
-                                    )
-                                },
-                            )
-                    },
-                )
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_SPACE_TRACKPAD,
-                    true,
-                    R.string.space_trackpad,
-                    onEvent,
-                    R.string.space_trackpad_summary,
-                )
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_BACKSPACE_TRACKPAD,
-                    true,
-                    R.string.backspace_trackpad,
-                    onEvent,
-                    R.string.backspace_trackpad_summary,
-                )
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_SWIPE_DOWN_FOR_DIGITS,
-                    false,
-                    R.string.swipe_down_for_digits,
-                    onEvent,
-                    R.string.swipe_down_for_digits_summary,
-                )
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY,
-                    true,
-                    R.string.prefs_enable_emoji_alt_physical_key,
-                    onEvent,
-                    R.string.prefs_enable_emoji_alt_physical_key_summary,
-                )
-            }
-        }
+        item { TimingGroup(snapshot, onEvent, dialogs) }
+        item { KeyboardGroup(snapshot, onEvent, dialogs) }
         item {
             PvotListGroup(title = stringResource(R.string.settings_group_other)) {
                 prefSwitch(
@@ -231,6 +40,138 @@ internal fun AdvancedScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun TimingGroup(
+    snapshot: SettingsSnapshot,
+    onEvent: (SettingsEvent) -> Unit,
+    dialogs: SettingsDialogState,
+) {
+    val res = LocalContext.current.resources
+    val ms = { value: Int -> milliseconds(res, value) }
+    val vibration =
+        SliderSetting(
+            Settings.PREF_VIBRATION_DURATION_SETTINGS,
+            R.string.prefs_keypress_vibration_duration_settings,
+            snapshot.vibrationMs,
+            0..integerResource(R.integer.config_max_vibration_duration),
+            ms,
+            { SettingsEvent.SetInt(Settings.PREF_VIBRATION_DURATION_SETTINGS, it) },
+            preview = { SettingsEvent.PreviewVibration(it) },
+            enabled = snapshot.vibrationEnabled,
+        )
+    val sound =
+        SliderSetting(
+            Settings.PREF_KEYPRESS_SOUND_VOLUME,
+            R.string.prefs_keypress_sound_volume_settings,
+            if (snapshot.soundPercent < 0) snapshot.soundDefaultPercent else snapshot.soundPercent,
+            0..PERCENT_MAX,
+            { percentOrDefault(res, it) },
+            { SettingsEvent.SetPercent(Settings.PREF_KEYPRESS_SOUND_VOLUME, it) },
+            preview = { SettingsEvent.PreviewSound(it) },
+            enabled = snapshot.soundEnabled,
+            label = percentOrDefault(res, snapshot.soundPercent),
+        )
+    val longPress =
+        SliderSetting(
+            Settings.PREF_KEY_LONGPRESS_TIMEOUT,
+            R.string.prefs_key_longpress_timeout_settings,
+            snapshot.longPressMs,
+            integerResource(R.integer.config_min_longpress_timeout)..integerResource(
+                    R.integer.config_max_longpress_timeout
+                ),
+            ms,
+            { SettingsEvent.SetInt(Settings.PREF_KEY_LONGPRESS_TIMEOUT, it) },
+            step = integerResource(R.integer.config_longpress_timeout_step),
+        )
+    val titles = listOf(vibration, sound, longPress).map { stringResource(it.title) }
+    PvotListGroup(title = stringResource(R.string.settings_group_timing)) {
+        if (snapshot.showPopupOption) popupDelayRow(snapshot, onEvent, dialogs)
+        if (snapshot.hasVibrator) sliderRow(vibration, titles[0], dialogs, onEvent)
+        sliderRow(sound, titles[1], dialogs, onEvent)
+        sliderRow(longPress, titles[2], dialogs, onEvent)
+    }
+}
+
+private fun PvotListGroupScope.popupDelayRow(
+    snapshot: SettingsSnapshot,
+    onEvent: (SettingsEvent) -> Unit,
+    dialogs: SettingsDialogState,
+) = item {
+    val entries =
+        listOf(
+            stringResource(R.string.key_preview_popup_dismiss_no_delay),
+            stringResource(R.string.key_preview_popup_dismiss_default_delay),
+        )
+    val values = listOf(0, snapshot.popupDefaultDelay)
+    val title = stringResource(R.string.key_preview_popup_dismiss_delay)
+    val index = values.indexOf(snapshot.popupDismissDelay)
+    PvotPreferenceRow(
+        title = title,
+        value = entries.getOrNull(index),
+        enabled = snapshot.popupEnabled,
+        onClick = {
+            dialogs.choice =
+                ChoiceRequest(title, entries, index) {
+                    onEvent(
+                        SettingsEvent.SetString(
+                            Settings.PREF_KEY_PREVIEW_POPUP_DISMISS_DELAY,
+                            values[it].toString(),
+                        )
+                    )
+                }
+        },
+    )
+}
+
+@Composable
+private fun KeyboardGroup(
+    snapshot: SettingsSnapshot,
+    onEvent: (SettingsEvent) -> Unit,
+    dialogs: SettingsDialogState,
+) {
+    val height =
+        SliderSetting(
+            Settings.PREF_KEYBOARD_HEIGHT_SCALE,
+            R.string.prefs_keyboard_height_scale,
+            snapshot.heightPercent,
+            HEIGHT_MIN..HEIGHT_MAX,
+            { "$it%" },
+            { SettingsEvent.SetPercent(Settings.PREF_KEYBOARD_HEIGHT_SCALE, it) },
+        )
+    val heightTitle = stringResource(height.title)
+    val settings =
+        listOf(
+            SwitchSetting(
+                Settings.PREF_SPACE_TRACKPAD,
+                true,
+                R.string.space_trackpad,
+                R.string.space_trackpad_summary,
+            ),
+            SwitchSetting(
+                Settings.PREF_BACKSPACE_TRACKPAD,
+                true,
+                R.string.backspace_trackpad,
+                R.string.backspace_trackpad_summary,
+            ),
+            SwitchSetting(
+                Settings.PREF_SWIPE_DOWN_FOR_DIGITS,
+                false,
+                R.string.swipe_down_for_digits,
+                R.string.swipe_down_for_digits_summary,
+            ),
+            SwitchSetting(
+                Settings.PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY,
+                true,
+                R.string.prefs_enable_emoji_alt_physical_key,
+                R.string.prefs_enable_emoji_alt_physical_key_summary,
+            ),
+        )
+    PvotListGroup(title = stringResource(R.string.settings_group_keyboard)) {
+        sliderRow(height, heightTitle, dialogs, onEvent)
+        switches(snapshot, onEvent, settings)
     }
 }
 

@@ -47,4 +47,21 @@ class ToolbarKeysTest {
         assertEquals(9, ids.size)
         assertEquals(ids.distinct(), ids)
     }
+
+    @Test
+    fun movedShiftsOneKeyAndKeepsTheRest() {
+        val entries = listOf(entry("a"), entry("b"), entry("c"))
+        assertEquals(listOf("b", "a", "c"), ToolbarKeys.moved(entries, 1, 0).map { it.id })
+        assertEquals(listOf("a", "c", "b"), ToolbarKeys.moved(entries, 1, 2).map { it.id })
+    }
+
+    @Test
+    fun withShownChangesOnlyThatKey() {
+        val entries = listOf(entry("a"), entry("b"))
+        val updated = ToolbarKeys.withShown(entries, 1, false)
+        assertEquals(listOf(true, false), updated.map { it.shown })
+        assertEquals(listOf(true, true), entries.map { it.shown })
+    }
+
+    private fun entry(id: String) = ToolbarKeys.Entry(id, true)
 }

@@ -68,3 +68,57 @@ internal fun PvotListGroupScope.linkRow(
         onClick = onClick,
     )
 }
+
+internal class SwitchSetting(
+    val key: String,
+    val default: Boolean,
+    @param:StringRes val title: Int,
+    @param:StringRes val summary: Int? = null,
+    val enabled: Boolean = true,
+)
+
+internal fun PvotListGroupScope.switches(
+    snapshot: SettingsSnapshot,
+    onEvent: (SettingsEvent) -> Unit,
+    settings: List<SwitchSetting>,
+) = settings.forEach {
+    prefSwitch(snapshot, it.key, it.default, it.title, onEvent, it.summary, it.enabled)
+}
+
+internal class SliderSetting(
+    val key: String,
+    @param:StringRes val title: Int,
+    val value: Int,
+    val range: IntRange,
+    val format: (Int) -> String,
+    val save: (Int) -> SettingsEvent,
+    val step: Int = 1,
+    val preview: ((Int) -> SettingsEvent)? = null,
+    val enabled: Boolean = true,
+    val label: String? = null,
+)
+
+internal fun PvotListGroupScope.sliderRow(
+    setting: SliderSetting,
+    titleText: String,
+    dialogs: SettingsDialogState,
+    onEvent: (SettingsEvent) -> Unit,
+) =
+    linkRow(
+        title = setting.title,
+        value = setting.label ?: setting.format(setting.value),
+        enabled = setting.enabled,
+        onClick = {
+            dialogs.slider =
+                SliderRequest(
+                    title = titleText,
+                    value = setting.value,
+                    range = setting.range,
+                    step = setting.step,
+                    format = setting.format,
+                    onPreview = { value -> setting.preview?.let { onEvent(it(value)) } },
+                    onSave = { onEvent(setting.save(it)) },
+                    onDefault = { onEvent(SettingsEvent.Reset(setting.key)) },
+                )
+        },
+    )

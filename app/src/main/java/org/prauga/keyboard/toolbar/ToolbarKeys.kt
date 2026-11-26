@@ -39,6 +39,12 @@ object ToolbarKeys {
         prefs.edit().putString(PREF_TOOLBAR_KEYS, serialize(entries)).apply()
     }
 
+    fun moved(entries: List<Entry>, from: Int, to: Int): List<Entry> =
+        entries.toMutableList().apply { add(to, removeAt(from)) }
+
+    fun withShown(entries: List<Entry>, index: Int, shown: Boolean): List<Entry> =
+        entries.toMutableList().apply { this[index] = this[index].copy(shown = shown) }
+
     internal fun parse(value: String?): List<Entry> {
         val entries = ArrayList<Entry>()
         for (token in value.orEmpty().split(SEPARATOR)) {

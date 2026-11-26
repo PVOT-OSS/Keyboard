@@ -21,130 +21,119 @@ internal fun PreferencesScreen(
     onOpen: (SettingsRoute) -> Unit,
     onBack: () -> Unit,
 ) {
-    val vibrationDefault = booleanResource(R.bool.config_default_vibration_enabled)
-    val soundDefault = booleanResource(R.bool.config_default_sound_enabled)
-    val popupDefault = booleanResource(R.bool.config_default_key_preview_popup)
-    val numberRow = snapshot.boolean(Settings.PREF_SHOW_NUMBER_ROW, false)
-    val toolbar = snapshot.boolean(Settings.PREF_SHOW_TOOLBAR, true)
     PvotSubScreen(screenTitle(SettingsRoute.PREFERENCES), onBack) {
-        item {
-            PvotListGroup(title = stringResource(R.string.settings_group_keys)) {
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_AUTO_CAP,
-                    true,
-                    R.string.auto_cap,
-                    onEvent,
-                    R.string.auto_cap_summary,
-                )
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_SHOW_NUMBER_ROW,
+        item { KeysGroup(snapshot, onEvent) }
+        item { ToolbarGroup(snapshot, onEvent, onOpen) }
+        item { FeedbackGroup(snapshot, onEvent) }
+    }
+}
+
+@Composable
+private fun KeysGroup(snapshot: SettingsSnapshot, onEvent: (SettingsEvent) -> Unit) {
+    val numberRow = snapshot.boolean(Settings.PREF_SHOW_NUMBER_ROW, false)
+    val settings =
+        listOfNotNull(
+            SwitchSetting(
+                Settings.PREF_AUTO_CAP,
+                true,
+                R.string.auto_cap,
+                R.string.auto_cap_summary,
+            ),
+            SwitchSetting(
+                Settings.PREF_SHOW_NUMBER_ROW,
+                false,
+                R.string.number_row,
+                R.string.number_row_summary,
+            ),
+            SwitchSetting(
+                Settings.PREF_SHOW_NUMBER_ROW_PASSWORD,
+                false,
+                R.string.number_row_password,
+                R.string.number_row_password_summary,
+                enabled = !numberRow,
+            ),
+            SwitchSetting(
+                Settings.PREF_ARROW_KEY_ROW,
+                false,
+                R.string.arrow_key_row,
+                R.string.arrow_key_row_summary,
+            ),
+            SwitchSetting(
+                    Settings.PREF_SHOW_EMOJI_KEY,
                     false,
-                    R.string.number_row,
-                    onEvent,
-                    R.string.number_row_summary,
+                    R.string.show_emoji_key,
+                    R.string.show_emoji_key_summary,
                 )
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_SHOW_NUMBER_ROW_PASSWORD,
-                    false,
-                    R.string.number_row_password,
-                    onEvent,
-                    R.string.number_row_password_summary,
-                    enabled = !numberRow,
+                .takeIf { snapshot.showEmojiKeyOption },
+            SwitchSetting(
+                Settings.PREF_SHOW_LONGPRESS_HINTS,
+                false,
+                R.string.show_longpress_hints,
+                R.string.show_longpress_hints_summary,
+            ),
+            SwitchSetting(
+                Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD,
+                true,
+                R.string.use_double_space_period,
+                R.string.use_double_space_period_summary,
+            ),
+            SwitchSetting(Settings.PREF_VOICE_INPUT_KEY, true, R.string.voice_input).takeIf {
+                snapshot.showVoiceKeyOption
+            },
+        )
+    PvotListGroup(title = stringResource(R.string.settings_group_keys)) {
+        switches(snapshot, onEvent, settings)
+    }
+}
+
+@Composable
+private fun ToolbarGroup(
+    snapshot: SettingsSnapshot,
+    onEvent: (SettingsEvent) -> Unit,
+    onOpen: (SettingsRoute) -> Unit,
+) {
+    val toolbar = snapshot.boolean(Settings.PREF_SHOW_TOOLBAR, true)
+    PvotListGroup(title = stringResource(R.string.settings_group_toolbar)) {
+        prefSwitch(
+            snapshot,
+            Settings.PREF_SHOW_TOOLBAR,
+            true,
+            R.string.show_toolbar,
+            onEvent,
+            R.string.show_toolbar_summary,
+        )
+        linkRow(
+            title = R.string.toolbar_keys,
+            summaryRes = R.string.toolbar_keys_summary,
+            enabled = toolbar,
+            onClick = { onOpen(SettingsRoute.TOOLBAR_KEYS) },
+        )
+    }
+}
+
+@Composable
+private fun FeedbackGroup(snapshot: SettingsSnapshot, onEvent: (SettingsEvent) -> Unit) {
+    val settings =
+        listOfNotNull(
+            SwitchSetting(
+                    Settings.PREF_VIBRATE_ON,
+                    booleanResource(R.bool.config_default_vibration_enabled),
+                    R.string.vibrate_on_keypress,
                 )
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_ARROW_KEY_ROW,
-                    false,
-                    R.string.arrow_key_row,
-                    onEvent,
-                    R.string.arrow_key_row_summary,
+                .takeIf { snapshot.hasVibrator },
+            SwitchSetting(
+                Settings.PREF_SOUND_ON,
+                booleanResource(R.bool.config_default_sound_enabled),
+                R.string.sound_on_keypress,
+            ),
+            SwitchSetting(
+                    Settings.PREF_POPUP_ON,
+                    booleanResource(R.bool.config_default_key_preview_popup),
+                    R.string.popup_on_keypress,
                 )
-                if (snapshot.showEmojiKeyOption) {
-                    prefSwitch(
-                        snapshot,
-                        Settings.PREF_SHOW_EMOJI_KEY,
-                        false,
-                        R.string.show_emoji_key,
-                        onEvent,
-                        R.string.show_emoji_key_summary,
-                    )
-                }
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_SHOW_LONGPRESS_HINTS,
-                    false,
-                    R.string.show_longpress_hints,
-                    onEvent,
-                    R.string.show_longpress_hints_summary,
-                )
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD,
-                    true,
-                    R.string.use_double_space_period,
-                    onEvent,
-                    R.string.use_double_space_period_summary,
-                )
-                if (snapshot.showVoiceKeyOption) {
-                    prefSwitch(
-                        snapshot,
-                        Settings.PREF_VOICE_INPUT_KEY,
-                        true,
-                        R.string.voice_input,
-                        onEvent,
-                    )
-                }
-            }
-        }
-        item {
-            PvotListGroup(title = stringResource(R.string.settings_group_toolbar)) {
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_SHOW_TOOLBAR,
-                    true,
-                    R.string.show_toolbar,
-                    onEvent,
-                    R.string.show_toolbar_summary,
-                )
-                linkRow(
-                    title = R.string.toolbar_keys,
-                    summaryRes = R.string.toolbar_keys_summary,
-                    enabled = toolbar,
-                    onClick = { onOpen(SettingsRoute.TOOLBAR_KEYS) },
-                )
-            }
-        }
-        item {
-            PvotListGroup(title = stringResource(R.string.settings_group_feedback)) {
-                if (snapshot.hasVibrator) {
-                    prefSwitch(
-                        snapshot,
-                        Settings.PREF_VIBRATE_ON,
-                        vibrationDefault,
-                        R.string.vibrate_on_keypress,
-                        onEvent,
-                    )
-                }
-                prefSwitch(
-                    snapshot,
-                    Settings.PREF_SOUND_ON,
-                    soundDefault,
-                    R.string.sound_on_keypress,
-                    onEvent,
-                )
-                if (snapshot.showPopupOption) {
-                    prefSwitch(
-                        snapshot,
-                        Settings.PREF_POPUP_ON,
-                        popupDefault,
-                        R.string.popup_on_keypress,
-                        onEvent,
-                    )
-                }
-            }
-        }
+                .takeIf { snapshot.showPopupOption },
+        )
+    PvotListGroup(title = stringResource(R.string.settings_group_feedback)) {
+        switches(snapshot, onEvent, settings)
     }
 }
