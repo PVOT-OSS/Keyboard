@@ -35,7 +35,6 @@ internal fun AppearanceScreen(
     val context = LocalContext.current
     val themeNames = stringArrayResource(R.array.keyboard_theme_names).toList()
     val themeIds = integerArrayResource(R.array.keyboard_theme_ids).toList()
-    val themeTitle = stringResource(R.string.settings_screen_theme)
     val textSize =
         listSetting(KeyTextSize.PREF_KEY_TEXT_SIZE, R.string.key_text_size,
             R.array.key_text_size_entries, R.array.key_text_size_values, DEFAULT_TEXT_SIZE)
@@ -51,12 +50,7 @@ internal fun AppearanceScreen(
                 linkRow(
                     title = R.string.settings_screen_theme,
                     value = themeNames.getOrNull(themeIndex),
-                    onClick = {
-                        dialogs.choice =
-                            ChoiceRequest(themeTitle, themeNames, themeIndex) {
-                                onEvent(SettingsEvent.SetTheme(themeIds[it]))
-                            }
-                    },
+                    onClick = { onOpen(SettingsRoute.THEME) },
                 )
                 prefSwitch(snapshot, BorderlessKeyBackground.PREF_KEY_BORDERS, true,
                     R.string.key_borders, onEvent, R.string.key_borders_summary)

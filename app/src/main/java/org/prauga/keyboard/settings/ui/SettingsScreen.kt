@@ -37,6 +37,7 @@ internal enum class SettingsRoute {
     ROOT,
     PREFERENCES,
     APPEARANCE,
+    THEME,
     GESTURE,
     CORRECTION,
     ADVANCED,
@@ -118,6 +119,7 @@ private fun SettingsRouteContent(
         SettingsRoute.PREFERENCES -> PreferencesScreen(snapshot, onEvent, navigator::open, onBack)
         SettingsRoute.APPEARANCE ->
             AppearanceScreen(snapshot, onEvent, dialogs, navigator::open, onBack)
+        SettingsRoute.THEME -> ThemeScreen(snapshot, onEvent, onBack)
         SettingsRoute.GESTURE -> GestureScreen(snapshot, onEvent, onBack)
         SettingsRoute.CORRECTION ->
             CorrectionScreen(snapshot, onEvent, dialogs, navigator::open, onBack)
@@ -145,6 +147,7 @@ internal fun screenTitle(route: SettingsRoute): String =
         SettingsRoute.ROOT -> stringResource(R.string.english_ime_settings)
         SettingsRoute.PREFERENCES -> stringResource(R.string.settings_screen_preferences)
         SettingsRoute.APPEARANCE -> stringResource(R.string.settings_screen_appearance)
+        SettingsRoute.THEME -> stringResource(R.string.settings_screen_theme)
         SettingsRoute.GESTURE -> stringResource(R.string.settings_screen_gesture)
         SettingsRoute.CORRECTION -> stringResource(R.string.settings_screen_correction)
         SettingsRoute.ADVANCED -> stringResource(R.string.settings_screen_advanced)

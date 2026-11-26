@@ -150,6 +150,19 @@ public final class KeyboardTheme implements Comparable<KeyboardTheme> {
         return getKeyboardTheme(context, BuildCompatUtils.EFFECTIVE_SDK_INT);
     }
 
+    public static int getStyleId(final Context context, final int themeId) {
+        int resolvedId = themeId;
+        if (THEME_ID_AUTO_DARK == themeId) {
+            final int nightMode = context.getResources().getConfiguration().uiMode
+                    & Configuration.UI_MODE_NIGHT_MASK;
+            resolvedId = nightMode == Configuration.UI_MODE_NIGHT_YES
+                    ? THEME_ID_LXX_DARK : THEME_ID_LXX_LIGHT;
+        }
+        final KeyboardTheme theme =
+                searchKeyboardThemeById(resolvedId, getAvailableThemeArray(context));
+        return theme != null ? theme.mStyleId : 0;
+    }
+
     /* package private for testing */
     static KeyboardTheme[] getAvailableThemeArray(final Context context) {
         if (AVAILABLE_KEYBOARD_THEMES == null) {

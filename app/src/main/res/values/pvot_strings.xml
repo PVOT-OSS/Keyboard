@@ -68,6 +68,7 @@
     <string name="keyboard_photo_darkness_dark">Dark</string>
     <string name="keyboard_theme_high_contrast">High contrast</string>
     <string name="keyboard_theme_pvot">Pvot</string>
+    <string name="keyboard_theme_selected">Selected</string>
     <string name="key_borders_summary">Draw a background behind each key</string>
     <string name="keyboard_resize">Resize keyboard</string>
     <string name="toolbar_keys">Toolbar keys</string>
