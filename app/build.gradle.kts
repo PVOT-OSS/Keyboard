@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.autofill)
+    implementation(libs.pvot.design.system.views)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.mockito.core)

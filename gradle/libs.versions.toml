@@ -27,6 +27,7 @@ jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 junit = { module = "junit:junit", version.ref = "junit" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+pvot-design-system-views = { module = "com.prauga.pvot:design-system-views" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
