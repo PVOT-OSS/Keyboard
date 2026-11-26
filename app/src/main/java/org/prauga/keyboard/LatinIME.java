@@ -24,7 +24,7 @@ import static org.prauga.keyboard.common.Constants.ImeOption.NO_MICROPHONE_COMPA
 
 import android.Manifest.permission;
 import android.app.ActivityOptions;
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -74,6 +74,8 @@ import android.view.inputmethod.InputContentInfo;
 import android.view.inputmethod.InputMethodSubtype;
 
 import androidx.annotation.NonNull;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.prauga.keyboard.accessibility.AccessibilityUtils;
 import org.prauga.keyboard.annotations.UsedForTesting;
@@ -249,7 +251,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     }
     final HideSoftInputReceiver mHideSoftInputReceiver = new HideSoftInputReceiver(this);
 
-    private AlertDialog mOptionsDialog;
+    private Dialog mOptionsDialog;
 
     private final boolean mIsHardwareAcceleratedDrawingEnabled;
 
@@ -2211,8 +2213,8 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     @Override
     public void removeSuggestion(final SuggestedWordInfo suggestionInfo) {
         final String word = suggestionInfo.mWord;
-        final AlertDialog dialog = new AlertDialog.Builder(
-                DialogUtils.getPlatformDialogThemeContext(this))
+        final Dialog dialog = new MaterialAlertDialogBuilder(
+                DialogUtils.getDialogThemeContext(this))
                 .setTitle(getString(R.string.remove_suggestion_title, word))
                 .setMessage(R.string.remove_suggestion_message)
                 .setPositiveButton(R.string.remove_suggestion, (di, which) -> {
@@ -2569,17 +2571,17 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
                 }
             }
         };
-        final AlertDialog.Builder builder = new AlertDialog.Builder(
-                DialogUtils.getPlatformDialogThemeContext(this));
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(
+                DialogUtils.getDialogThemeContext(this));
         builder.setItems(items, listener).setTitle(title);
-        final AlertDialog dialog = builder.create();
+        final Dialog dialog = builder.create();
         dialog.setCancelable(true /* cancelable */);
         dialog.setCanceledOnTouchOutside(true /* cancelable */);
         showOptionDialog(dialog);
     }
 
     // TODO: Move this method out of {@link LatinIME}.
-    private void showOptionDialog(final AlertDialog dialog) {
+    private void showOptionDialog(final Dialog dialog) {
         final IBinder windowToken = mKeyboardSwitcher.getMainKeyboardView().getWindowToken();
         if (windowToken == null) {
             return;
