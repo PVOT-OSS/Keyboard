@@ -5,14 +5,12 @@
 
 package org.prauga.keyboard.editing
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.view.KeyEvent
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -111,35 +109,8 @@ class TextEditingView(context: Context, attrs: AttributeSet?) : LinearLayout(con
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private fun setUpRepeatingKey(key: View, action: () -> Unit) {
-        val startDelay = resources.getInteger(R.integer.config_key_repeat_start_timeout).toLong()
-        val interval = resources.getInteger(R.integer.config_key_repeat_interval).toLong()
-        var repeated = false
-        val repeat = object : Runnable {
-            override fun run() {
-                repeated = true
-                action()
-                handler.postDelayed(this, interval)
-            }
-        }
-        key.setOnClickListener { action() }
-        key.setOnTouchListener { view, event ->
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN -> {
-                    repeated = false
-                    handler.postDelayed(repeat, startDelay)
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    handler.removeCallbacks(repeat)
-                    if (repeated) {
-                        view.isPressed = false
-                        return@setOnTouchListener true
-                    }
-                }
-            }
-            false
-        }
+        RepeatingKey.attach(key, handler, action)
     }
 
     override fun onDetachedFromWindow() {
