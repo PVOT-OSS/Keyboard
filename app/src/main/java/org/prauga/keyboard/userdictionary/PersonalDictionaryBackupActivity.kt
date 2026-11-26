@@ -5,6 +5,7 @@
 
 package org.prauga.keyboard.userdictionary
 
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -18,6 +19,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import java.io.IOException
+import java.io.Writer
 import org.prauga.keyboard.R
 import org.prauga.keyboard.utils.ExecutorUtils
 
@@ -69,116 +71,110 @@ class PersonalDictionaryBackupActivity : ComponentActivity() {
             )
 
         private fun export(context: Context, uri: Uri) {
-            val resolver = context.contentResolver
             val count =
-                try {
-                    val cursor =
-                        resolver.query(
-                            UserDictionary.Words.CONTENT_URI,
-                            PROJECTION,
-                            null,
-                            null,
-                            UserDictionary.Words.WORD,
-                        ) ?: throw IOException("Cannot open the personal dictionary")
-                    cursor.use {
-                        val stream =
-                            resolver.openOutputStream(uri, "wt")
-                                ?: throw IOException("Cannot open the file")
-                        stream.bufferedWriter().use { writer ->
-                            var written = 0
-                            while (cursor.moveToNext()) {
-                                val entry = fromCursor(cursor)
-                                if ('\t' in entry.word) {
-                                    continue
-                                }
-                                writer.write(entry.toLine())
-                                writer.write("\n")
-                                written++
-                            }
-                            written
-                        }
-                    }
-                } catch (e: IOException) {
-                    Log.w(TAG, "Personal dictionary export failed", e)
-                    showToast(
-                        context,
-                        context.getString(R.string.personal_dictionary_export_failed),
-                    )
-                    return
-                } catch (e: SecurityException) {
-                    Log.w(TAG, "Personal dictionary export failed", e)
-                    showToast(
-                        context,
-                        context.getString(R.string.personal_dictionary_export_failed),
-                    )
-                    return
+                guarded("Personal dictionary export failed") {
+                    writeEntries(context.contentResolver, uri)
                 }
             showToast(
                 context,
-                context.resources.getQuantityString(
-                    R.plurals.personal_dictionary_exported,
-                    count,
-                    count,
-                ),
+                if (count == null) {
+                    context.getString(R.string.personal_dictionary_export_failed)
+                } else {
+                    context.resources.getQuantityString(
+                        R.plurals.personal_dictionary_exported,
+                        count,
+                        count,
+                    )
+                },
             )
         }
 
         private fun importFrom(context: Context, uri: Uri) {
-            val resolver = context.contentResolver
-            val newWords =
-                try {
-                    val knownKeys = HashSet<String>()
-                    resolver
-                        .query(UserDictionary.Words.CONTENT_URI, PROJECTION, null, null, null)
-                        ?.use { cursor ->
-                            while (cursor.moveToNext()) {
-                                knownKeys.add(fromCursor(cursor).key())
-                            }
-                        }
-                    val stream =
-                        resolver.openInputStream(uri) ?: throw IOException("Cannot open the file")
-                    val values =
-                        stream.bufferedReader().useLines { lines ->
-                            lines
-                                .mapNotNull { PersonalDictionaryEntry.fromLine(it) }
-                                .filter { knownKeys.add(it.key()) }
-                                .map(::toValues)
-                                .toList()
-                        }
-                    if (values.isNotEmpty()) {
-                        resolver.bulkInsert(UserDictionary.Words.CONTENT_URI, values.toTypedArray())
-                    }
-                    values.size
-                } catch (e: IOException) {
-                    Log.w(TAG, "Personal dictionary import failed", e)
-                    showToast(
-                        context,
-                        context.getString(R.string.personal_dictionary_import_failed),
-                    )
-                    return
-                } catch (e: SecurityException) {
-                    Log.w(TAG, "Personal dictionary import failed", e)
-                    showToast(
-                        context,
-                        context.getString(R.string.personal_dictionary_import_failed),
-                    )
-                    return
-                } catch (e: IllegalArgumentException) {
-                    Log.w(TAG, "Personal dictionary import failed", e)
-                    showToast(
-                        context,
-                        context.getString(R.string.personal_dictionary_import_failed),
-                    )
-                    return
+            val count =
+                guarded("Personal dictionary import failed") {
+                    insertNewEntries(context.contentResolver, uri)
                 }
             showToast(
                 context,
-                context.resources.getQuantityString(
-                    R.plurals.personal_dictionary_imported,
-                    newWords,
-                    newWords,
-                ),
+                if (count == null) {
+                    context.getString(R.string.personal_dictionary_import_failed)
+                } else {
+                    context.resources.getQuantityString(
+                        R.plurals.personal_dictionary_imported,
+                        count,
+                        count,
+                    )
+                },
             )
+        }
+
+        private inline fun guarded(failure: String, block: () -> Int): Int? =
+            try {
+                block()
+            } catch (e: IOException) {
+                Log.w(TAG, failure, e)
+                null
+            } catch (e: SecurityException) {
+                Log.w(TAG, failure, e)
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.w(TAG, failure, e)
+                null
+            }
+
+        @Throws(IOException::class)
+        private fun writeEntries(resolver: ContentResolver, uri: Uri): Int {
+            val cursor =
+                resolver.query(
+                    UserDictionary.Words.CONTENT_URI,
+                    PROJECTION,
+                    null,
+                    null,
+                    UserDictionary.Words.WORD,
+                ) ?: throw IOException("Cannot open the personal dictionary")
+            return cursor.use {
+                val stream =
+                    resolver.openOutputStream(uri, "wt")
+                        ?: throw IOException("Cannot open the file")
+                stream.bufferedWriter().use { writer -> writeAll(cursor, writer) }
+            }
+        }
+
+        private fun writeAll(cursor: Cursor, writer: Writer): Int {
+            var written = 0
+            while (cursor.moveToNext()) {
+                val entry = fromCursor(cursor)
+                if ('\t' !in entry.word) {
+                    writer.write(entry.toLine())
+                    writer.write("\n")
+                    written++
+                }
+            }
+            return written
+        }
+
+        @Throws(IOException::class)
+        private fun insertNewEntries(resolver: ContentResolver, uri: Uri): Int {
+            val knownKeys = HashSet<String>()
+            resolver.query(UserDictionary.Words.CONTENT_URI, PROJECTION, null, null, null)?.use {
+                cursor ->
+                while (cursor.moveToNext()) {
+                    knownKeys.add(fromCursor(cursor).key())
+                }
+            }
+            val stream = resolver.openInputStream(uri) ?: throw IOException("Cannot open the file")
+            val values =
+                stream.bufferedReader().useLines { lines ->
+                    lines
+                        .mapNotNull { PersonalDictionaryEntry.fromLine(it) }
+                        .filter { knownKeys.add(it.key()) }
+                        .map(::toValues)
+                        .toList()
+                }
+            if (values.isNotEmpty()) {
+                resolver.bulkInsert(UserDictionary.Words.CONTENT_URI, values.toTypedArray())
+            }
+            return values.size
         }
 
         private fun fromCursor(cursor: Cursor) =

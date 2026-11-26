@@ -26,30 +26,35 @@ data class PersonalDictionaryEntry(
         private const val MIN_FREQUENCY = 1
         private const val MAX_FREQUENCY = 255
         private const val MAX_LENGTH = 48
+        private const val FIELD_WORD = 0
+        private const val FIELD_FREQUENCY = 1
+        private const val FIELD_LOCALE = 2
+        private const val FIELD_SHORTCUT = 3
         const val DEFAULT_FREQUENCY = 250
 
         fun fromLine(line: String): PersonalDictionaryEntry? {
             if (line.isEmpty() || line.startsWith(COMMENT_PREFIX)) {
                 return null
             }
-            val fields = line.split(SEPARATOR)
-            val word = fields[0].trim()
-            if (word.isEmpty() || word.length > MAX_LENGTH) {
-                return null
+            val fields = line.split(SEPARATOR).map { it.trim() }
+            val word = fields[FIELD_WORD]
+            val frequency = parseFrequency(fields.getOrNull(FIELD_FREQUENCY).orEmpty())
+            val shortcut = fields.getOrNull(FIELD_SHORTCUT).orEmpty()
+            val valid =
+                word.isNotEmpty() && word.length <= MAX_LENGTH && shortcut.length <= MAX_LENGTH
+            return if (valid && frequency != null) {
+                PersonalDictionaryEntry(
+                    word,
+                    frequency,
+                    fields.getOrNull(FIELD_LOCALE).orEmpty(),
+                    shortcut,
+                )
+            } else {
+                null
             }
-            val frequencyField = fields.getOrNull(1)?.trim().orEmpty()
-            val frequency =
-                if (frequencyField.isEmpty()) {
-                    DEFAULT_FREQUENCY
-                } else {
-                    frequencyField.toIntOrNull() ?: return null
-                }
-            val locale = fields.getOrNull(2)?.trim().orEmpty()
-            val shortcut = fields.getOrNull(3)?.trim().orEmpty()
-            if (shortcut.length > MAX_LENGTH) {
-                return null
-            }
-            return PersonalDictionaryEntry(word, frequency, locale, shortcut)
         }
+
+        private fun parseFrequency(field: String): Int? =
+            if (field.isEmpty()) DEFAULT_FREQUENCY else field.toIntOrNull()
     }
 }
