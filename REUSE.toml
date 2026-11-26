@@ -1,0 +1,49 @@
+# SPDX-FileCopyrightText: 2026 Saalim Quadri <danascape@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+version = 1
+SPDX-PackageName = "Pvot Keyboard"
+SPDX-PackageSupplier = "Saalim Quadri <danascape@gmail.com>"
+SPDX-PackageDownloadLocation = "https://github.com/PVOT-OSS/Keyboard"
+
+[[annotations]]
+path = "**"
+precedence = "closest"
+SPDX-FileCopyrightText = ["The Android Open Source Project", "The LineageOS Project"]
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ["gradle/wrapper/**", "gradlew", "gradlew.bat"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2007-2023 Gradle, Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ["fastlane/metadata/android/**/*.txt", "fastlane/metadata/android/**/*.png", "app/lint-baseline.xml"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Saalim Quadri <danascape@gmail.com>"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "app/src/main/assets/emoji/**"
+precedence = "override"
+SPDX-FileCopyrightText = "2015-2024 Unicode, Inc."
+SPDX-License-Identifier = "Unicode-3.0"
+
+[[annotations]]
+path = "app/src/main/assets/licenses/Apache-2.0.txt"
+precedence = "override"
+SPDX-FileCopyrightText = "2004 The Apache Software Foundation"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "app/src/main/assets/licenses/MIT-Tabler.txt"
+precedence = "override"
+SPDX-FileCopyrightText = "2020-2026 Paweł Kuna"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "app/src/main/assets/licenses/MIT-Glisse.txt"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Kelvin Zhang"
+SPDX-License-Identifier = "MIT"
